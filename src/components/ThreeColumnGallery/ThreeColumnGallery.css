@@ -1,0 +1,108 @@
+.three-column-gallery {
+  height: 250vh; /* Scrollable space for the animation */
+  position: relative;
+  background-color: var(--color-bg-primary);
+  z-index: 5;
+}
+
+.sticky-gallery-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100vh; /* Exactly 100vh to ensure perfect centering */
+  display: flex;
+  flex-direction: column; /* Stack paragraph, cards, and title vertically */
+  justify-content: center; /* Pushes the entire block into the absolute mathematical center */
+  align-items: center;
+  overflow: hidden;
+}.gallery-intro-section {
+  width: 100%;
+  padding: 15vh 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-bg-primary);
+}
+
+.three-column-intro-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  justify-content: center;
+}
+
+.three-column-paragraph-top {
+  text-align: center;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 300;
+  color: var(--color-text-main, #ffffff);
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.gallery-cards-container {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gallery-card {
+  position: absolute; /* Side cards stack on top */
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 1.5rem; /* Better gap between image and title */
+}
+
+.gallery-card.center-card {
+  position: relative; /* In normal flow */
+}
+
+.gallery-card-img-wrapper {
+  height: 75vh; /* Massive 75vh restored since bottom text is gone! */
+  max-height: calc(100vh - 20vh); /* Safety max-height */
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gallery-card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.gallery-card-img-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-card-title {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-text-main, #ffffff);
+  font-weight: 400;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  /* No width overrides needed, height/aspect-ratio handles everything! */
+}
+
+@media (max-width: 768px) {
+  .gallery-cards-container {
+    transform: scale(0.65); /* Scales down the entire animation container so the cards don't fly off screen */
+  }
+  /* No extra overrides needed */
+}

@@ -1,0 +1,237 @@
+.footer-container {
+  width: 100%;
+  background-color: #050505;
+  display: flex;
+  flex-direction: column;
+  padding: 4rem 4rem 3.5rem 4rem; /* Aligned with CTA above */
+  color: var(--color-text-white);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+  align-items: center;
+}
+
+.footer-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35; /* Clearly visible red digital portal banner */
+  z-index: 1;
+  pointer-events: none;
+}
+
+.footer-overlay-dark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #050505 0%, rgba(5, 5, 5, 0.6) 50%, #050505 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: flex-start;
+  margin-bottom: 5rem;
+  gap: 4rem;
+  position: relative;
+  z-index: 4;
+}
+
+/* Left Brand & Contact Info Column */
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(225, 6, 0, 0.3));
+}
+
+.footer-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 2rem;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-secondary);
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+  color: var(--color-text-white);
+  transform: translateX(4px);
+}
+
+.contact-icon {
+  color: var(--color-primary);
+  filter: drop-shadow(0 0 5px rgba(225, 6, 0, 0.4));
+  flex-shrink: 0;
+}
+
+/* Right Navigation Links */
+.footer-links {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  height: 100%;
+  padding-top: 0.5rem; /* Align vertically with logo top */
+}
+
+.footer-links a {
+  font-family: var(--font-oswald);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  position: relative;
+  padding: 0.25rem 0;
+}
+
+.footer-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--color-text-white);
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}
+
+/* Bottom Bar Alignment */
+.footer-bottom {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: none;
+  padding-top: 2.5rem;
+  font-size: 0.85rem;
+  color: var(--color-accent-gray);
+  font-family: var(--font-inter);
+  position: relative;
+  z-index: 4;
+}
+
+.copyright {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Social Icon Circles */
+.footer-social-icons {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.footer-social-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-sizing: border-box;
+}
+
+.footer-social-icon-link svg {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease;
+}
+
+/* Hover effects for brand icons */
+.footer-social-icon-link:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Specific glows matching brand colors */
+.footer-social-icon-link[aria-label="Facebook"]:hover {
+  box-shadow: 0 5px 15px rgba(24, 119, 242, 0.2);
+  border-color: #1877F2;
+}
+
+.footer-social-icon-link[aria-label="Instagram"]:hover {
+  box-shadow: 0 5px 15px rgba(228, 64, 95, 0.2);
+  border-color: #E4405F;
+}
+
+.footer-social-icon-link[aria-label="LinkedIn"]:hover {
+  box-shadow: 0 5px 15px rgba(0, 119, 181, 0.2);
+  border-color: #0077B5;
+}
+
+.footer-social-icon-link:hover svg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+    text-align: center;
+  }
+  .footer-brand-col {
+    align-items: center;
+  }
+  .footer-links {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    padding: 6rem 2rem 2.5rem 2rem;
+  }
+  .footer-bottom {
+    flex-direction: column-reverse;
+    gap: 1.5rem;
+    align-items: center;
+    text-align: center;
+    padding-top: 2rem;
+  }
+}

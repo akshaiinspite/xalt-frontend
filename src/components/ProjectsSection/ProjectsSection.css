@@ -1,0 +1,213 @@
+.featured-section {
+  width: 100%;
+  background-color: var(--color-section-bg);
+  padding: 10rem 4rem;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.featured-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.featured-header {
+  text-align: left;
+}
+
+.featured-subtitle {
+  font-family: var(--font-oswald);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* Asymmetric Top Grid Layout */
+.featured-top-grid {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 2.2rem;
+  width: 100%;
+}
+
+.featured-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  height: 100%;
+}
+
+/* Base Project Grid Card */
+.project-grid-card {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-card-bg);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.project-image-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.project-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Heights mapping for grid */
+.large-left {
+  height: 620px;
+}
+
+.stacked-right {
+  height: 299px;
+  flex-grow: 1;
+}
+
+/* Overlays */
+.project-overlay-dark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(5,5,5,0.1) 30%, rgba(5,5,5,0.9) 100%);
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+
+.project-overlay-red {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(225, 6, 0, 0.15);
+  mix-blend-mode: overlay;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.4s ease;
+}
+
+/* Hover border animation */
+.project-animated-border {
+  position: absolute;
+  inset: 20px;
+  border: 1.5px solid transparent;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+.project-grid-card:hover .project-animated-border {
+  border-color: var(--color-primary);
+  inset: 12px;
+}
+
+/* Text Position */
+.project-text-box {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 2.2rem;
+  right: 2.2rem;
+  z-index: 4;
+}
+
+.project-tag-category {
+  font-family: var(--font-oswald);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: 600;
+}
+
+.project-card-title-text {
+  font-family: var(--font-oswald);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-white);
+}
+
+/* Bottom Grid Row Layout */
+.featured-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.2rem;
+  width: 100%;
+}
+
+.bottom-card {
+  height: 380px;
+}
+
+/* Hover effects triggers */
+.project-grid-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 15px 30px rgba(225, 6, 0, 0.1);
+}
+
+.project-grid-card:hover img {
+  transform: scale(1.06);
+}
+
+.project-grid-card:hover .project-overlay-red {
+  opacity: 1;
+}
+
+@media (max-width: 992px) {
+  .featured-top-grid {
+    grid-template-columns: 1fr;
+  }
+  .large-left {
+    height: 480px;
+  }
+  .stacked-right {
+    height: 280px;
+  }
+  .featured-bottom-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-section {
+    padding: 6rem 2rem;
+  }
+  .featured-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  .bottom-card {
+    height: 300px;
+  }
+  .project-text-box {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+  }
+}
+

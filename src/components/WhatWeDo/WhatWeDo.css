@@ -1,0 +1,135 @@
+.horizontal-scroll-container {
+  height: 400vh; /* Creates the scrollable space for the horizontal movement */
+  position: relative;
+}
+
+.sticky-scroll-wrapper {
+  position: sticky;
+  top: 15vh; /* Safely sticks the card in the center of the viewport without breaking sticky positioning */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 4rem 4rem 4rem; /* Bottom padding ensures card shadows aren't cut off by overflow: hidden */
+}
+
+.section-title-wrapper {
+  /* Margin and padding handled inline in TSX */
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: clamp(2.5rem, 4.5vw, 4.2rem); 
+  font-weight: 400;
+  color: #ff1a1a;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.horizontal-scroll-track {
+  display: flex;
+  gap: 8rem;
+  padding-right: 8rem; /* Matches the gap for perfect alignment at the end */
+  width: max-content;
+}
+
+.scroll-card {
+  width: 75vw; 
+  max-width: 1500px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem; /* Solid gap so the card title never touches the content below it */
+}
+
+.scroll-card-title {
+  font-size: clamp(2rem, 3.5vw, 3.2rem); 
+  color: var(--color-text-main, #ffffff);
+  margin: 0;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.scroll-card-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3rem; 
+}
+
+.scroll-card-image-wrapper {
+  flex: 1.2; 
+  aspect-ratio: 2 / 1; /* Made the image much wider/shorter so it perfectly fits smaller screens */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 1;
+}
+
+.scroll-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.scroll-card:hover .scroll-card-image {
+  transform: scale(1.03);
+}
+
+.scroll-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+}
+
+.scroll-card-desc {
+  font-size: clamp(1rem, 1.5vw, 1.2rem); 
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1.5rem -5rem; /* Only the paragraph pulls left to overlap the image */
+  line-height: 1.5;
+  font-weight: 300;
+  max-width: 450px; 
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* Text shadow strictly on the overlapping paragraph */
+}
+
+.explore-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-main, #ffffff);
+  padding: 0;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  width: fit-content;
+}
+
+.explore-btn:hover {
+  opacity: 1;
+}
+
+@media (max-width: 1024px) {
+  .scroll-card {
+    width: 80vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .sticky-scroll-wrapper {
+    padding: 0 2rem;
+  }
+  .scroll-card {
+    width: 85vw;
+  }
+}

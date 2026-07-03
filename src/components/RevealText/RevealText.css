@@ -1,0 +1,108 @@
+.reveal-text-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0a0a0a;
+  padding: 8rem 2rem 6rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.reveal-text-wrapper {
+  max-width: 1400px;
+  width: 100%;
+}
+
+.inline-video-heading {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.4;
+  text-align: center;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.inline-video-wrapper {
+  display: inline-flex;
+  position: relative;
+  width: clamp(80px, 12vw, 160px);
+  height: clamp(50px, 7vw, 90px);
+  margin: 0 0.5rem;
+  vertical-align: middle;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  background-color: #1a1a1a;
+  z-index: 1;
+}
+
+.inline-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.inline-video-wrapper:hover {
+  transform: scale(2.4) translateY(-5px);
+  z-index: 10;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 26, 26, 0.3);
+}
+
+.audio-toggle {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0;
+  
+  /* Counter-scale the parent's massive 2.4x zoom so the button stays small */
+  transform: scale(0.45);
+  transform-origin: bottom right;
+  
+  transition: opacity 0.3s ease, background 0.3s ease, transform 0.3s ease;
+  z-index: 5;
+}
+
+.inline-video-wrapper:hover .audio-toggle {
+  opacity: 1;
+  transform: scale(0.45); /* Maintain the small counter-scale */
+}
+
+.inline-video-wrapper:hover .audio-toggle:hover {
+  background: rgba(255, 26, 26, 0.9);
+  transform: scale(0.55); /* Slight bump when you actually hover the button */
+  border-color: rgba(255, 26, 26, 1);
+}
+
+.reveal-word {
+  display: inline-block;
+  will-change: opacity;
+  position: relative;
+  z-index: 1;
+}
+
+/* 
+ * CRITICAL FIX: Because the videos are nested inside .reveal-word, 
+ * they are trapped in its stacking context. To make the video pop in FRONT 
+ * of later text words in the DOM, we must hoist the entire hovered word to the front.
+ */
+.reveal-word:hover {
+  z-index: 50;
+}

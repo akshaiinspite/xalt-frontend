@@ -1,0 +1,788 @@
+.careers-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #0c0c10 0%, #050507 100%);
+  color: var(--color-text-white, #ffffff);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 150px 0 100px 0;
+}
+
+/* Three.js Background Canvas */
+.careers-three-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* Global Content Wrapper */
+.careers-content-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.careers-header-section {
+  width: 100%;
+  margin-bottom: 3.5rem;
+  position: relative;
+  z-index: 5;
+}
+
+.careers-heading-group {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.careers-backdrop-text {
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(5rem, 12vw, 11rem);
+  font-weight: 900;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(225, 6, 0, 0.15);
+  letter-spacing: 0.05em;
+  user-select: none;
+  pointer-events: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.careers-fore-title {
+  position: absolute;
+  top: 40%;
+  left: 2%;
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(2.5rem, 5.5vw, 5.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+  color: var(--color-text-white, #ffffff);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* Vacancies Full Panel */
+.careers-full-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.careers-subtitle-text {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+  margin-top: 0;
+  margin-bottom: 3rem;
+  max-width: 650px;
+}
+
+/* 3-Column Jobs Grid */
+.careers-jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  width: 100%;
+}
+
+.job-card-item {
+  position: relative;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 0 !important;
+  padding: 35px 30px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 340px;
+}
+
+.job-card-item:hover {
+  border-color: var(--color-primary, #e10600);
+  background: rgba(225, 6, 0, 0.02);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(225, 6, 0, 0.05);
+}
+
+/* Corner Bracket Lines */
+.card-corners {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.card-corners .corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: border-color 0.4s ease;
+}
+
+.job-card-item:hover .card-corners .corner {
+  border-color: var(--color-primary, #e10600);
+}
+
+.card-corners .tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.card-corners .tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.card-corners .bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.card-corners .br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.job-card-experience {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--color-primary, #e10600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.job-card-location {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.job-card-body {
+  border-left: 1.5px solid rgba(255, 255, 255, 0.08);
+  padding-left: 20px;
+  margin-bottom: 24px;
+  flex-grow: 1;
+  transition: border-color 0.4s ease;
+}
+
+.job-card-item:hover .job-card-body {
+  border-left-color: var(--color-primary, #e10600);
+}
+
+.job-index-badge {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.25);
+  margin-bottom: 6px;
+}
+
+.job-card-title {
+  font-family: var(--font-oswald, 'Montserrat', sans-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+}
+
+.job-card-desc {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.job-card-footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.job-card-apply-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary, #e10600);
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  padding: 0;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.job-card-item:hover .job-card-apply-btn {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+/* ----------------------------------------------------
+   APPLICATION MODAL OVERLAY
+   ---------------------------------------------------- */
+.careers-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(4, 4, 6, 0.8);
+  backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInOverlay 0.35s ease-out forwards;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.careers-modal-card {
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 0 !important;
+  background: rgba(10, 10, 14, 0.95);
+  border: 1px solid rgba(225, 6, 0, 0.15);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(225, 6, 0, 0.05);
+  padding: 40px 48px;
+  animation: scaleInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(225, 6, 0, 0.3) transparent;
+}
+
+/* Webkit Scrollbar styling for form modal */
+.careers-modal-card::-webkit-scrollbar {
+  width: 4px;
+}
+.careers-modal-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+.careers-modal-card::-webkit-scrollbar-thumb {
+  background: rgba(225, 6, 0, 0.3);
+  border-radius: 2px;
+}
+
+@keyframes scaleInCard {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Close Button styling */
+.close-modal-btn {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s ease;
+  z-index: 100;
+  padding: 4px;
+}
+
+.close-modal-btn svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+
+.close-modal-btn:hover {
+  color: var(--color-primary, #e10600);
+}
+
+.close-modal-btn:hover svg {
+  transform: rotate(90deg);
+}
+
+/* Prefilled Form Position Details */
+.prefilled-position-header {
+  margin-top: 10px;
+  margin-bottom: 1.5rem;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 20px;
+}
+
+.prefilled-position-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  background: rgba(225, 6, 0, 0.1);
+  border: 1px solid rgba(225, 6, 0, 0.3);
+  color: var(--color-primary, #e10600);
+  padding: 4px 10px;
+  width: fit-content;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.prefilled-position-title {
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.prefilled-position-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.meta-separator {
+  color: var(--color-primary, #e10600);
+}
+
+/* Form Styles Override & CV Upload Layout */
+.form-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 5px;
+}
+
+.form-header-status {
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-white, #ffffff);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.form-header-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+}
+
+.cyber-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group.focused {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.form-label {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.label-index {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 400;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.form-label .req {
+  color: var(--color-primary, #e10600);
+}
+
+.form-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #ffffff;
+  padding: 6px 0;
+  width: 100%;
+  letter-spacing: 0.01em;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 400;
+}
+
+/* File Upload Styles */
+.file-upload-group {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin-top: 5px;
+}
+
+.drag-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1.5px dashed rgba(255, 255, 255, 0.08);
+  padding: 26px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.drag-drop-zone:hover,
+.drag-drop-zone.drag-active {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--color-primary, #e10600);
+}
+
+.drag-drop-zone.has-file {
+  background: rgba(255, 255, 255, 0.02);
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.15);
+  cursor: default;
+}
+
+.upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-icon {
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 2px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.drag-drop-zone:hover .upload-icon {
+  color: var(--color-primary, #e10600);
+  transform: translateY(-2px);
+}
+
+.upload-text {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.browse-link {
+  color: var(--color-primary, #e10600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 600;
+}
+
+.upload-meta {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.02em;
+}
+
+.uploaded-file-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.file-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.2);
+}
+
+.doc-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary, #e10600);
+}
+
+.file-info-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.file-name {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ffffff;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-file-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.remove-file-btn:hover {
+  color: var(--color-primary, #e10600);
+  transform: scale(1.1);
+}
+
+.remove-file-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.file-size-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.upload-progress-text {
+  color: var(--color-primary, #e10600);
+  font-weight: 600;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-top: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--color-primary, #e10600);
+  width: 0;
+  transition: width 0.15s ease-out;
+  box-shadow: 0 0 6px var(--color-primary, #e10600);
+}
+
+/* Submit Messages */
+.submit-message {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  line-height: 1.4;
+  margin-top: 10px;
+}
+
+.submit-message.success {
+  background: rgba(0, 255, 102, 0.04);
+  border: 1px solid rgba(0, 255, 102, 0.15);
+  color: #00ff66;
+}
+
+.submit-message.error {
+  background: rgba(225, 6, 0, 0.04);
+  border: 1px solid rgba(225, 6, 0, 0.15);
+  color: #ff3344;
+}
+
+/* Form Submit Button */
+.form-submit-btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 14px 32px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.4s ease, background-color 0.4s ease;
+  margin-top: 15px;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+.submit-btn-text {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.submit-btn-arrow {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+.form-submit-btn:hover {
+  border-color: var(--color-primary, #e10600);
+  background-color: var(--color-primary, #e10600);
+}
+
+.form-submit-btn:hover .submit-btn-text {
+  color: #ffffff;
+}
+
+.form-submit-btn:hover .submit-btn-arrow {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.form-submit-btn.submitting {
+  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #222225;
+}
+
+.form-submit-btn.submitting .submit-btn-text {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-submit-btn.submitting .submit-btn-arrow {
+  display: none;
+}
+
+.form-group::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-primary, #e10600);
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.form-group.focused::after {
+  width: 100%;
+}
+
+/* Fluid scaling overrides for wide monitors */
+@media (min-width: 1440px) {
+  .careers-content-wrapper {
+    max-width: 1350px !important;
+  }
+}
+
+@media (min-width: 1900px) {
+  .careers-content-wrapper {
+    max-width: 1550px !important;
+  }
+}
+
+/* ----------------------------------------------------
+   RESPONSIVE DESIGN MEDIA QUERIES
+   ---------------------------------------------------- */
+@media (max-width: 1024px) {
+  .careers-page {
+    padding-top: 120px;
+    padding-bottom: 60px;
+  }
+
+  .careers-jobs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .careers-jobs-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .careers-modal-card {
+    padding: 30px 24px;
+  }
+  
+  .careers-content-wrapper {
+    width: 92%;
+  }
+
+  .job-card-item {
+    padding: 24px 20px;
+    min-height: 280px;
+  }
+
+  .file-name {
+    max-width: 160px;
+  }
+}

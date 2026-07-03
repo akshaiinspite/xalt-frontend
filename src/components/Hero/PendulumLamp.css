@@ -1,0 +1,89 @@
+.pendulum-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 5; /* Sit perfectly between background and foreground text */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.pendulum-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  /* Harmonic pendulum physics */
+  animation: pendulumSwing 5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes pendulumSwing {
+  0% { transform: rotate(8deg); }
+  50% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
+}
+
+.pendulum-wire {
+  width: 3px;
+  height: 15vh;
+  background: linear-gradient(to right, #111 0%, #444 50%, #111 100%);
+  box-shadow: 2px 0 10px rgba(0,0,0,0.8);
+  z-index: 2;
+}
+
+.pendulum-lamp-head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -10px; /* Embed the wire into the top of the SVG dome */
+  z-index: 3;
+  transform: scale(0.65); /* Slightly reduce the overall size of the lamp pot */
+  transform-origin: top center; /* Keeps it perfectly attached to the wire */
+}
+
+.pendulum-bulb {
+  position: absolute;
+  top: 86px; /* Centered beautifully inside the cy=95 dark interior */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 20px;
+  background: #ffffff;
+  /* Very small, realistic glowing LED dome */
+  border-radius: 50% 50% 50% 50% / 10px 10px 20px 20px;
+  z-index: 5;
+  /* Intensely realistic lens flare and core glow */
+  box-shadow: 
+    0 0 10px 5px rgba(255, 255, 255, 1),
+    0 5px 20px 10px rgba(255, 26, 26, 1),
+    0 10px 50px 20px rgba(255, 26, 26, 0.7),
+    0 20px 100px 40px rgba(255, 26, 26, 0.4);
+}
+
+.pendulum-rays {
+  position: absolute;
+  top: calc(15vh + 55px); /* Adjusted slightly up to match the newly scaled lamp head */
+  width: 80vw; /* Massively wide to ensure the glow reaches the character on the right */
+  height: 300vh;
+  
+  /* Ultra-soft, realistic volumetric light spreading naturally from the bulb */
+  background: radial-gradient(
+    ellipse 60% 100% at 50% 0%, 
+    rgba(255, 26, 26, 0.35) 0%, /* Reduced from 0.5 for a slightly softer intensity */
+    rgba(255, 26, 26, 0.1) 35%, /* Reduced from 0.15 */
+    rgba(255, 26, 26, 0) 70%
+  );
+  
+  /* No clip-path! This removes the ugly hard edges entirely */
+  
+  opacity: 0.8; /* Reduced slightly from 0.9 */
+  filter: blur(40px); /* Immensely soft atmospheric blur */
+  mix-blend-mode: screen; /* Interacts realistically with the background and character */
+  z-index: 1; 
+  pointer-events: none;
+}

@@ -1,0 +1,195 @@
+.our-story-section {
+  width: 100%;
+  background-color: var(--color-bg); /* Same dark tone background */
+  padding: 7.5rem 4rem; /* Balanced section padding */
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Huge faded typography behind content */
+.about-backdrop-text {
+  position: absolute;
+  top: 10%;
+  left: -2%;
+  font-family: var(--font-anton);
+  font-size: clamp(8rem, 22vw, 24rem);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.01);
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.our-story-container {
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Professional 2-Column Split Grid */
+.our-story-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5.5rem;
+  align-items: flex-start; /* Align columns to the top for clean horizontal lines */
+}
+
+.our-story-left-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.story-badge {
+  display: inline-block;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 30px;
+  padding: 6px 18px;
+  font-family: var(--font-oswald);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+  width: fit-content;
+}
+
+/* Balanced Bold Title */
+.story-title {
+  font-family: var(--font-anton);
+  font-size: clamp(3.5rem, 5.5vw, 6rem); /* Reduced from 8.5rem to fit nicely in 2-column */
+  font-weight: 900;
+  line-height: 0.9;
+  color: var(--color-text-white);
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.story-title .title-highlight {
+  color: var(--color-primary);
+  text-shadow: 0 0 35px rgba(225, 6, 0, 0.25);
+}
+
+.about-description-box {
+  position: relative;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 0; /* Align with top of heading in left column */
+}
+
+.about-accent-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
+}
+
+.about-intro-text {
+  font-family: var(--font-inter);
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+  color: var(--color-text-white);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.about-description-box p {
+  color: var(--color-text-secondary);
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.our-story-right-col {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Stats Layout (clean typography, no boxes) */
+.story-stats-layout {
+  display: flex;
+  gap: 5rem;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 3.5rem; /* Clean margin separation from paragraphs */
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.stat-number {
+  font-family: var(--font-oswald);
+  font-size: clamp(3rem, 5vw, 4.8rem);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.1rem;
+  text-shadow: 0 0 20px rgba(225, 6, 0, 0.15);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--font-inter);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .our-story-section {
+    padding: 4rem 2rem;
+  }
+  .our-story-split-grid {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+  .our-story-left-col {
+    align-items: center;
+    text-align: center;
+  }
+  .story-title {
+    text-align: center;
+  }
+  .about-description-box {
+    padding-left: 0;
+    text-align: center;
+    align-items: center;
+  }
+  .about-accent-line {
+    display: none;
+  }
+  .story-stats-layout {
+    justify-content: center;
+    gap: 4rem;
+  }
+  .stat-item {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .story-stats-layout {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+}

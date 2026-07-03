@@ -1,0 +1,89 @@
+/* Hide default cursor globally */
+body, * {
+  cursor: none !important;
+}
+
+/* Cursor container */
+.custom-cursor-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  z-index: 999999;
+  pointer-events: none;
+  will-change: transform;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  transform: translate3d(-100px, -100px, 0); /* Start offscreen */
+}
+
+/* Red square dot */
+.custom-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-primary, #e10600);
+  border-radius: 0%; /* Sharp square! */
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.25s ease, 
+              border-color 0.25s ease, 
+              border-radius 0.25s ease,
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, width, height;
+}
+
+/* Clicking scale effect */
+.custom-cursor-dot.clicking {
+  transform: scale(0.6);
+}
+
+/* Pointer Hover state: morphs into a hollow square frame (reticle) */
+.custom-cursor-dot.pointer {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 1px solid var(--color-primary, #e10600);
+  border-radius: 0%;
+  transform: rotate(45deg); /* Cool diamond crosshair roticle */
+  box-shadow: 0 0 10px rgba(225, 6, 0, 0.4);
+}
+
+/* Text Selection Hover state: turns into a vertical cursor line */
+.custom-cursor-dot.text {
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  background-color: #ff3344;
+}
+
+/* Monospace coordinates label positioned below the square */
+.custom-cursor-label {
+  margin-top: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--color-primary, #e10600);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+/* Pointer hover text label changes color and weight */
+.custom-cursor-label.pointer {
+  color: #ffffff;
+  font-weight: 700;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(225, 6, 0, 0.8);
+}
+
+/* Text hover label */
+.custom-cursor-label.text {
+  color: #ff3344;
+  opacity: 0.9;
+}

@@ -1,0 +1,467 @@
+.contact-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #0c0c10 0%, #050507 100%);
+  color: var(--color-text-white, #ffffff);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 150px 0 100px 0;
+}
+
+/* Three.js Background canvas container */
+.contact-three-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.4; /* Subtle backdrop dust */
+}
+
+/* Global Content Wrapper */
+.contact-content-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* New full-width header section */
+.contact-header-section {
+  width: 100%;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 5;
+}
+
+.contact-heading-group {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.contact-backdrop-text {
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(5rem, 12vw, 11rem);
+  font-weight: 900;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(225, 6, 0, 0.15);
+  letter-spacing: 0.05em;
+  user-select: none;
+  pointer-events: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.contact-fore-title {
+  position: absolute;
+  top: 40%;
+  left: 2%;
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(2.5rem, 5.5vw, 5.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+  color: var(--color-text-white, #ffffff);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* 2-Column Grid Layout */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 80px;
+  align-items: flex-start; /* Align elements to top for professional alignment */
+}
+
+/* ----------------------------------------------------
+   LEFT COLUMN: COMPANY DETAILS
+   ---------------------------------------------------- */
+.contact-info-panel {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-width: 0;
+}
+
+.contact-subtitle-text {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+  margin-top: 0;
+  margin-bottom: 3rem;
+  max-width: 520px;
+}
+
+/* Detail Info Cards List */
+.contact-info-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-card-item {
+  position: relative;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 0 !important; /* Sharp edges */
+  padding: 26px 30px;
+  transition: border-color 0.4s ease, background 0.4s ease, transform 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-card-item:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  transform: translateY(-2px);
+}
+
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.info-card-idx {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--color-primary, #e10600);
+}
+
+.info-card-label {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.info-card-body {
+  padding-left: 20px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.info-card-title {
+  font-family: var(--font-oswald, 'Montserrat', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+}
+
+.info-card-details {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+.info-card-link {
+  display: inline-block;
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.3s ease;
+  margin-bottom: 4px;
+}
+
+.info-card-link:hover {
+  color: var(--color-primary, #e10600);
+}
+
+.info-card-meta {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+/* ----------------------------------------------------
+   RIGHT COLUMN: SLEEK MINIMAL FORM
+   ---------------------------------------------------- */
+.contact-form-panel {
+  display: flex;
+  justify-content: flex-end;
+  height: auto;
+  min-width: 0;
+}
+
+.cyber-form-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  background: rgba(10, 10, 12, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  border-radius: 0 !important; /* Sharp edges */
+  padding: 48px;
+  backdrop-filter: blur(20px);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 2rem;
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Header Status Bar */
+.form-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.form-header-status {
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-white, #ffffff);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.form-header-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+}
+
+/* Form Inputs */
+.cyber-form {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group.focused {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.form-label {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.label-index {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 400;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.form-label .req {
+  color: var(--color-primary, #e10600);
+}
+
+.form-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #ffffff;
+  padding: 6px 0;
+  width: 100%;
+  letter-spacing: 0.01em;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 400;
+}
+
+.form-textarea {
+  resize: none;
+}
+
+/* Submit Messages */
+.submit-message {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 0 !important; /* Sharp edges */
+  line-height: 1.4;
+  margin-top: 10px;
+}
+
+.submit-message.success {
+  background: rgba(0, 255, 102, 0.04);
+  border: 1px solid rgba(0, 255, 102, 0.15);
+  color: #00ff66;
+}
+
+.submit-message.error {
+  background: rgba(225, 6, 0, 0.04);
+  border: 1px solid rgba(225, 6, 0, 0.15);
+  color: #ff3344;
+}
+
+/* Submit Button */
+.form-submit-btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0 !important; /* Sharp edges */
+  padding: 16px 36px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.4s ease, background-color 0.4s ease;
+  margin-top: 20px;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+.submit-btn-text {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-oswald, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.submit-btn-arrow {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+.form-submit-btn:hover {
+  border-color: var(--color-primary, #e10600);
+  background-color: var(--color-primary, #e10600);
+}
+
+.form-submit-btn:hover .submit-btn-text {
+  color: #ffffff;
+}
+
+.form-submit-btn:hover .submit-btn-arrow {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.form-submit-btn.submitting {
+  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #222225;
+}
+
+.form-submit-btn.submitting .submit-btn-text {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-submit-btn.submitting .submit-btn-arrow {
+  display: none;
+}
+
+/* Glowing line under focused fields */
+.form-group::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-primary, #e10600);
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.form-group.focused::after {
+  width: 100%;
+}
+
+/* Fluid scaling overrides for wide monitors */
+@media (min-width: 1440px) {
+  .contact-content-wrapper {
+    max-width: 1350px !important;
+  }
+}
+
+@media (min-width: 1900px) {
+  .contact-content-wrapper {
+    max-width: 1550px !important;
+  }
+}
+
+/* ----------------------------------------------------
+   RESPONSIVE LAYOUT MEDIA QUERIES
+   ---------------------------------------------------- */
+@media (max-width: 1024px) {
+  .contact-page {
+    padding-top: 120px;
+    padding-bottom: 60px;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  .contact-form-panel {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .cyber-form-wrapper {
+    padding: 30px 24px;
+  }
+  
+  .contact-content-wrapper {
+    width: 92%;
+  }
+
+  .info-card-link {
+    font-size: 1.15rem;
+  }
+}

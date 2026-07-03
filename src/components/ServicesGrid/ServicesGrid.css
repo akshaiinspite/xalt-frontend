@@ -1,0 +1,232 @@
+.services-section {
+  width: 100%;
+  background-color: var(--color-bg);
+  padding: 7rem 4rem; /* Balanced section padding */
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.services-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem; /* Reduced container gap */
+}
+
+.services-header {
+  text-align: left;
+}
+
+.services-subtitle {
+  font-family: var(--font-oswald);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.services-heading {
+  font-family: var(--font-anton);
+  font-size: clamp(3rem, 5.2vw, 5.2rem);
+  font-weight: 900;
+  line-height: 0.9;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.services-highlight {
+  color: var(--color-primary);
+  text-shadow: 0 0 35px rgba(225, 6, 0, 0.3);
+}
+
+/* 3-column Layout Grid */
+.services-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.8rem; /* Balanced, professional grid gap */
+}
+
+/* Service Card Styles */
+.service-card {
+  position: relative;
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0; /* Straight square edges */
+  overflow: hidden;
+  height: 460px; /* Fixed height for clean grid alignment */
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+}
+
+.service-card-img-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #050505;
+}
+
+.service-card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.service-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(5, 5, 5, 0) 40%, rgba(5, 5, 5, 0.6) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.service-card-glow-red {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(225, 6, 0, 0.05);
+  mix-blend-mode: color-burn;
+  opacity: 0;
+  z-index: 3;
+  transition: opacity 0.4s ease;
+}
+
+/* Text Section with rich professional red background (hidden by default) */
+.service-card-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  z-index: 4;
+  /* Premium deep red background */
+  background: linear-gradient(135deg, rgba(128, 2, 0, 0.95) 0%, rgba(58, 0, 0, 0.98) 100%);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none;
+}
+
+.service-card-category {
+  font-family: var(--font-oswald);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.4rem;
+  transition: color 0.3s ease;
+}
+
+.service-card-title {
+  font-family: var(--font-oswald);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin-bottom: 0.8rem;
+}
+
+.service-card-desc {
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+.service-card-btn {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-family: var(--font-oswald);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-arrow {
+  transition: transform 0.3s ease;
+}
+
+.service-card-btn:hover {
+  opacity: 0.85;
+}
+
+.service-card-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Card Hover Effects */
+.service-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 15px 30px rgba(225, 6, 0, 0.15);
+}
+
+/* Brighten and show the text background on hover */
+.service-card:hover .service-card-content {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.service-card:hover .service-card-category {
+  color: #FFFFFF;
+}
+
+.service-card:hover .service-card-img {
+  transform: scale(1.05);
+}
+
+.service-card:hover .service-card-glow-red {
+  opacity: 1;
+}
+
+@media (max-width: 992px) {
+  .services-grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-section {
+    padding: 4rem 2rem;
+  }
+  .services-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}
