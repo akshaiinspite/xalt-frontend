@@ -187,6 +187,23 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   );
 };
 
+const getMediaUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  // Convert legacy local paths that might be stored in the database to backend uploads
+  if (url.startsWith('/src/assets/images/')) {
+    const filename = url.substring(url.lastIndexOf('/') + 1);
+    return `/uploads/${filename}`;
+  }
+  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return cleanUrl;
+  }
+  return url;
+};
+
 const AdminPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
@@ -1021,7 +1038,7 @@ const AdminPage = () => {
                       </form>
                     ) : (
                       <div className="category-overview-display" style={{ marginTop: '15px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <img src={cat.heroImage} alt={cat.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} onError={e => {
+                        <img src={getMediaUrl(cat.heroImage)} alt={cat.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} onError={e => {
                           (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop';
                         }} />
                         <div>
@@ -1141,7 +1158,7 @@ const AdminPage = () => {
                             ) : (
                               <>
                                 <div style={{ display: 'flex', gap: '15px' }}>
-                                  <img src={sub.image} alt={sub.title} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} onError={e => {
+                                  <img src={getMediaUrl(sub.image)} alt={sub.title} style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} onError={e => {
                                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80&auto=format&fit=crop';
                                   }} />
                                   <div>
@@ -1303,7 +1320,7 @@ const AdminPage = () => {
                                   ) : (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                        <img src={proj.image} alt={proj.title} style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '3px' }} onError={e => {
+                                        <img src={getMediaUrl(proj.image)} alt={proj.title} style={{ width: '50px', height: '40px', objectFit: 'cover', borderRadius: '3px' }} onError={e => {
                                           (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop';
                                         }} />
                                         <div style={{ overflow: 'hidden' }}>
