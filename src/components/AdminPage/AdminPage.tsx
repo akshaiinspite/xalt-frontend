@@ -670,7 +670,8 @@ const AdminPage = () => {
         title: editingProject.title,
         tag: editingProject.tag,
         code: editingProject.code,
-        image: editingProject.image
+        image: editingProject.image,
+        video: editingProject.video || ''
       })
     })
     .then(async res => {
@@ -1309,7 +1310,7 @@ const AdminPage = () => {
                                 className="dashboard-btn primary"
                                 style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                 onClick={() => {
-                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', code: '', image: '' });
+                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', code: '', image: '', video: '' });
                                   setIsAddingProject(true);
                                 }}
                               >
@@ -1356,13 +1357,21 @@ const AdminPage = () => {
                                       />
                                     </div>
                                     <div className="dashboard-form-group">
-                                      <label>IMAGE PATH</label>
+                                      <label>MEDIA (IMAGE / THUMBNAIL)</label>
                                       <FileUploadWidget 
                                         value={editingProject.image} 
                                         onChange={url => setEditingProject({ ...editingProject, image: url })}
                                         acceptType="image"
                                       />
                                     </div>
+                                  </div>
+                                  <div className="dashboard-form-group">
+                                    <label>VIDEO (OPTIONAL — MP4, WEBM)</label>
+                                    <FileUploadWidget 
+                                      value={editingProject.video || ''} 
+                                      onChange={url => setEditingProject({ ...editingProject, video: url })}
+                                      acceptType="video"
+                                    />
                                   </div>
                                   <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                                     <button type="submit" className="dashboard-btn primary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>Create Project</button>
@@ -1412,11 +1421,19 @@ const AdminPage = () => {
                                         />
                                       </div>
                                       <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>IMAGE URL</label>
+                                        <label style={{ fontSize: '0.65rem' }}>IMAGE / THUMBNAIL</label>
                                         <FileUploadWidget 
                                           value={editingProject.image} 
                                           onChange={url => setEditingProject({ ...editingProject, image: url })}
                                           acceptType="image"
+                                        />
+                                      </div>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
+                                        <label style={{ fontSize: '0.65rem' }}>VIDEO (OPTIONAL)</label>
+                                        <FileUploadWidget 
+                                          value={editingProject.video || ''} 
+                                          onChange={url => setEditingProject({ ...editingProject, video: url })}
+                                          acceptType="video"
                                         />
                                       </div>
                                       <div className="dashboard-form-actions" style={{ display: 'flex', gap: '6px' }}>
@@ -1440,7 +1457,12 @@ const AdminPage = () => {
                                         </div>
                                       </div>
                                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '8px', marginTop: '4px' }}>
-                                        <span style={{ fontSize: '0.65rem', color: '#6b7280' }}>Tag: {proj.tag}</span>
+                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                          <span style={{ fontSize: '0.65rem', color: '#6b7280' }}>Tag: {proj.tag}</span>
+                                          {proj.video && (
+                                            <span style={{ fontSize: '0.6rem', color: '#fff', background: '#e10600', padding: '1px 6px', borderRadius: '3px', fontWeight: '600' }}>VIDEO</span>
+                                          )}
+                                        </div>
                                         <div className="list-item-actions" style={{ margin: 0, paddingTop: 0, border: 'none', gap: '5px' }}>
                                           <button 
                                             className="list-action-btn edit" 
@@ -1452,7 +1474,8 @@ const AdminPage = () => {
                                               title: proj.title, 
                                               tag: proj.tag, 
                                               code: proj.code, 
-                                              image: proj.image 
+                                              image: proj.image,
+                                              video: proj.video || ''
                                             })}
                                           >
                                             Edit
