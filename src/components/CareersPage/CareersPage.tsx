@@ -424,7 +424,7 @@ const CareersPage = () => {
          APPLICATION MODAL OVERLAY
          ---------------------------------------------------- */}
       {isModalOpen && selectedJob && (
-        <div className="careers-modal-overlay" onClick={closeModal}>
+        <div className="careers-modal-overlay" onClick={closeModal} data-lenis-prevent>
           <div 
             ref={formRef}
             className="cyber-form-wrapper careers-modal-card"

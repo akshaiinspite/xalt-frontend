@@ -10,7 +10,184 @@ interface Job {
   location: string;
   description: string;
 }
+interface FileUploadWidgetProps {
+  value: string;
+  onChange: (url: string) => void;
+  acceptType: 'image' | 'video' | 'any';
+  placeholder?: string;
+}
 
+const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
+  value,
+  onChange,
+  acceptType,
+  placeholder = 'Select a file'
+}) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const uploadFile = (file: File) => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('xalt_admin_token');
+
+    // We use XMLHttpRequest to track upload progress
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://localhost:5000/api/upload', true);
+    if (token) {
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    }
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percent);
+      }
+    };
+
+    xhr.onload = () => {
+      setIsUploading(false);
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          onChange(response.url);
+          toast.success('File uploaded successfully!');
+        } catch (error) {
+          toast.error('Failed to parse upload response.');
+        }
+      } else {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          toast.error(response.message || 'Upload failed.');
+        } catch (error) {
+          toast.error(`Upload failed with status ${xhr.status}`);
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      setIsUploading(false);
+      toast.error('Network error during file upload.');
+    };
+
+    xhr.send(formData);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      uploadFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      uploadFile(e.target.files[0]);
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange('');
+  };
+
+  // Detect file type from URL
+  const isVideoUrl = (url: string) => {
+    return !!(
+      url.match(/\.(mp4|webm|ogg|mov)$/i) || 
+      (url.includes('/uploads/') && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm') || url.toLowerCase().endsWith('.mov')))
+    );
+  };
+
+  const hasValue = !!value;
+
+  return (
+    <div className="premium-upload-widget">
+      {isUploading ? (
+        <div className="upload-progress-container">
+          <div className="upload-progress-text">
+            <span>Uploading file...</span>
+            <span>{uploadProgress}%</span>
+          </div>
+          <div className="upload-progress-bar-bg">
+            <div className="upload-progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
+          </div>
+        </div>
+      ) : hasValue ? (
+        <div className="upload-preview-container">
+          {isVideoUrl(value) ? (
+            <video className="upload-preview-media" src={value} muted playsInline />
+          ) : (
+            <img 
+              className="upload-preview-media" 
+              src={value} 
+              alt="Preview" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+              }} 
+            />
+          )}
+          <div className="upload-preview-info">
+            <span className="upload-preview-name" title={value}>{value.substring(value.lastIndexOf('/') + 1)}</span>
+            <span className="upload-preview-size" title={value} style={{ fontSize: '0.65rem', color: '#6b7280', wordBreak: 'break-all' }}>{value}</span>
+          </div>
+          <div className="upload-preview-actions">
+            <button type="button" className="upload-remove-btn" onClick={handleClear}>
+              Clear
+            </button>
+          </div>
+        </div>
+      ) : (
+        <label 
+          className={`upload-dropzone ${dragActive ? 'dragging' : ''}`}
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+        >
+          <input 
+            type="file" 
+            style={{ display: 'none' }} 
+            onChange={handleChange}
+            accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'}
+          />
+          <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <span className="upload-text">
+            <strong>Click to upload</strong> or drag & drop
+          </span>
+          <span className="upload-hint">
+            {acceptType === 'image' ? 'Supports JPEG, PNG, WEBP, SVG, GIF' : acceptType === 'video' ? 'Supports MP4, WEBM, MOV' : 'Images or Videos up to 100MB'}
+          </span>
+        </label>
+      )}
+    </div>
+  );
+};
 
 const AdminPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,6 +199,7 @@ const AdminPage = () => {
   // Dashboard Tabs: 'careers' | 'projects' | 'showreel'
   const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'showreel'>('careers');
   const [activeField, setActiveField] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // --- Careers State ---
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -50,6 +228,19 @@ const AdminPage = () => {
     videoUrl: '/src/assets/videos/showreel.mp4',
   });
   const [reelFeedback, setReelFeedback] = useState({ type: '', message: '' });
+
+  // --- Confirmation Modal State ---
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
 
   // Check login state on mount
   useEffect(() => {
@@ -205,26 +396,31 @@ const AdminPage = () => {
   };
 
   const handleDeleteJob = (id: string) => {
-    if (!confirm('Are you sure you want to decommission this vacancy?')) return;
-    const token = localStorage.getItem('xalt_admin_token');
-
-    fetch(`http://localhost:5000/api/jobs/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(async res => {
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Failed to delete vacancy');
+    setConfirmModal({
+      isOpen: true,
+      title: 'Decommission Vacancy Node',
+      message: 'Are you sure you want to permanently decommission this job opening? This action will remove it from the live Careers portal.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/jobs/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete vacancy');
+          }
+          if (editingJobId === id) {
+            cancelEditJob();
+          }
+          toast.success('Vacancy successfully decommissioned.');
+          fetchJobs();
+        })
+        .catch(err => {
+          toast.error('Error deleting vacancy: ' + err.message);
+        });
       }
-      if (editingJobId === id) {
-        cancelEditJob();
-      }
-      toast.success('Vacancy successfully decommissioned.');
-      fetchJobs();
-    })
-    .catch(err => {
-      toast.error('Error deleting vacancy: ' + err.message);
     });
   };
 
@@ -304,24 +500,29 @@ const AdminPage = () => {
   };
 
   const handleSubcategoryDelete = (id: string) => {
-    if (!confirm('Are you sure you want to delete this subcategory? This will also purge all projects belonging to it.')) return;
-    const token = localStorage.getItem('xalt_admin_token');
-
-    fetch(`http://localhost:5000/api/portfolio/subcategories/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(async res => {
-      if (!res.ok) throw new Error('Failed to delete subcategory');
-      setProjectFeedback({ type: 'success', message: 'Subcategory deleted successfully!' });
-      toast.success('Subcategory deleted successfully!');
-      fetchPortfolio();
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
-    })
-    .catch(err => {
-      setProjectFeedback({ type: 'error', message: err.message });
-      toast.error('Failed to delete subcategory: ' + err.message);
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+    setConfirmModal({
+      isOpen: true,
+      title: 'Purge Subcategory Division',
+      message: 'Are you sure you want to delete this subcategory? This will also permanently purge all projects belonging to it.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/portfolio/subcategories/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) throw new Error('Failed to delete subcategory');
+          setProjectFeedback({ type: 'success', message: 'Subcategory deleted successfully!' });
+          toast.success('Subcategory deleted successfully!');
+          fetchPortfolio();
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
+        })
+        .catch(err => {
+          setProjectFeedback({ type: 'error', message: err.message });
+          toast.error('Failed to delete subcategory: ' + err.message);
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+        });
+      }
     });
   };
 
@@ -370,24 +571,29 @@ const AdminPage = () => {
   };
 
   const handleProjectDelete = (id: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-    const token = localStorage.getItem('xalt_admin_token');
-
-    fetch(`http://localhost:5000/api/projects/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(async res => {
-      if (!res.ok) throw new Error('Failed to delete project');
-      setProjectFeedback({ type: 'success', message: 'Project deleted successfully!' });
-      toast.success('Project deleted successfully!');
-      fetchPortfolio();
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
-    })
-    .catch(err => {
-      setProjectFeedback({ type: 'error', message: err.message });
-      toast.error('Failed to delete project: ' + err.message);
-      setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Project Asset',
+      message: 'Are you sure you want to permanently delete this project from the portfolio gallery?',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/projects/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) throw new Error('Failed to delete project');
+          setProjectFeedback({ type: 'success', message: 'Project deleted successfully!' });
+          toast.success('Project deleted successfully!');
+          fetchPortfolio();
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 3000);
+        })
+        .catch(err => {
+          setProjectFeedback({ type: 'error', message: err.message });
+          toast.error('Failed to delete project: ' + err.message);
+          setTimeout(() => setProjectFeedback({ type: '', message: '' }), 4000);
+        });
+      }
     });
   };
 
@@ -495,12 +701,28 @@ const AdminPage = () => {
   }
 
   // ----------------------------------------------------
-  // ADMIN DASHBOARD (Professionally designed light theme with sidebar)
-  // ----------------------------------------------------
   return (
     <div className="admin-dashboard-layout">
+      {/* MOBILE HEADER BAR */}
+      <div className="admin-mobile-header">
+        <button className="mobile-menu-toggle" onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileSidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+          </svg>
+        </button>
+        <div className="mobile-logo-container">
+          <img src={logoImg} alt="X.ALT" className="mobile-logo" />
+          <span className="mobile-logo-text">Control Studio</span>
+        </div>
+      </div>
+
+      {/* MOBILE SIDEBAR OVERLAY */}
+      {isMobileSidebarOpen && (
+        <div className="admin-sidebar-overlay" onClick={() => setIsMobileSidebarOpen(false)}></div>
+      )}
+
       {/* SIDEBAR NAVIGATION */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${isMobileSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <img src={logoImg} alt="X.ALT" className="sidebar-logo" />
           <span className="sidebar-title">Control Studio</span>
@@ -509,7 +731,10 @@ const AdminPage = () => {
         <nav className="sidebar-nav">
           <button 
             className={`sidebar-nav-btn ${activeTab === 'careers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('careers')}
+            onClick={() => {
+              setActiveTab('careers');
+              setIsMobileSidebarOpen(false);
+            }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -519,7 +744,10 @@ const AdminPage = () => {
           
           <button 
             className={`sidebar-nav-btn ${activeTab === 'projects' ? 'active' : ''}`}
-            onClick={() => setActiveTab('projects')}
+            onClick={() => {
+              setActiveTab('projects');
+              setIsMobileSidebarOpen(false);
+            }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -529,7 +757,10 @@ const AdminPage = () => {
 
           <button 
             className={`sidebar-nav-btn ${activeTab === 'showreel' ? 'active' : ''}`}
-            onClick={() => setActiveTab('showreel')}
+            onClick={() => {
+              setActiveTab('showreel');
+              setIsMobileSidebarOpen(false);
+            }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -547,7 +778,10 @@ const AdminPage = () => {
             </div>
           </div>
           
-          <button className="admin-disconnect-btn" onClick={handleLogout}>
+          <button className="admin-disconnect-btn" onClick={() => {
+            handleLogout();
+            setIsMobileSidebarOpen(false);
+          }}>
             <svg className="disconnect-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -776,11 +1010,10 @@ const AdminPage = () => {
                         </div>
                         <div className="dashboard-form-group">
                           <label>SECTOR HERO BANNER IMAGE</label>
-                          <input 
-                            type="text" 
+                          <FileUploadWidget 
                             value={editingCategory.heroImage} 
-                            onChange={e => setEditingCategory({ ...editingCategory, heroImage: e.target.value })}
-                            required 
+                            onChange={url => setEditingCategory({ ...editingCategory, heroImage: url })}
+                            acceptType="image"
                           />
                         </div>
                         <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
@@ -845,12 +1078,10 @@ const AdminPage = () => {
                         </div>
                         <div className="dashboard-form-group">
                           <label>PREVIEW IMAGE URL</label>
-                          <input 
-                            type="text" 
-                            placeholder="e.g. /src/assets/images/img/img-1.jpg" 
+                          <FileUploadWidget 
                             value={editingSubcategory.image} 
-                            onChange={e => setEditingSubcategory({ ...editingSubcategory, image: e.target.value })}
-                            required 
+                            onChange={url => setEditingSubcategory({ ...editingSubcategory, image: url })}
+                            acceptType="image"
                           />
                         </div>
                         <div className="dashboard-form-actions">
@@ -898,11 +1129,10 @@ const AdminPage = () => {
                                 </div>
                                 <div className="dashboard-form-group">
                                   <label>IMAGE URL</label>
-                                  <input 
-                                    type="text" 
+                                  <FileUploadWidget 
                                     value={editingSubcategory.image} 
-                                    onChange={e => setEditingSubcategory({ ...editingSubcategory, image: e.target.value })}
-                                    required 
+                                    onChange={url => setEditingSubcategory({ ...editingSubcategory, image: url })}
+                                    acceptType="image"
                                   />
                                 </div>
                                 <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px' }}>
@@ -1005,12 +1235,10 @@ const AdminPage = () => {
                                     </div>
                                     <div className="dashboard-form-group">
                                       <label>IMAGE PATH</label>
-                                      <input 
-                                        type="text" 
-                                        placeholder="e.g. /src/assets/images/img/img-2.jpg" 
+                                      <FileUploadWidget 
                                         value={editingProject.image} 
-                                        onChange={e => setEditingProject({ ...editingProject, image: e.target.value })}
-                                        required 
+                                        onChange={url => setEditingProject({ ...editingProject, image: url })}
+                                        acceptType="image"
                                       />
                                     </div>
                                   </div>
@@ -1063,12 +1291,10 @@ const AdminPage = () => {
                                       </div>
                                       <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
                                         <label style={{ fontSize: '0.65rem' }}>IMAGE URL</label>
-                                        <input 
-                                          type="text" 
+                                        <FileUploadWidget 
                                           value={editingProject.image} 
-                                          onChange={e => setEditingProject({ ...editingProject, image: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
-                                          required 
+                                          onChange={url => setEditingProject({ ...editingProject, image: url })}
+                                          acceptType="image"
                                         />
                                       </div>
                                       <div className="dashboard-form-actions" style={{ display: 'flex', gap: '6px' }}>
@@ -1163,14 +1389,12 @@ const AdminPage = () => {
 
                   <div className="dashboard-form-group">
                     <label>VIDEO SOURCE LINK (DIRECT MP4)</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. /src/assets/videos/showreel.mp4 or direct hosting link"
-                      value={reel.videoUrl}
-                      onChange={(e) => setReel({ ...reel, videoUrl: e.target.value })}
-                      required
+                    <FileUploadWidget 
+                      value={reel.videoUrl} 
+                      onChange={url => setReel({ ...reel, videoUrl: url })}
+                      acceptType="video"
                     />
-                    <small className="field-hint">// Supports absolute URLs or root-relative paths targeting direct video formats.</small>
+                    <small className="field-hint">// Supports file uploads or absolute URLs targeting direct video formats.</small>
                   </div>
 
                   <div className="dashboard-form-actions">
@@ -1185,6 +1409,40 @@ const AdminPage = () => {
 
         </div>
       </main>
+
+      {/* PREMIUM CONFIRMATION MODAL */}
+      {confirmModal.isOpen && (
+        <div className="confirm-modal-overlay" onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}>
+          <div className="confirm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-modal-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <h3 className="confirm-modal-title">{confirmModal.title}</h3>
+            <p className="confirm-modal-message">{confirmModal.message}</p>
+            <div className="confirm-modal-actions">
+              <button
+                className="confirm-modal-btn cancel"
+                onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+              >
+                Cancel
+              </button>
+              <button
+                className="confirm-modal-btn danger"
+                onClick={() => {
+                  confirmModal.onConfirm();
+                  setConfirmModal({ ...confirmModal, isOpen: false });
+                }}
+              >
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
