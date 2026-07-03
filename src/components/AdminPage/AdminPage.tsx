@@ -195,11 +195,11 @@ const getMediaUrl = (url: string) => {
   // Convert legacy local paths that might be stored in the database to backend uploads
   if (url.startsWith('/src/assets/images/')) {
     const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `/uploads/${filename}`;
+    return `http://localhost:5000/uploads/${filename}`;
   }
   if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return cleanUrl;
+    return `http://localhost:5000${cleanUrl}`;
   }
   return url;
 };
@@ -211,8 +211,8 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dashboard Tabs: 'careers' | 'projects' | 'showreel'
-  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'showreel'>('careers');
+  // Dashboard Tabs: 'careers' | 'projects' | 'home'
+  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home'>('careers');
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -243,6 +243,19 @@ const AdminPage = () => {
     videoUrl: '/src/assets/videos/showreel.mp4',
   });
   const [reelFeedback, setReelFeedback] = useState({ type: '', message: '' });
+
+  // --- Homepage Expertise State ---
+  const [expertiseItems, setExpertiseItems] = useState<any[]>([]);
+  const [newExpertise, setNewExpertise] = useState({
+    title: '',
+    category: '',
+    description: '',
+    image: '',
+    link: '',
+    order: 0
+  });
+  const [editingExpertiseId, setEditingExpertiseId] = useState<string | null>(null);
+  const [expertiseFeedback, setExpertiseFeedback] = useState({ type: '', message: '' });
 
   // --- Confirmation Modal State ---
   const [confirmModal, setConfirmModal] = useState<{
@@ -285,6 +298,7 @@ const AdminPage = () => {
       fetchJobs();
       fetchPortfolio();
       fetchReel();
+      fetchExpertise();
     }
   }, [isLoggedIn]);
 
@@ -312,6 +326,99 @@ const AdminPage = () => {
         }
       })
       .catch(err => console.error('Error fetching showreel:', err));
+  };
+
+  const fetchExpertise = () => {
+    fetch('http://localhost:5000/api/expertise')
+      .then(res => res.json())
+      .then(data => setExpertiseItems(data))
+      .catch(err => console.error('Error fetching expertise:', err));
+  };
+
+  // --- Expertise CRUD Handlers ---
+  const handleExpertiseSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('xalt_admin_token');
+
+    const url = editingExpertiseId 
+      ? `http://localhost:5000/api/expertise/${editingExpertiseId}` 
+      : 'http://localhost:5000/api/expertise';
+    const method = editingExpertiseId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(newExpertise)
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to save expertise item');
+      }
+      setExpertiseFeedback({ 
+        type: 'success', 
+        message: editingExpertiseId ? 'Expertise item updated successfully!' : 'Expertise item created successfully!' 
+      });
+      toast.success(editingExpertiseId ? 'Expertise item updated successfully!' : 'Expertise item created successfully!');
+      setNewExpertise({ title: '', category: '', description: '', image: '', link: '', order: 0 });
+      setEditingExpertiseId(null);
+      fetchExpertise();
+      setTimeout(() => setExpertiseFeedback({ type: '', message: '' }), 3000);
+    })
+    .catch(err => {
+      setExpertiseFeedback({ type: 'error', message: err.message });
+      toast.error('Failed to save expertise item: ' + err.message);
+      setTimeout(() => setExpertiseFeedback({ type: '', message: '' }), 4000);
+    });
+  };
+
+  const startEditExpertise = (item: any) => {
+    setEditingExpertiseId(item._id);
+    setNewExpertise({
+      title: item.title,
+      category: item.category,
+      description: item.description,
+      image: item.image,
+      link: item.link || '',
+      order: item.order !== undefined ? item.order : 0
+    });
+  };
+
+  const cancelEditExpertise = () => {
+    setEditingExpertiseId(null);
+    setNewExpertise({ title: '', category: '', description: '', image: '', link: '', order: 0 });
+  };
+
+  const handleDeleteExpertise = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Decommission Expertise Item',
+      message: 'Are you sure you want to permanently decommission this expertise item? This action will remove it from the live Homepage.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/expertise/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete expertise item');
+          }
+          if (editingExpertiseId === id) {
+            cancelEditExpertise();
+          }
+          toast.success('Expertise item successfully decommissioned.');
+          fetchExpertise();
+        })
+        .catch(err => {
+          toast.error('Error deleting expertise item: ' + err.message);
+        });
+      }
+    });
   };
 
   // --- Auth Handlers ---
@@ -771,16 +878,16 @@ const AdminPage = () => {
           </button>
 
           <button 
-            className={`sidebar-nav-btn ${activeTab === 'showreel' ? 'active' : ''}`}
+            className={`sidebar-nav-btn ${activeTab === 'home' ? 'active' : ''}`}
             onClick={() => {
-              setActiveTab('showreel');
+              setActiveTab('home');
               setIsMobileSidebarOpen(false);
             }}
           >
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            <span>Showreel Source</span>
+            <span>Home Menu</span>
           </button>
         </nav>
 
@@ -809,8 +916,8 @@ const AdminPage = () => {
       <main className="admin-workspace">
         <header className="workspace-header">
           <div className="workspace-title-area">
-            <h1>{activeTab === 'careers' ? 'Careers Openings' : activeTab === 'projects' ? 'Projects Portfolio' : 'Showreel Source'}</h1>
-            <p className="workspace-breadcrumbs">Console / {activeTab === 'careers' ? 'Careers Manager' : activeTab === 'projects' ? 'Portfolio Manager' : 'Showreel Config'}</p>
+            <h1>{activeTab === 'careers' ? 'Careers Openings' : activeTab === 'projects' ? 'Projects Portfolio' : 'Home Menu'}</h1>
+            <p className="workspace-breadcrumbs">Console / {activeTab === 'careers' ? 'Careers Manager' : activeTab === 'projects' ? 'Portfolio Manager' : 'Home Manager'}</p>
           </div>
 
           <div className="workspace-status-badge">
@@ -1375,11 +1482,13 @@ const AdminPage = () => {
               ))}
             </div>
           )}
-
-          {/* TAB 3: SHOWREEL CONFIG */}
-          {activeTab === 'showreel' && (
-            <div className="dashboard-single-card-container">
-              <div className="dashboard-card">
+          
+          {/* TAB 3: HOME MENU MANAGER (SHOWREEL & EXPERTISE ITEMS) */}
+          {activeTab === 'home' && (
+            <div className="dashboard-grid">
+              
+              {/* Showreel Section */}
+              <div className="dashboard-card" style={{ gridColumn: 'span 2' }}>
                 <div className="dashboard-card-header">
                   <h3>Homepage Reel Transmission Source</h3>
                   <p>Configure the primary MP4 streaming source of the main homepage showcase video.</p>
@@ -1419,6 +1528,152 @@ const AdminPage = () => {
                   </div>
                 </form>
               </div>
+
+              {/* Add/Edit Expertise Card */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header">
+                  <h3>{editingExpertiseId ? 'Edit Expertise Item' : 'Create Expertise Item'}</h3>
+                  <p>{editingExpertiseId ? 'Modify details for the selected homepage item.' : 'Initialize and publish a new homepage item.'}</p>
+                </div>
+
+                {expertiseFeedback.message && (
+                  <div className={`feedback-alert ${expertiseFeedback.type}`}>
+                    {expertiseFeedback.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleExpertiseSubmit} className="dashboard-form">
+                  <div className="dashboard-form-group">
+                    <label>TITLE</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Films & Entertainment"
+                      value={newExpertise.title}
+                      onChange={(e) => setNewExpertise({ ...newExpertise, title: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>SUBTITLE / CATEGORY</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. VFX & Post Production"
+                      value={newExpertise.category}
+                      onChange={(e) => setNewExpertise({ ...newExpertise, category: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>DESCRIPTION</label>
+                    <textarea 
+                      rows={4}
+                      placeholder="Enter description summary for the homepage expertise section..."
+                      value={newExpertise.description}
+                      onChange={(e) => setNewExpertise({ ...newExpertise, description: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label>LINK TARGET (HASH OR PATH)</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. #projects/films"
+                        value={newExpertise.link}
+                        onChange={(e) => setNewExpertise({ ...newExpertise, link: e.target.value })}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label>DISPLAY ORDER</label>
+                      <input 
+                        type="number" 
+                        placeholder="0"
+                        value={newExpertise.order}
+                        onChange={(e) => setNewExpertise({ ...newExpertise, order: parseInt(e.target.value) || 0 })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>IMAGE</label>
+                    <FileUploadWidget 
+                      value={newExpertise.image} 
+                      onChange={url => setNewExpertise({ ...newExpertise, image: url })}
+                      acceptType="image"
+                    />
+                  </div>
+
+                  <div className="dashboard-form-actions">
+                    <button type="submit" className="dashboard-btn primary">
+                      {editingExpertiseId ? 'Save Changes' : 'Initialize Expertise Item'}
+                    </button>
+                    {editingExpertiseId && (
+                      <button type="button" className="dashboard-btn secondary" onClick={cancelEditExpertise}>
+                        Cancel Edit
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* Active Expertise List */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header">
+                  <h3>Homepage Expertise Items ({expertiseItems.length})</h3>
+                  <p>Currently active sections in "What We Do" and "OUR EXPERTISE" grids on the homepage.</p>
+                </div>
+
+                <div className="dashboard-list-scroller">
+                  {expertiseItems.length === 0 ? (
+                    <div className="dashboard-empty-state">
+                      <span>No active expertise items found.</span>
+                    </div>
+                  ) : (
+                    expertiseItems.map((item) => (
+                      <div key={item._id} className="dashboard-list-item">
+                        <div className="list-item-header" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                          <img 
+                            src={getMediaUrl(item.image)} 
+                            alt={item.title} 
+                            style={{ width: '70px', height: '50px', objectFit: 'cover', borderRadius: '6px', border: '2px solid #e5e7eb' }} 
+                            onError={e => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+                            }}
+                          />
+                          <div>
+                            <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{item.title}</span>
+                            <span className="item-meta" style={{ fontSize: '0.75rem', color: '#e10600', fontWeight: 'bold', display: 'block' }}>{item.category}</span>
+                          </div>
+                        </div>
+                        <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>{item.description}</p>
+                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '4px' }}>
+                          <span>Link: {item.link || 'None'} | Order: {item.order}</span>
+                        </div>
+                        
+                        <div className="list-item-actions" style={{ marginTop: '8px' }}>
+                          <button 
+                            className="list-action-btn edit"
+                            onClick={() => startEditExpertise(item)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="list-action-btn delete"
+                            onClick={() => handleDeleteExpertise(item._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
             </div>
           )}
 

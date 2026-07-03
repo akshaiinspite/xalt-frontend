@@ -1,40 +1,61 @@
+import { useState, useEffect } from 'react';
 import './ServicesGrid.css';
 import imgFilms from '../../assets/images/image-galley/gallery-img-1.jpg';
 import imgCommercial from '../../assets/images/image-galley/gallery-img-3.jpg';
 import imgArvr from '../../assets/images/image-galley/gallery-img-5.jpg';
 
-const services = [
+// Original images mapped by order — these never change
+const LOCAL_IMAGES: { [key: number]: string } = {
+  0: imgFilms,
+  1: imgCommercial,
+  2: imgArvr
+};
+
+const DEFAULT_SERVICES = [
   {
-    id: 1,
+    _id: 'default-films',
     title: 'Films & Entertainment',
     category: 'VFX & Post Production',
     description: 'We curate and aggregate breathtaking visual sequences for feature films, leveraging deep relationships across the worldwide entertainment industry.',
-    image: imgFilms
+    link: '#projects/films',
+    order: 0
   },
   {
-    id: 2,
+    _id: 'default-commercial',
     title: 'Commercial Projects',
     category: 'CGI & Motion Design',
     description: 'Seamlessly integrating premium tech aesthetics with robust design systems to elevate modern brand identities and digital experiences.',
-    image: imgCommercial
+    link: '#projects/commercial',
+    order: 1
   },
   {
-    id: 3,
+    _id: 'default-arvr',
     title: 'AR & VR Experiences',
     category: 'Spatial Computing',
     description: 'Immersive digital environments and spatial computing solutions that bridge the physical and virtual worlds for interactive storytelling.',
-    image: imgArvr
+    link: '#projects/immersive',
+    order: 2
   }
 ];
 
 const ServicesGrid = () => {
-  const handleCardClick = (id: number) => {
-    const hashes: { [key: number]: string } = {
-      1: '#projects/films',
-      2: '#projects/commercial',
-      3: '#projects/immersive'
-    };
-    const targetHash = hashes[id] || '#projects';
+  const [services, setServices] = useState<any[]>(DEFAULT_SERVICES);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/expertise')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setServices(data);
+        }
+      })
+      .catch(() => {
+        // Backend offline — keep defaults
+      });
+  }, []);
+
+  const handleCardClick = (service: any) => {
+    const targetHash = service.link || '#projects';
     const lenisInstance = (window as any).lenis;
     if (lenisInstance) {
       lenisInstance.scrollTo(0, { immediate: true });
@@ -55,21 +76,21 @@ const ServicesGrid = () => {
         </div>
 
         <div className="services-grid-layout">
-          {services.map((service) => (
+          {services.map((service, index) => (
             <div 
-              key={service.id} 
+              key={service._id || index} 
               className="service-card"
-              onClick={() => handleCardClick(service.id)}
+              onClick={() => handleCardClick(service)}
               style={{ cursor: 'pointer' }}
             >
-              {/* Image Container */}
+              {/* Image Container — always uses original local images */}
               <div className="service-card-img-box">
-                <img src={service.image} alt={service.title} className="service-card-img" />
+                <img src={LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" />
                 <div className="service-card-overlay"></div>
                 <div className="service-card-glow-red"></div>
               </div>
 
-              {/* Card Content */}
+              {/* Card Content — text comes from API */}
               <div className="service-card-content">
                 <div className="service-card-category">{service.category}</div>
                 <h3 className="service-card-title">{service.title}</h3>
