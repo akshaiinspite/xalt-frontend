@@ -265,6 +265,23 @@ const CATEGORIES_DATA: CategorySection[] = [
   }
 ];
 
+const getMediaUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  // Convert legacy local paths that might be stored in the database to backend uploads
+  if (url.startsWith('/src/assets/images/')) {
+    const filename = url.substring(url.lastIndexOf('/') + 1);
+    return `http://localhost:5000/uploads/${filename}`;
+  }
+  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return `http://localhost:5000${cleanUrl}`;
+  }
+  return url;
+};
+
 const ProjectsPage = () => {
   const [categoriesData, setCategoriesData] = useState<CategorySection[]>(CATEGORIES_DATA);
   const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<number>(1); // Default: Films & Entertainment
@@ -551,7 +568,7 @@ const ProjectsPage = () => {
                   </div>
                   
                   <div className="board-subcard-img-container">
-                    <img src={sub.image} alt={sub.title} className="board-subcard-img" />
+                    <img src={getMediaUrl(sub.image)} alt={sub.title} className="board-subcard-img" />
                     <div className="board-subcard-filter"></div>
                   </div>
 
@@ -624,7 +641,7 @@ const ProjectsPage = () => {
                   <span className="corner br"></span>
                 </div>
                 <img 
-                  src={activeSubcategory.image} 
+                  src={getMediaUrl(activeSubcategory.image)} 
                   alt={activeSubcategory.title} 
                   className="gallery-hero-image" 
                 />
@@ -657,7 +674,7 @@ const ProjectsPage = () => {
                 </div>
 
                 <div className="slot-img-wrapper">
-                  <img src={item.image} alt={item.title} className="slot-preview-img" />
+                  <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
                   <div className="slot-cyber-overlay"></div>
                 </div>
 
