@@ -14,14 +14,12 @@ interface FileUploadWidgetProps {
   value: string;
   onChange: (url: string) => void;
   acceptType: 'image' | 'video' | 'any';
-  placeholder?: string;
 }
 
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   value,
   onChange,
-  acceptType,
-  placeholder = 'Select a file'
+  acceptType
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
