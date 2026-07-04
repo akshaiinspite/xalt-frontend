@@ -81,23 +81,41 @@ const ServicesGrid = () => {
               key={service._id || index} 
               className="service-card"
               onClick={() => handleCardClick(service)}
-              style={{ cursor: 'pointer' }}
             >
-              {/* Image Container — always uses original local images */}
+              {/* Image Container covers the entire card */}
               <div className="service-card-img-box">
+                {/* Cyber Corner Brackets */}
+                <div className="card-corners">
+                  <span className="corner tl"></span>
+                  <span className="corner tr"></span>
+                  <span className="corner bl"></span>
+                  <span className="corner br"></span>
+                </div>
+                
                 <img src={LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" />
                 <div className="service-card-overlay"></div>
                 <div className="service-card-glow-red"></div>
+
+                {/* Cyber Telemetry Overlay */}
+                <div className="card-telemetry-overlay">
+                  <div className="telemetry-line"><span>NODE:</span> <span>0{index + 1}_VFX</span></div>
+                  <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
+                  <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">DECRYPT_READY</span></div>
+                </div>
+
+                <div className="board-subcard-indicator">
+                  <span>&gt;&gt; CLICK TO DECRYPT</span>
+                </div>
               </div>
 
-              {/* Card Content — text comes from API */}
+              {/* Text overlay content */}
               <div className="service-card-content">
-                <div className="service-card-category">{service.category}</div>
+                <span className="service-card-category">{service.category}</span>
                 <h3 className="service-card-title">{service.title}</h3>
                 <p className="service-card-desc">{service.description}</p>
                 
-                <button className="service-card-btn">
-                  Read More
+                <button className="service-card-btn view-project-btn">
+                  VIEW PROJECT
                   <span className="btn-arrow">&rarr;</span>
                 </button>
               </div>

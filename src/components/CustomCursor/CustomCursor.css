@@ -8,13 +8,12 @@ body, * {
   position: fixed;
   top: 0;
   left: 0;
-  width: auto;
-  height: auto;
+  width: 0;
+  height: 0;
   z-index: 999999;
   pointer-events: none;
   will-change: transform;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease;
@@ -23,10 +22,12 @@ body, * {
 
 /* Red square dot */
 .custom-cursor-dot {
+  position: absolute;
   width: 8px;
   height: 8px;
   background-color: var(--color-primary, #e10600);
   border-radius: 0%; /* Sharp square! */
+  transform: translate(-50%, -50%);
   transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
               height 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
               background-color 0.25s ease, 
@@ -38,7 +39,7 @@ body, * {
 
 /* Clicking scale effect */
 .custom-cursor-dot.clicking {
-  transform: scale(0.6);
+  transform: translate(-50%, -50%) scale(0.6);
 }
 
 /* Pointer Hover state: morphs into a hollow square frame (reticle) */
@@ -48,7 +49,7 @@ body, * {
   background-color: transparent;
   border: 1px solid var(--color-primary, #e10600);
   border-radius: 0%;
-  transform: rotate(45deg); /* Cool diamond crosshair roticle */
+  transform: translate(-50%, -50%) rotate(45deg); /* Cool diamond crosshair roticle */
   box-shadow: 0 0 10px rgba(225, 6, 0, 0.4);
 }
 
@@ -58,11 +59,15 @@ body, * {
   height: 14px;
   border-radius: 1px;
   background-color: #ff3344;
+  transform: translate(-50%, -50%);
 }
 
 /* Monospace coordinates label positioned below the square */
 .custom-cursor-label {
-  margin-top: 8px;
+  position: absolute;
+  top: 15px;
+  left: 0;
+  transform: translateX(-50%);
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.62rem;
   font-weight: 500;
@@ -71,11 +76,12 @@ body, * {
   text-transform: uppercase;
   white-space: nowrap;
   opacity: 0.85;
-  transition: color 0.25s ease, opacity 0.25s ease;
+  transition: color 0.25s ease, opacity 0.25s ease, transform 0.25s ease, top 0.25s ease;
 }
 
 /* Pointer hover text label changes color and weight */
 .custom-cursor-label.pointer {
+  top: 18px;
   color: #ffffff;
   font-weight: 700;
   opacity: 1;
@@ -84,6 +90,29 @@ body, * {
 
 /* Text hover label */
 .custom-cursor-label.text {
+  top: 15px;
   color: #ff3344;
   opacity: 0.9;
+}
+
+/* Wide Cursor States */
+.custom-cursor-dot.wide {
+  width: 120px;
+  height: 34px;
+  background-color: rgba(225, 6, 0, 0.12);
+  border: 1px solid var(--color-primary, #e10600);
+  border-radius: 0%;
+  transform: translate(-50%, -50%) rotate(0deg); /* Centered without diamond rotation */
+  box-shadow: 0 0 15px rgba(225, 6, 0, 0.25);
+}
+
+.custom-cursor-label.wide {
+  top: 0;
+  transform: translate(-50%, -50%);
+  margin-top: 0;
+  color: #ffffff;
+  font-weight: 700;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(225, 6, 0, 0.8);
+  pointer-events: none;
 }

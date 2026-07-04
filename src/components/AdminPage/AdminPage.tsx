@@ -16,6 +16,16 @@ interface FileUploadWidgetProps {
   acceptType: 'image' | 'video' | 'any';
 }
 
+// Detect file type from URL
+const isVideoUrl = (url: string) => {
+  if (!url) return false;
+  const cleanUrl = url.split('?')[0].split('#')[0];
+  return !!(
+    cleanUrl.match(/\.(mp4|webm|ogg|mov|m4v)$/i) || 
+    (url.includes('/uploads/') && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm') || url.toLowerCase().endsWith('.mov')))
+  );
+};
+
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   value,
   onChange,
@@ -24,6 +34,12 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
+  const [urlInput, setUrlInput] = useState(value || '');
+
+  // Keep urlInput in sync when value changes externally
+  React.useEffect(() => {
+    setUrlInput(value || '');
+  }, [value]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -110,18 +126,10 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     onChange('');
   };
 
-  // Detect file type from URL
-  const isVideoUrl = (url: string) => {
-    return !!(
-      url.match(/\.(mp4|webm|ogg|mov)$/i) || 
-      (url.includes('/uploads/') && (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm') || url.toLowerCase().endsWith('.mov')))
-    );
-  };
-
   const hasValue = !!value;
 
   return (
-    <div className="premium-upload-widget">
+    <div className="premium-upload-widget" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       {isUploading ? (
         <div className="upload-progress-container">
           <div className="upload-progress-text">
@@ -133,55 +141,94 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
           </div>
         </div>
       ) : hasValue ? (
-        <div className="upload-preview-container">
-          {isVideoUrl(value) ? (
-            <video className="upload-preview-media" src={value} muted playsInline />
-          ) : (
-            <img 
-              className="upload-preview-media" 
-              src={value} 
-              alt="Preview" 
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
-              }} 
-            />
-          )}
-          <div className="upload-preview-info">
-            <span className="upload-preview-name" title={value}>{value.substring(value.lastIndexOf('/') + 1)}</span>
-            <span className="upload-preview-size" title={value} style={{ fontSize: '0.65rem', color: '#6b7280', wordBreak: 'break-all' }}>{value}</span>
-          </div>
-          <div className="upload-preview-actions">
-            <button type="button" className="upload-remove-btn" onClick={handleClear}>
+        <div className="upload-preview-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'stretch', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px' }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0, flex: 1 }}>
+              {isVideoUrl(value) ? (
+                <video className="upload-preview-media" src={value} muted playsInline autoPlay loop style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+              ) : (
+                <img 
+                  className="upload-preview-media" 
+                  src={value} 
+                  alt="Preview" 
+                  style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+                  }} 
+                />
+              )}
+              <span className="upload-preview-name" style={{ fontSize: '0.75rem', fontWeight: 600, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', color: '#111827' }} title={value}>
+                {value.substring(value.lastIndexOf('/') + 1)}
+              </span>
+            </div>
+            <button type="button" className="upload-remove-btn" style={{ padding: '4px 8px', fontSize: '0.68rem', margin: 0 }} onClick={handleClear}>
               Clear
             </button>
           </div>
+          
+          <div style={{ width: '100%' }}>
+            <input 
+              type="text" 
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              onBlur={() => onChange(urlInput)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onChange(urlInput); } }}
+              className="upload-cdn-url-input"
+              style={{ fontSize: '0.75rem', padding: '5px 8px', background: '#fff', border: '1px solid #d1d5db', borderRadius: '4px', width: '100%', color: '#374151', boxSizing: 'border-box', height: '32px' }}
+              placeholder="Direct Link / CDN URL"
+            />
+          </div>
         </div>
       ) : (
-        <label 
-          className={`upload-dropzone ${dragActive ? 'dragging' : ''}`}
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-        >
-          <input 
-            type="file" 
-            style={{ display: 'none' }} 
-            onChange={handleChange}
-            accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'}
-          />
-          <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-          <span className="upload-text">
-            <strong>Click to upload</strong> or drag & drop
-          </span>
-          <span className="upload-hint">
-            {acceptType === 'image' ? 'Supports JPEG, PNG, WEBP, SVG, GIF' : acceptType === 'video' ? 'Supports MP4, WEBM, MOV' : 'Images or Videos up to 100MB'}
-          </span>
-        </label>
+        <div className="upload-widget-empty-state" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <label 
+            className={`upload-dropzone ${dragActive ? 'dragging' : ''}`}
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+          >
+            <input 
+              type="file" 
+              style={{ display: 'none' }} 
+              onChange={handleChange}
+              accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'}
+            />
+            <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <span className="upload-text">
+              <strong>Click to upload</strong> or drag & drop
+            </span>
+            <span className="upload-hint">
+              {acceptType === 'image' ? 'Supports JPEG, PNG, WEBP, SVG, GIF' : acceptType === 'video' ? 'Supports MP4, WEBM, MOV' : 'Images or Videos up to 100MB'}
+            </span>
+          </label>
+          
+          <div className="upload-cdn-link-section" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.05em' }}>— OR PASTE CDN / EXTERNAL MEDIA URL —</span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                placeholder="https://cdn.example.com/assets/media.mp4" 
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onChange(urlInput); } }}
+                style={{ flex: 1, padding: '6px 10px', fontSize: '0.8rem', border: '1px solid #d1d5db', borderRadius: '4px', background: '#fff', color: '#1f2937', height: '34px' }}
+              />
+              <button 
+                type="button" 
+                onClick={() => onChange(urlInput)}
+                className="dashboard-btn primary"
+                style={{ padding: '6px 12px', fontSize: '0.75rem', whiteSpace: 'nowrap', height: '34px', margin: 0 }}
+              >
+                Apply URL
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1320,10 +1367,10 @@ const AdminPage = () => {
 
                             {/* Add Project Form inline */}
                             {isAddingProject && editingProject && editingProject.subcategoryTitle === sub.title && !editingProject._id && (
-                              <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '6px', border: '1px dashed #3b82f6', marginBottom: '15px' }}>
-                                <h5 style={{ margin: '0 0 10px 0', fontSize: '0.8rem' }}>ADD PROJECT TO {sub.title.toUpperCase()}</h5>
-                                <form onSubmit={handleProjectSave} className="dashboard-form">
-                                  <div className="dashboard-form-row">
+                              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                <h5 style={{ margin: '0 0 15px 0', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ADD PROJECT TO {sub.title.toUpperCase()}</h5>
+                                <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '15px' }}>
+                                  <div className="dashboard-form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                                     <div className="dashboard-form-group">
                                       <label>PROJECT TITLE</label>
                                       <input 
@@ -1331,6 +1378,7 @@ const AdminPage = () => {
                                         placeholder="e.g. Chronos Identity" 
                                         value={editingProject.title} 
                                         onChange={e => setEditingProject({ ...editingProject, title: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
                                       />
                                     </div>
@@ -1341,11 +1389,10 @@ const AdminPage = () => {
                                         placeholder="e.g. Visual Narrative" 
                                         value={editingProject.tag} 
                                         onChange={e => setEditingProject({ ...editingProject, tag: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
                                       />
                                     </div>
-                                  </div>
-                                  <div className="dashboard-form-row">
                                     <div className="dashboard-form-group">
                                       <label>PROJECT CODE / SKU</label>
                                       <input 
@@ -1353,32 +1400,32 @@ const AdminPage = () => {
                                         placeholder="e.g. FILM_CH_02" 
                                         value={editingProject.code} 
                                         onChange={e => setEditingProject({ ...editingProject, code: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
-                                      />
-                                    </div>
-                                    <div className="dashboard-form-group">
-                                      <label>MEDIA (IMAGE / THUMBNAIL)</label>
-                                      <FileUploadWidget 
-                                        value={editingProject.image} 
-                                        onChange={url => setEditingProject({ ...editingProject, image: url })}
-                                        acceptType="image"
                                       />
                                     </div>
                                   </div>
                                   <div className="dashboard-form-group">
-                                    <label>VIDEO (OPTIONAL — MP4, WEBM)</label>
+                                    <label>PROJECT MEDIA (IMAGE, VIDEO, OR CDN LINK)</label>
                                     <FileUploadWidget 
-                                      value={editingProject.video || ''} 
-                                      onChange={url => setEditingProject({ ...editingProject, video: url })}
-                                      acceptType="video"
+                                      value={editingProject.video || editingProject.image} 
+                                      onChange={url => {
+                                        const isVid = isVideoUrl(url);
+                                        setEditingProject({
+                                          ...editingProject,
+                                          image: isVid ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop' : url,
+                                          video: isVid ? url : ''
+                                        });
+                                      }}
+                                      acceptType="any"
                                     />
                                   </div>
-                                  <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                                    <button type="submit" className="dashboard-btn primary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>Create Project</button>
-                                    <button type="button" className="dashboard-btn secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }} onClick={() => {
+                                  <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '15px', borderTop: '1px solid #e2e8f0', paddingTop: '15px' }}>
+                                    <button type="button" className="dashboard-btn secondary" style={{ padding: '8px 16px', fontSize: '0.78rem', margin: 0 }} onClick={() => {
                                       setIsAddingProject(false);
                                       setEditingProject(null);
                                     }}>Cancel</button>
+                                    <button type="submit" className="dashboard-btn primary" style={{ padding: '8px 16px', fontSize: '0.78rem', margin: 0 }}>Create Project</button>
                                   </div>
                                 </form>
                               </div>
@@ -1389,56 +1436,55 @@ const AdminPage = () => {
                               {sub.galleryItems && sub.galleryItems.map((proj: any) => (
                                 <div key={proj._id || proj.code} className="project-grid-item" style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px' }}>
                                   {editingProject && editingProject._id === proj._id ? (
-                                    <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '8px' }}>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>TITLE</label>
+                                    <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '10px' }}>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>TITLE</label>
                                         <input 
                                           type="text" 
                                           value={editingProject.title} 
                                           onChange={e => setEditingProject({ ...editingProject, title: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>TAG</label>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>TAG</label>
                                         <input 
                                           type="text" 
                                           value={editingProject.tag} 
                                           onChange={e => setEditingProject({ ...editingProject, tag: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>CODE</label>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>CODE</label>
                                         <input 
                                           type="text" 
                                           value={editingProject.code} 
                                           onChange={e => setEditingProject({ ...editingProject, code: e.target.value })}
-                                          style={{ padding: '4px 8px', fontSize: '0.75rem', height: 'auto' }}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>IMAGE / THUMBNAIL</label>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '4px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>PROJECT MEDIA (IMAGE, VIDEO, OR CDN LINK)</label>
                                         <FileUploadWidget 
-                                          value={editingProject.image} 
-                                          onChange={url => setEditingProject({ ...editingProject, image: url })}
-                                          acceptType="image"
+                                          value={editingProject.video || editingProject.image} 
+                                          onChange={url => {
+                                            const isVid = isVideoUrl(url);
+                                            setEditingProject({
+                                              ...editingProject,
+                                              image: isVid ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop' : url,
+                                              video: isVid ? url : ''
+                                            });
+                                          }}
+                                          acceptType="any"
                                         />
                                       </div>
-                                      <div className="dashboard-form-group" style={{ marginBottom: '8px' }}>
-                                        <label style={{ fontSize: '0.65rem' }}>VIDEO (OPTIONAL)</label>
-                                        <FileUploadWidget 
-                                          value={editingProject.video || ''} 
-                                          onChange={url => setEditingProject({ ...editingProject, video: url })}
-                                          acceptType="video"
-                                        />
-                                      </div>
-                                      <div className="dashboard-form-actions" style={{ display: 'flex', gap: '6px' }}>
-                                        <button type="submit" className="dashboard-btn primary" style={{ padding: '4px 8px', fontSize: '0.7rem' }}>Save</button>
-                                        <button type="button" className="dashboard-btn secondary" style={{ padding: '4px 8px', fontSize: '0.7rem' }} onClick={() => setEditingProject(null)}>Cancel</button>
+                                      <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid #f3f4f6', paddingTop: '8px', marginTop: '4px' }}>
+                                        <button type="button" className="dashboard-btn secondary" style={{ padding: '5px 12px', fontSize: '0.7rem', margin: 0 }} onClick={() => setEditingProject(null)}>Cancel</button>
+                                        <button type="submit" className="dashboard-btn primary" style={{ padding: '5px 12px', fontSize: '0.7rem', margin: 0 }}>Save</button>
                                       </div>
                                     </form>
                                   ) : (

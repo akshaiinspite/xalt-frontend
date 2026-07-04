@@ -13,6 +13,7 @@ const CustomCursor = () => {
     let currentY = -100;
     let isHoveringPointer = false;
     let isHoveringText = false;
+    let isHoveringWide = false;
     let currentLabelText = '';
     let animId: number;
 
@@ -23,43 +24,54 @@ const CustomCursor = () => {
       const target = e.target as HTMLElement;
       if (!target) return;
 
-      // Walk up DOM to find links/buttons/interactive elements
-      let el: HTMLElement | null = target;
       let pointerFound = false;
+      let wideFound = false;
       let hoverLabel = '>> ACCESS';
 
-      while (el) {
-        const tag = el.tagName.toLowerCase();
-        const style = window.getComputedStyle(el);
-        
-        if (
-          style.cursor === 'pointer' ||
-          tag === 'a' ||
-          tag === 'button' ||
-          el.classList.contains('team-nav-arrow-btn') ||
-          el.classList.contains('team-card-new') ||
-          el.classList.contains('form-submit-btn') ||
-          el.classList.contains('nav-link') ||
-          el.classList.contains('hamburger-btn')
-        ) {
-          pointerFound = true;
-          if (el.classList.contains('team-card-new')) {
-            hoverLabel = '>> DECRYPT DOSSIER';
-          } else if (el.classList.contains('nav-link') || tag === 'a') {
-            hoverLabel = '>> NAVIGATE';
-          } else if (el.classList.contains('form-submit-btn')) {
-            hoverLabel = '>> TRANSMIT';
-          } else if (el.classList.contains('inline-video-wrapper') || el.classList.contains('play-btn')) {
-            hoverLabel = '>> PLAY REEL';
-          } else {
-            hoverLabel = '>> ACCESS';
-          }
-          break;
+      // Check if hovering inside a wide interactive card first
+      const wideContainer = target.closest('.service-card, .team-card-new, .board-subcard');
+      if (wideContainer) {
+        pointerFound = true;
+        wideFound = true;
+        if (wideContainer.classList.contains('service-card') || wideContainer.classList.contains('board-subcard')) {
+          hoverLabel = '>> DECRYPT NODE';
+        } else {
+          hoverLabel = '>> DECRYPT DOSSIER';
         }
-        el = el.parentElement;
+      } else {
+        // Standard walk up for other interactive elements
+        let el: HTMLElement | null = target;
+        while (el) {
+          const tag = el.tagName.toLowerCase();
+          const style = window.getComputedStyle(el);
+          
+          if (
+            style.cursor === 'pointer' ||
+            tag === 'a' ||
+            tag === 'button' ||
+            el.classList.contains('team-nav-arrow-btn') ||
+            el.classList.contains('form-submit-btn') ||
+            el.classList.contains('nav-link') ||
+            el.classList.contains('hamburger-btn')
+          ) {
+            pointerFound = true;
+            if (el.classList.contains('nav-link') || tag === 'a') {
+              hoverLabel = '>> NAVIGATE';
+            } else if (el.classList.contains('form-submit-btn')) {
+              hoverLabel = '>> TRANSMIT';
+            } else if (el.classList.contains('inline-video-wrapper') || el.classList.contains('play-btn')) {
+              hoverLabel = '>> PLAY REEL';
+            } else {
+              hoverLabel = '>> ACCESS';
+            }
+            break;
+          }
+          el = el.parentElement;
+        }
       }
 
       isHoveringPointer = pointerFound;
+      isHoveringWide = wideFound;
 
       if (!pointerFound) {
         const tag = target.tagName.toLowerCase();
@@ -89,7 +101,9 @@ const CustomCursor = () => {
       }
 
       if (dotRef.current) {
-        if (isHoveringPointer) {
+        if (isHoveringWide) {
+          dotRef.current.className = 'custom-cursor-dot wide pointer';
+        } else if (isHoveringPointer) {
           dotRef.current.className = 'custom-cursor-dot pointer';
         } else if (isHoveringText) {
           dotRef.current.className = 'custom-cursor-dot text';
@@ -100,7 +114,9 @@ const CustomCursor = () => {
 
       if (labelRef.current) {
         labelRef.current.textContent = currentLabelText;
-        if (isHoveringPointer) {
+        if (isHoveringWide) {
+          labelRef.current.className = 'custom-cursor-label wide pointer';
+        } else if (isHoveringPointer) {
           labelRef.current.className = 'custom-cursor-label pointer';
         } else if (isHoveringText) {
           labelRef.current.className = 'custom-cursor-label text';
