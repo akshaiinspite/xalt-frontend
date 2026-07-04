@@ -60,81 +60,101 @@ const AnimatedCounter = ({ target, duration = 1500, suffix = '' }: CounterProps)
 const OurStory = () => {
   return (
     <section className="our-story-section" id="about">
-      {/* Huge faded typography behind content */}
-      <div className="about-backdrop-text">X.ALT STUDIO</div>
+      {/* Cinematic Red Overlays and Background elements */}
+      <div className="cinematic-bg-darken"></div>
+      <div className="cinematic-bg-red-wash"></div>
+      <div className="light-flare"></div>
+      <div className="light-streak"></div>
       
+      {/* Outer and Inner Chevrons via SVG */}
+      <div className="chevron-svg-container">
+        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chevron-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(225, 6, 0, 0.08)" />
+              <stop offset="60%" stopColor="rgba(225, 6, 0, 0.02)" />
+              <stop offset="100%" stopColor="rgba(0, 0, 0, 0)" />
+            </linearGradient>
+          </defs>
+          
+          {/* Main Chevron Gradient Fill */}
+          <polygon 
+            points="0,0 50,0 85,50 50,100 0,100 35,50" 
+            fill="url(#chevron-grad)" 
+          />
+          
+          {/* Glowing Outer Edge 1 (Primary Bold) */}
+          <polyline 
+            points="50,0 85,50 50,100" 
+            fill="none" 
+            stroke="rgba(225, 6, 0, 0.35)" 
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Glowing Outer Edge 2 (Secondary Accent) */}
+          <polyline 
+            points="46,0 81,50 46,100" 
+            fill="none" 
+            stroke="rgba(255, 69, 0, 0.20)" 
+            strokeWidth="0.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Subtle Inner Edge (Left) */}
+          <polyline 
+            points="0,0 35,50 0,100" 
+            fill="none" 
+            stroke="rgba(225, 6, 0, 0.15)" 
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* HUD Tech Elements at Top-Left */}
+          <rect x="5" y="8" width="15" height="2" fill="rgba(225, 6, 0, 0.25)" />
+          <rect x="22" y="8" width="6" height="2" fill="rgba(225, 6, 0, 0.25)" />
+        </svg>
+      </div>
+
       <div className="our-story-container">
-        <div className="our-story-split-grid">
+        <motion.div 
+          className="our-story-content-block"
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1.0, ease: "easeOut" }}
+        >
+          <div className="story-badge">// SECURE NODE ACCESS: STUDIO PROFILE</div>
           
-          {/* Left Column: Badge, Title, Descriptions & Stats Layout */}
-          <motion.div 
-            className="our-story-left-col"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <div className="story-badge">STUDIO PROFILE</div>
-            <h2 className="story-title">
-              WHO <span className="title-highlight">WE ARE</span>
-            </h2>
-            
-            <div className="about-description-box">
-              <span className="about-accent-line"></span>
-              <p className="about-intro-text">
-                We are a team of visionary creators, tech innovators, and visual artists pushing the boundaries of what is possible in the digital realm.
-              </p>
-              <p>
-                X.ALT Studio bridges the gap between raw imagination and technical execution. We craft high-end visual effects, interactive 3D assets, and immersive XR experiences that do not just tell a story—they transport audiences entirely.
-              </p>
-            </div>
+          <h2 className="story-title">WHO WE <span className="story-highlight">ARE</span></h2>
+          
+          <div className="about-description-box">
+            <p className="about-hud-text">
+              AT XALT STUDIOS, WE ARE A TEAM OF VISIONARY CREATORS, TECH INNOVATORS, AND VISUAL ARTISTS PUSHING THE BOUNDARIES OF WHAT IS POSSIBLE IN THE DIGITAL REALM.
+            </p>
+            <p className="about-hud-text">
+              X.ALT STUDIO BRIDGES THE GAP BETWEEN RAW IMAGINATION AND TECHNICAL EXECUTION. WE CRAFT HIGH-END VISUAL EFFECTS, INTERACTIVE 3D ASSETS, AND IMMERSIVE XR EXPERIENCES THAT DO NOT JUST TELL A STORY—THEY TRANSPORT AUDIENCES ENTIRELY.
+            </p>
+          </div>
 
-            <div className="story-stats-layout">
-              <div className="stat-item">
-                <h3 className="stat-number">
-                  <AnimatedCounter target={250} suffix="+" />
-                </h3>
-                <p className="stat-label">Projects Completed</p>
-              </div>
-
-              <div className="stat-item">
-                <h3 className="stat-number">
-                  <AnimatedCounter target={120} suffix="+" />
-                </h3>
-                <p className="stat-label">Happy Clients</p>
-              </div>
+          <div className="telemetry-stats">
+            <div className="telemetry-item">
+              <span className="telemetry-label">PROJECTS COMPLETED:</span>
+              <span className="telemetry-val">
+                <AnimatedCounter target={250} suffix="+" />
+              </span>
             </div>
-          </motion.div>
-          
-          {/* Right Column: 4-image grid */}
-          <motion.div 
-            className="our-story-right-col"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
-          >
-            <div className="story-image-grid">
-              <div className="story-image-item">
-                <img src="/uploads/IMG_8727.jpeg" alt="X.ALT Studio Workspace" />
-                <div className="image-hud-tag">[ DSC_8727 // SYS_A ]</div>
-              </div>
-              <div className="story-image-item">
-                <img src="/uploads/IMG_8731.jpeg" alt="X.ALT Creative Tech" />
-                <div className="image-hud-tag">[ DSC_8731 // SYS_B ]</div>
-              </div>
-              <div className="story-image-item">
-                <img src="/uploads/PHOTO-2026-03-17-10-40-16.jpg.jpeg" alt="X.ALT Visual Artists" />
-                <div className="image-hud-tag">[ DSC_1040 // SYS_C ]</div>
-              </div>
-              <div className="story-image-item">
-                <img src="/uploads/PHOTO-2026-03-17-10-41-56.jpg.jpeg" alt="X.ALT Immersive Production" />
-                <div className="image-hud-tag">[ DSC_1041 // SYS_D ]</div>
-              </div>
+            <div className="telemetry-item">
+              <span className="telemetry-label">HAPPY CLIENTS:</span>
+              <span className="telemetry-val">
+                <AnimatedCounter target={120} suffix="+" />
+              </span>
             </div>
-          </motion.div>
-          
-        </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
