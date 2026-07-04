@@ -552,7 +552,7 @@ const ProjectsPage = () => {
                   <div className="card-telemetry-overlay">
                     <div className="telemetry-line"><span>NODE:</span> <span>0{sIdx + 1}_VFX</span></div>
                     <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
-                    <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">DECRYPT_READY</span></div>
+                    <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">ACCESS_READY</span></div>
                   </div>
 
                   <div className="board-subcard-indicator">
