@@ -311,54 +311,7 @@
   color: var(--color-primary, #e10600);
 }
 
-/* ----------------------------------------------------
-   CUSTOM HOVER CURSOR
-   ---------------------------------------------------- */
-.custom-projects-cursor {
-  position: fixed;
-  width: 12px;
-  height: 12px;
-  border: 1.5px solid var(--color-primary, #e10600);
-  background-color: transparent;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: 
-    width 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
-    height 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
-    background-color 0.25s ease,
-    opacity 0.15s ease;
-  z-index: 10000;
-  opacity: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
 
-.custom-projects-cursor.active {
-  opacity: 1;
-}
-
-.custom-projects-cursor.wide {
-  width: 100px;
-  height: 100px;
-  background-color: rgba(225, 6, 0, 0.12);
-  border-color: var(--color-primary, #e10600);
-}
-
-.cursor-text-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  color: #ffffff;
-  letter-spacing: 0.05em;
-  opacity: 0;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.custom-projects-cursor.wide .cursor-text-label {
-  opacity: 1;
-}
 
 /* ----------------------------------------------------
    SUBCATEGORY CARDS GRID

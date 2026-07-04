@@ -29,11 +29,15 @@ const CustomCursor = () => {
       let hoverLabel = '>> ACCESS';
 
       // Check if hovering inside a wide interactive card first
-      const wideContainer = target.closest('.service-card, .team-card-new, .board-subcard');
+      const wideContainer = target.closest('.service-card, .team-card-new, .board-subcard, .gallery-sharp-slot');
       if (wideContainer) {
         pointerFound = true;
         wideFound = true;
-        if (wideContainer.classList.contains('service-card') || wideContainer.classList.contains('board-subcard')) {
+        if (
+          wideContainer.classList.contains('service-card') || 
+          wideContainer.classList.contains('board-subcard') ||
+          wideContainer.classList.contains('gallery-sharp-slot')
+        ) {
           hoverLabel = '>> DECRYPT NODE';
         } else {
           hoverLabel = '>> DECRYPT DOSSIER';

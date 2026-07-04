@@ -305,18 +305,7 @@ const ProjectsPage = () => {
       });
   }, []);
 
-  // Custom Cursor state
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [cursorActive, setCursorActive] = useState(false);
-  const [isWiderCursor, setIsWiderCursor] = useState(false);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Scroll window to top when changing views or subcategories
   useEffect(() => {
@@ -450,13 +439,7 @@ const ProjectsPage = () => {
   return (
     <div className="projects-page-new">
       
-      {/* Custom hover cursor outline */}
-      <div 
-        className={`custom-projects-cursor ${cursorActive ? 'active' : ''} ${isWiderCursor ? 'wide' : ''}`}
-        style={{ left: `${mousePos.x}px`, top: `${mousePos.y}px` }}
-      >
-        <span className="cursor-text-label">DECRYPT NODE</span>
-      </div>
+
 
       {/* TOP DROPDOWN NAVIGATION BAR */}
       <div className="projects-nav-bar">
@@ -547,14 +530,6 @@ const ProjectsPage = () => {
                   key={sIdx} 
                   className={`board-subcard ${isSelected ? 'active-card' : ''}`}
                   onClick={() => handleSelect(selectedCategoryIdx, sIdx)}
-                  onMouseEnter={() => {
-                    setCursorActive(true);
-                    setIsWiderCursor(true);
-                  }}
-                  onMouseLeave={() => {
-                    setCursorActive(false);
-                    setIsWiderCursor(false);
-                  }}
                 >
                   {/* Cyber Corner Brackets */}
                   <div className="card-corners">
@@ -657,14 +632,6 @@ const ProjectsPage = () => {
               <div 
                 key={idx} 
                 className="gallery-sharp-slot"
-                onMouseEnter={() => {
-                  setCursorActive(true);
-                  setIsWiderCursor(true);
-                }}
-                onMouseLeave={() => {
-                  setCursorActive(false);
-                  setIsWiderCursor(false);
-                }}
               >
                 {/* Cyber Corner Brackets */}
                 <div className="slot-corners">
