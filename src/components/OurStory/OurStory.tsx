@@ -66,7 +66,7 @@ const OurStory = () => {
       <div className="our-story-container">
         <div className="our-story-split-grid">
           
-          {/* Left Column: Badge & Title */}
+          {/* Left Column: Badge, Title, Descriptions & Stats Layout */}
           <motion.div 
             className="our-story-left-col"
             initial={{ opacity: 0, y: 40 }}
@@ -78,16 +78,7 @@ const OurStory = () => {
             <h2 className="story-title">
               WHO <span className="title-highlight">WE ARE</span>
             </h2>
-          </motion.div>
-          
-          {/* Right Column: Descriptions & Stats Layout */}
-          <motion.div 
-            className="our-story-right-col"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
-          >
+            
             <div className="about-description-box">
               <span className="about-accent-line"></span>
               <p className="about-intro-text">
@@ -111,6 +102,34 @@ const OurStory = () => {
                   <AnimatedCounter target={120} suffix="+" />
                 </h3>
                 <p className="stat-label">Happy Clients</p>
+              </div>
+            </div>
+          </motion.div>
+          
+          {/* Right Column: 4-image grid */}
+          <motion.div 
+            className="our-story-right-col"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
+          >
+            <div className="story-image-grid">
+              <div className="story-image-item">
+                <img src="/uploads/IMG_8727.jpeg" alt="X.ALT Studio Workspace" />
+                <div className="image-hud-tag">[ DSC_8727 // SYS_A ]</div>
+              </div>
+              <div className="story-image-item">
+                <img src="/uploads/IMG_8731.jpeg" alt="X.ALT Creative Tech" />
+                <div className="image-hud-tag">[ DSC_8731 // SYS_B ]</div>
+              </div>
+              <div className="story-image-item">
+                <img src="/uploads/PHOTO-2026-03-17-10-40-16.jpg.jpeg" alt="X.ALT Visual Artists" />
+                <div className="image-hud-tag">[ DSC_1040 // SYS_C ]</div>
+              </div>
+              <div className="story-image-item">
+                <img src="/uploads/PHOTO-2026-03-17-10-41-56.jpg.jpeg" alt="X.ALT Immersive Production" />
+                <div className="image-hud-tag">[ DSC_1041 // SYS_D ]</div>
               </div>
             </div>
           </motion.div>
