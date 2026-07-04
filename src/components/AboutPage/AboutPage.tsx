@@ -159,9 +159,12 @@ const ThreeBackground = () => {
 // 3D TILT TEAM CARD COMPONENT (With Zoom & Wide Expand)
 // ----------------------------------------------------
 interface TeamMember {
+  _id?: string;
   name: string;
   role: string;
   gradient: string;
+  department?: string;
+  bio?: string;
 }
 
 interface TeamCardProps {
@@ -219,21 +222,12 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
 
   const idNumber = String(index + 1).padStart(2, '0');
 
-  // Hardcoded profiles for visual flair
   const getDepartment = () => {
-    if (index === 0) return 'ADMINISTRATIVE_CORE';
-    if (index === 1) return 'OPERATION_MGMT';
-    return 'CREATIVE_3D_LAB';
+    return member.department || 'CREATIVE_3D_LAB';
   };
 
   const getDossierBio = () => {
-    if (index === 0) {
-      return 'Key visionary behind X.ALT. Directs administrative strategies, business partnerships, and structural expansion plans to redefine digital design standards.';
-    }
-    if (index === 1) {
-      return 'Supervises studio workflow, project milestones, and resource allocation. Bridges organizational systems with production pipelines for flawless delivery.';
-    }
-    return 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.';
+    return member.bio || 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.';
   };
 
 
@@ -356,38 +350,63 @@ const AboutPage = () => {
   const [hoverDirection, setHoverDirection] = useState<'left' | 'right' | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const teamMembers: TeamMember[] = [
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
       name: 'Alex Mercer',
       role: 'Founder / CEO',
       gradient: 'linear-gradient(135deg, #050505 0%, #300006 100%)',
+      department: 'ADMINISTRATIVE_CORE',
+      bio: 'Key visionary behind X.ALT. Directs administrative strategies, business partnerships, and structural expansion plans to redefine digital design standards.'
     },
     {
       name: 'Sarah Connor',
       role: 'Manager',
       gradient: 'linear-gradient(135deg, #101012 0%, #440d16 100%)',
+      department: 'OPERATION_MGMT',
+      bio: 'Supervises studio workflow, project milestones, and resource allocation. Bridges organizational systems with production pipelines for flawless delivery.'
     },
     {
       name: 'David Miller',
       role: 'Senior 3D Environment Artist',
       gradient: 'linear-gradient(135deg, #1b0206 0%, #520510 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.'
     },
     {
       name: 'Michael Chen',
       role: 'Senior 3D Environment Artist',
       gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.'
     },
     {
       name: 'Marcus Vance',
       role: 'Creative Director',
       gradient: 'linear-gradient(135deg, #120318 0%, #4a030a 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.'
     },
     {
       name: 'Liam Vance',
       role: 'Partner',
       gradient: 'linear-gradient(135deg, #040108 0%, #350218 100%)',
+      department: 'CREATIVE_3D_LAB',
+      bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.'
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/team-members')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setTeamMembers(data);
+        }
+      })
+      .catch(err => {
+        console.warn('Backend offline or error fetching team members, using local dummy list.', err);
+      });
+  }, []);
 
   // Mouse wheel scroll horizontal listener
   useEffect(() => {

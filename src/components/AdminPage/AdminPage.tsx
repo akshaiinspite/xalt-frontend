@@ -258,8 +258,8 @@ const AdminPage = () => {
   const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dashboard Tabs: 'careers' | 'projects' | 'home'
-  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home'>('careers');
+  // Dashboard Tabs: 'careers' | 'projects' | 'home' | 'team'
+  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home' | 'team'>('careers');
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -304,6 +304,19 @@ const AdminPage = () => {
   const [editingExpertiseId, setEditingExpertiseId] = useState<string | null>(null);
   const [expertiseFeedback, setExpertiseFeedback] = useState({ type: '', message: '' });
 
+  // --- Teams State ---
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [newTeamMember, setNewTeamMember] = useState({
+    name: '',
+    role: '',
+    department: 'CREATIVE_3D_LAB',
+    bio: '',
+    gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+    order: 0
+  });
+  const [editingTeamMemberId, setEditingTeamMemberId] = useState<string | null>(null);
+  const [teamFeedback, setTeamFeedback] = useState({ type: '', message: '' });
+
   // --- Confirmation Modal State ---
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -346,6 +359,7 @@ const AdminPage = () => {
       fetchPortfolio();
       fetchReel();
       fetchExpertise();
+      fetchTeamMembers();
     }
   }, [isLoggedIn]);
 
@@ -380,6 +394,17 @@ const AdminPage = () => {
       .then(res => res.json())
       .then(data => setExpertiseItems(data))
       .catch(err => console.error('Error fetching expertise:', err));
+  };
+
+  const fetchTeamMembers = () => {
+    fetch('http://localhost:5000/api/team-members')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTeamMembers(data);
+        }
+      })
+      .catch(err => console.error('Error fetching team members:', err));
   };
 
   // --- Expertise CRUD Handlers ---
@@ -463,6 +488,92 @@ const AdminPage = () => {
         })
         .catch(err => {
           toast.error('Error deleting expertise item: ' + err.message);
+        });
+      }
+    });
+  };
+
+  // --- Teams CRUD Handlers ---
+  const handleTeamSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('xalt_admin_token');
+
+    const url = editingTeamMemberId 
+      ? `http://localhost:5000/api/team-members/${editingTeamMemberId}` 
+      : 'http://localhost:5000/api/team-members';
+    const method = editingTeamMemberId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(newTeamMember)
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to save team member');
+      }
+      setTeamFeedback({ 
+        type: 'success', 
+        message: editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!' 
+      });
+      toast.success(editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!');
+      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', order: 0 });
+      setEditingTeamMemberId(null);
+      fetchTeamMembers();
+      setTimeout(() => setTeamFeedback({ type: '', message: '' }), 3000);
+    })
+    .catch(err => {
+      setTeamFeedback({ type: 'error', message: err.message });
+      toast.error('Failed to save team member: ' + err.message);
+      setTimeout(() => setTeamFeedback({ type: '', message: '' }), 4000);
+    });
+  };
+
+  const startEditTeamMember = (member: any) => {
+    setEditingTeamMemberId(member._id);
+    setNewTeamMember({
+      name: member.name,
+      role: member.role,
+      department: member.department || 'CREATIVE_3D_LAB',
+      bio: member.bio || '',
+      gradient: member.gradient || 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+      order: member.order !== undefined ? member.order : 0
+    });
+  };
+
+  const cancelEditTeamMember = () => {
+    setEditingTeamMemberId(null);
+    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', order: 0 });
+  };
+
+  const handleDeleteTeamMember = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Decommission Team Member Dossier',
+      message: 'Are you sure you want to permanently delete this team member dossier? This action will remove it from the live About page.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`http://localhost:5000/api/team-members/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete team member');
+          }
+          if (editingTeamMemberId === id) {
+            cancelEditTeamMember();
+          }
+          toast.success('Team member dossier successfully deleted.');
+          fetchTeamMembers();
+        })
+        .catch(err => {
+          toast.error('Error deleting team member: ' + err.message);
         });
       }
     });
@@ -937,6 +1048,19 @@ const AdminPage = () => {
             </svg>
             <span>Home Menu</span>
           </button>
+
+          <button 
+            className={`sidebar-nav-btn ${activeTab === 'team' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('team');
+              setIsMobileSidebarOpen(false);
+            }}
+          >
+            <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Teams Manager</span>
+          </button>
         </nav>
 
         <div className="sidebar-footer">
@@ -964,8 +1088,26 @@ const AdminPage = () => {
       <main className="admin-workspace">
         <header className="workspace-header">
           <div className="workspace-title-area">
-            <h1>{activeTab === 'careers' ? 'Careers Openings' : activeTab === 'projects' ? 'Projects Portfolio' : 'Home Menu'}</h1>
-            <p className="workspace-breadcrumbs">Console / {activeTab === 'careers' ? 'Careers Manager' : activeTab === 'projects' ? 'Portfolio Manager' : 'Home Manager'}</p>
+            <h1>
+              {activeTab === 'careers' 
+                ? 'Careers Openings' 
+                : activeTab === 'projects' 
+                ? 'Projects Portfolio' 
+                : activeTab === 'home' 
+                ? 'Home Menu' 
+                : 'Teams Manager'}
+            </h1>
+            <p className="workspace-breadcrumbs">
+              Console / {
+                activeTab === 'careers' 
+                  ? 'Careers Manager' 
+                  : activeTab === 'projects' 
+                  ? 'Portfolio Manager' 
+                  : activeTab === 'home' 
+                  ? 'Home Manager' 
+                  : 'Teams Manager'
+              }
+            </p>
           </div>
 
           <div className="workspace-status-badge">
@@ -1733,6 +1875,178 @@ const AdminPage = () => {
                           <button 
                             className="list-action-btn delete"
                             onClick={() => handleDeleteExpertise(item._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {activeTab === 'team' && (
+            <div className="dashboard-grid-two-col animate-fade-in">
+              
+              {/* Form Card */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header">
+                  <h3>{editingTeamMemberId ? 'Modify Personnel Dossier' : 'Commission Personnel Dossier'}</h3>
+                  <p>{editingTeamMemberId ? 'Adjust biographical logs and credentials.' : 'Initialize credentials and profile log for a new team member.'}</p>
+                </div>
+
+                {teamFeedback.message && (
+                  <div className={`feedback-alert ${teamFeedback.type}`}>
+                    {teamFeedback.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleTeamSubmit} className="dashboard-form">
+                  <div className="dashboard-form-group">
+                    <label>FULL NAME</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Alex Mercer"
+                      value={newTeamMember.name}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>ROLE / TITLE</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Creative Director"
+                      value={newTeamMember.role}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>DEPARTMENT SECTION</label>
+                    <select 
+                      value={newTeamMember.department}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, department: e.target.value })}
+                      className="dashboard-select"
+                      required
+                    >
+                      <option value="ADMINISTRATIVE_CORE">ADMINISTRATIVE CORE</option>
+                      <option value="OPERATION_MGMT">OPERATION MGMT</option>
+                      <option value="CREATIVE_3D_LAB">CREATIVE 3D LAB</option>
+                    </select>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>GRADIENT BACKGROUND STYLE (CSS GRADIENT)</label>
+                    <input 
+                      type="text" 
+                      placeholder="linear-gradient(135deg, #161616 0%, #700a18 100%)"
+                      value={newTeamMember.gradient}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, gradient: e.target.value })}
+                      required
+                    />
+                    <small className="field-hint">// Controls the custom background ambiance of this member's card.</small>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>DISPLAY ORDER</label>
+                    <input 
+                      type="number" 
+                      placeholder="0"
+                      value={newTeamMember.order}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, order: parseInt(e.target.value) || 0 })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>DOSSIER BIO SUMMARY</label>
+                    <textarea 
+                      rows={5}
+                      placeholder="Log biographical profile..."
+                      value={newTeamMember.bio}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-actions">
+                    <button type="submit" className="dashboard-btn primary">
+                      {editingTeamMemberId ? 'Save Changes' : 'Publish Dossier'}
+                    </button>
+                    {editingTeamMemberId && (
+                      <button type="button" className="dashboard-btn secondary" onClick={cancelEditTeamMember}>
+                        Cancel Edit
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* List Card */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header">
+                  <h3>Active Personnel Records ({teamMembers.length})</h3>
+                  <p>Current team dossiers displayed on the active About page.</p>
+                </div>
+
+                <div className="dashboard-list-scroller">
+                  {teamMembers.length === 0 ? (
+                    <div className="dashboard-empty-state">
+                      <span>No personnel logs found.</span>
+                    </div>
+                  ) : (
+                    teamMembers.map((member) => (
+                      <div key={member._id} className="dashboard-list-item">
+                        <div className="list-item-header" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                          <div 
+                            style={{ 
+                              width: '50px', 
+                              height: '50px', 
+                              borderRadius: '8px', 
+                              background: member.gradient || 'var(--color-primary-dark)',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#fff',
+                              fontSize: '1.2rem',
+                              fontWeight: 'bold',
+                              fontFamily: 'Share Tech Mono, monospace'
+                            }}
+                          >
+                            {member.name.charAt(0)}
+                          </div>
+                          <div>
+                            <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{member.name}</span>
+                            <span className="item-meta" style={{ fontSize: '0.75rem', color: '#e10600', fontWeight: 'bold', display: 'block' }}>{member.role}</span>
+                            <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                              {member.department ? member.department.replace(/_/g, ' ') : 'CREATIVE 3D LAB'}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>
+                          {member.bio}
+                        </p>
+                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '4px' }}>
+                          <span>Order: {member.order !== undefined ? member.order : 0}</span>
+                        </div>
+                        
+                        <div className="list-item-actions" style={{ marginTop: '8px' }}>
+                          <button 
+                            className="list-action-btn edit"
+                            onClick={() => startEditTeamMember(member)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="list-action-btn delete"
+                            onClick={() => handleDeleteTeamMember(member._id)}
                           >
                             Delete
                           </button>
