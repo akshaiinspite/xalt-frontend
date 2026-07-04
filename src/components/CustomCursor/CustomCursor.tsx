@@ -38,9 +38,9 @@ const CustomCursor = () => {
           wideContainer.classList.contains('board-subcard') ||
           wideContainer.classList.contains('gallery-sharp-slot')
         ) {
-          hoverLabel = '>> DECRYPT NODE';
+          hoverLabel = '>> CLICK TO OPEN';
         } else {
-          hoverLabel = '>> DECRYPT DOSSIER';
+          hoverLabel = '>> CLICK TO OPEN';
         }
       } else {
         // Standard walk up for other interactive elements

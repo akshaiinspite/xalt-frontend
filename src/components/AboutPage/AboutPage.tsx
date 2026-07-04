@@ -255,7 +255,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
         <span className="hud-status-text">
           {isClicked ? 'SECURE_DOSSIER // DECRYPTED' : 'ENCRYPTED_FILE // RESTRICTED'}
         </span>
-        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO DECRYPT'}</span>
+        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
         <span className="hud-corner-bracket bracket-tr">]</span>
       </div>
 
@@ -331,7 +331,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
 
         {/* Action Button at the bottom */}
         <div className="evidence-action-btn">
-          {isClicked ? '[ DISMISS DOSSIER ]' : '[ DECRYPT DATA FILE ]'}
+          {isClicked ? '[ DISMISS DOSSIER ]' : '[ OPEN DATA FILE ]'}
         </div>
 
       </div>
@@ -921,7 +921,7 @@ const AboutPage = () => {
               </h3>
               <p className="team-intro-desc">
                 We believe in the power of visuals to transport audiences and ignite emotions. 
-                <strong> Click on any card below to decrypt and reveal personnel dossiers.</strong>
+                <strong> Click on any card below to open and reveal personnel dossiers.</strong>
               </p>
             </div>
 

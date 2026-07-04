@@ -556,7 +556,7 @@ const ProjectsPage = () => {
                   </div>
 
                   <div className="board-subcard-indicator">
-                    <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO DECRYPT'}</span>
+                    <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO OPEN'}</span>
                   </div>
                 </div>
               );

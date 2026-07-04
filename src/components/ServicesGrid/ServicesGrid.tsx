@@ -104,7 +104,7 @@ const ServicesGrid = () => {
                 </div>
 
                 <div className="board-subcard-indicator">
-                  <span>&gt;&gt; CLICK TO DECRYPT</span>
+                  <span>&gt;&gt; CLICK TO OPEN</span>
                 </div>
               </div>
 
