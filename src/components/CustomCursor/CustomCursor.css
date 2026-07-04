@@ -97,8 +97,8 @@ body, * {
 
 /* Wide Cursor States */
 .custom-cursor-dot.wide {
-  width: 120px;
-  height: 34px;
+  width: 100px;
+  height: 100px;
   background-color: rgba(225, 6, 0, 0.12);
   border: 1px solid var(--color-primary, #e10600);
   border-radius: 0%;
