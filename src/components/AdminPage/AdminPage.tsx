@@ -145,11 +145,11 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0, flex: 1 }}>
               {isVideoUrl(value) ? (
-                <video className="upload-preview-media" src={value} muted playsInline autoPlay loop style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }} />
+                <video className="upload-preview-media" src={getMediaUrl(value)} muted playsInline autoPlay loop style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }} />
               ) : (
                 <img 
                   className="upload-preview-media" 
-                  src={value} 
+                  src={getMediaUrl(value)} 
                   alt="Preview" 
                   style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }}
                   onError={(e) => {
@@ -312,6 +312,7 @@ const AdminPage = () => {
     department: 'CREATIVE_3D_LAB',
     bio: '',
     gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+    image: '',
     order: 0
   });
   const [editingTeamMemberId, setEditingTeamMemberId] = useState<string | null>(null);
@@ -521,7 +522,7 @@ const AdminPage = () => {
         message: editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!' 
       });
       toast.success(editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!');
-      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', order: 0 });
+      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', order: 0 });
       setEditingTeamMemberId(null);
       fetchTeamMembers();
       setTimeout(() => setTeamFeedback({ type: '', message: '' }), 3000);
@@ -541,13 +542,20 @@ const AdminPage = () => {
       department: member.department || 'CREATIVE_3D_LAB',
       bio: member.bio || '',
       gradient: member.gradient || 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
+      image: member.image || '',
       order: member.order !== undefined ? member.order : 0
     });
+    setTimeout(() => {
+      const element = document.getElementById('team-form-container');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const cancelEditTeamMember = () => {
     setEditingTeamMemberId(null);
-    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', order: 0 });
+    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', order: 0 });
   };
 
   const handleDeleteTeamMember = (id: string) => {
@@ -1892,7 +1900,7 @@ const AdminPage = () => {
             <div className="dashboard-grid-two-col animate-fade-in">
               
               {/* Form Card */}
-              <div className="dashboard-card">
+              <div className="dashboard-card" id="team-form-container">
                 <div className="dashboard-card-header">
                   <h3>{editingTeamMemberId ? 'Modify Personnel Dossier' : 'Commission Personnel Dossier'}</h3>
                   <p>{editingTeamMemberId ? 'Adjust biographical logs and credentials.' : 'Initialize credentials and profile log for a new team member.'}</p>
@@ -1917,14 +1925,13 @@ const AdminPage = () => {
                   </div>
 
                   <div className="dashboard-form-group">
-                    <label>ROLE / TITLE</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Creative Director"
-                      value={newTeamMember.role}
-                      onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
-                      required
+                    <label>PERSONNEL PHOTO / PORTRAIT</label>
+                    <FileUploadWidget 
+                      value={newTeamMember.image}
+                      onChange={(url) => setNewTeamMember({ ...newTeamMember, image: url })}
+                      acceptType="image"
                     />
+                    <small className="field-hint">// Upload profile photo (JPG, PNG, WebP) or paste a CDN URL.</small>
                   </div>
 
                   <div className="dashboard-form-group">
@@ -1939,29 +1946,6 @@ const AdminPage = () => {
                       <option value="OPERATION_MGMT">OPERATION MGMT</option>
                       <option value="CREATIVE_3D_LAB">CREATIVE 3D LAB</option>
                     </select>
-                  </div>
-
-                  <div className="dashboard-form-group">
-                    <label>GRADIENT BACKGROUND STYLE (CSS GRADIENT)</label>
-                    <input 
-                      type="text" 
-                      placeholder="linear-gradient(135deg, #161616 0%, #700a18 100%)"
-                      value={newTeamMember.gradient}
-                      onChange={(e) => setNewTeamMember({ ...newTeamMember, gradient: e.target.value })}
-                      required
-                    />
-                    <small className="field-hint">// Controls the custom background ambiance of this member's card.</small>
-                  </div>
-
-                  <div className="dashboard-form-group">
-                    <label>DISPLAY ORDER</label>
-                    <input 
-                      type="number" 
-                      placeholder="0"
-                      value={newTeamMember.order}
-                      onChange={(e) => setNewTeamMember({ ...newTeamMember, order: parseInt(e.target.value) || 0 })}
-                      required
-                    />
                   </div>
 
                   <div className="dashboard-form-group">
@@ -2004,28 +1988,41 @@ const AdminPage = () => {
                     teamMembers.map((member) => (
                       <div key={member._id} className="dashboard-list-item">
                         <div className="list-item-header" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                          <div 
-                            style={{ 
-                              width: '50px', 
-                              height: '50px', 
-                              borderRadius: '8px', 
-                              background: member.gradient || 'var(--color-primary-dark)',
-                              border: '1px solid rgba(255, 255, 255, 0.1)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: '#fff',
-                              fontSize: '1.2rem',
-                              fontWeight: 'bold',
-                              fontFamily: 'Share Tech Mono, monospace'
-                            }}
-                          >
-                            {member.name.charAt(0)}
-                          </div>
+                          {member.image ? (
+                            <img 
+                              src={getMediaUrl(member.image)} 
+                              alt={member.name} 
+                              style={{ 
+                                width: '50px', 
+                                height: '50px', 
+                                borderRadius: '8px', 
+                                objectFit: 'cover',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }} 
+                            />
+                          ) : (
+                            <div 
+                              style={{ 
+                                width: '50px', 
+                                height: '50px', 
+                                borderRadius: '8px', 
+                                background: member.gradient || 'var(--color-primary-dark)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#fff',
+                                fontSize: '1.2rem',
+                                fontWeight: 'bold',
+                                fontFamily: 'Share Tech Mono, monospace'
+                              }}
+                            >
+                              {member.name.charAt(0)}
+                            </div>
+                          )}
                           <div>
                             <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{member.name}</span>
-                            <span className="item-meta" style={{ fontSize: '0.75rem', color: '#e10600', fontWeight: 'bold', display: 'block' }}>{member.role}</span>
-                            <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
                               {member.department ? member.department.replace(/_/g, ' ') : 'CREATIVE 3D LAB'}
                             </span>
                           </div>
@@ -2033,9 +2030,7 @@ const AdminPage = () => {
                         <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>
                           {member.bio}
                         </p>
-                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '4px' }}>
-                          <span>Order: {member.order !== undefined ? member.order : 0}</span>
-                        </div>
+
                         
                         <div className="list-item-actions" style={{ marginTop: '8px' }}>
                           <button 
