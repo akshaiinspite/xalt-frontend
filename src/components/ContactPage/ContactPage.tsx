@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import emailjs from '@emailjs/browser';
 import './ContactPage.css';
 
 // ----------------------------------------------------
@@ -149,6 +150,7 @@ const ContactPage = () => {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
   const formRef = useRef<HTMLDivElement>(null);
+  const emailFormRef = useRef<HTMLFormElement>(null);
 
   // Subtle 3D Card Tilt Mouse Tracker
   const handleFormMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -193,15 +195,27 @@ const ContactPage = () => {
 
     setIsSubmitting(true);
 
-    // Simulate clean, professional transmission upload
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({ name: '', contactNumber: '', email: '', message: '' });
-      setTimeout(() => {
-        setSubmitStatus('idle');
-      }, 5000);
-    }, 1500);
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'your_service_id';
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT || 'your_contact_template_id';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key';
+
+    emailjs.sendForm(serviceId, templateId, emailFormRef.current!, publicKey)
+      .then(() => {
+        setIsSubmitting(false);
+        setSubmitStatus('success');
+        setFormData({ name: '', contactNumber: '', email: '', message: '' });
+        setTimeout(() => {
+          setSubmitStatus('idle');
+        }, 5000);
+      })
+      .catch((err) => {
+        console.error('EmailJS Error:', err);
+        setIsSubmitting(false);
+        setSubmitStatus('error');
+        setTimeout(() => {
+          setSubmitStatus('idle');
+        }, 5000);
+      });
   };
 
   return (
@@ -292,7 +306,7 @@ const ContactPage = () => {
                 <span className="form-header-line"></span>
               </div>
 
-              <form onSubmit={handleSubmit} className="cyber-form">
+              <form ref={emailFormRef} onSubmit={handleSubmit} className="cyber-form">
                 
                 {/* Name Input */}
                 <div className={`form-group ${activeField === 'name' ? 'focused' : ''} ${formData.name ? 'has-value' : ''}`}>

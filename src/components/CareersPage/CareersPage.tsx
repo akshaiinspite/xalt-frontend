@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import emailjs from '@emailjs/browser';
 import './CareersPage.css';
 import { toast } from 'react-toastify';
 
@@ -203,6 +204,7 @@ const CareersPage = () => {
 
   const formRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const emailFormRef = useRef<HTMLFormElement>(null);
 
   // Close modal when pressing Escape key
   useEffect(() => {
@@ -295,6 +297,14 @@ const CareersPage = () => {
         return;
       }
       setCareersFile(droppedFile);
+
+      // Programmatically assign the dropped file to the file input DOM element
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(droppedFile);
+      if (fileInputRef.current) {
+        fileInputRef.current.files = dataTransfer.files;
+      }
+
       simulateFileUpload();
     }
   };
@@ -324,16 +334,30 @@ const CareersPage = () => {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', contactNumber: '' });
-      setCareersFile(null);
-      setTimeout(() => {
-        setSubmitStatus('idle');
-        closeModal();
-      }, 2000);
-    }, 2000);
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'your_service_id';
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CAREERS || 'your_careers_template_id';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key';
+
+    emailjs.sendForm(serviceId, templateId, emailFormRef.current!, publicKey)
+      .then(() => {
+        setIsSubmitting(false);
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', contactNumber: '' });
+        setCareersFile(null);
+        setTimeout(() => {
+          setSubmitStatus('idle');
+          closeModal();
+        }, 3000);
+      })
+      .catch((err) => {
+        console.error('EmailJS Careers Error:', err);
+        setIsSubmitting(false);
+        setSubmitStatus('error');
+        setTimeout(() => {
+          setSubmitStatus('idle');
+        }, 5000);
+      });
   };
 
   const handleJobClick = (job: Job) => {
@@ -455,7 +479,8 @@ const CareersPage = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="cyber-form">
+            <form ref={emailFormRef} onSubmit={handleSubmit} className="cyber-form">
+              <input type="hidden" name="job_title" value={selectedJob.title} />
               
               {/* Name Input */}
               <div className={`form-group ${activeField === 'name' ? 'focused' : ''} ${formData.name ? 'has-value' : ''}`}>
@@ -526,6 +551,7 @@ const CareersPage = () => {
                   <input 
                     type="file" 
                     ref={fileInputRef} 
+                    name="resume"
                     onChange={handleFileChange} 
                     accept=".pdf,.csv,.doc,.docx,.txt"
                     className="hidden-file-input"
