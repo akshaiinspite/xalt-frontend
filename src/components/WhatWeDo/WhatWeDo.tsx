@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
 import { AnimatedUnderline } from '../AnimatedUnderline/AnimatedUnderline';
 import './WhatWeDo.css';
+import { API_BASE_URL } from '../../config';
 
 import imgCommercial from '../../assets/images/services/commercial_landscape.png';
 import imgFilms from '../../assets/images/services/films_landscape.png';
@@ -168,7 +169,7 @@ const WhatWeDo = () => {
   const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/expertise')
+    fetch(`${API_BASE_URL}/expertise`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {

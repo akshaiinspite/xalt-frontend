@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import './Header.css';
-import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -113,7 +112,7 @@ const Header = () => {
   return (
     <header className={`header ${isScrolled || isProjectsPage || isMobileMenuOpen ? 'scrolled' : ''}`}>
       <div className="header-logo" style={{ cursor: 'pointer' }} onClick={handleLogoClick}>
-        <img src={logoImg} alt="Xalt Studio" className="logo" />
+        <img src="/uploads/XALT LOGO - VERT (1).png" alt="Xalt Studio" className="logo" />
       </div>
       
       <nav className="nav-links">

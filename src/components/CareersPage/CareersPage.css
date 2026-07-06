@@ -444,16 +444,16 @@
   border: none;
   outline: none;
   font-family: var(--font-inter, sans-serif);
-  font-size: 0.95rem;
-  font-weight: 400;
-  color: #ffffff;
-  padding: 6px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #dddddd;
+  padding: 10px 0;
   width: 100%;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.2);
   font-weight: 400;
 }
 

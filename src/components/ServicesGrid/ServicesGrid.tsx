@@ -4,6 +4,8 @@ import imgFilms from '../../assets/images/image-galley/gallery-img-1.jpg';
 import imgCommercial from '../../assets/images/image-galley/gallery-img-3.jpg';
 import imgArvr from '../../assets/images/image-galley/gallery-img-5.jpg';
 
+import { API_BASE_URL } from '../../config';
+
 // Original images mapped by order — these never change
 const LOCAL_IMAGES: { [key: number]: string } = {
   0: imgFilms,
@@ -42,7 +44,7 @@ const ServicesGrid = () => {
   const [services, setServices] = useState<any[]>(DEFAULT_SERVICES);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/expertise')
+    fetch(`${API_BASE_URL}/expertise`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {

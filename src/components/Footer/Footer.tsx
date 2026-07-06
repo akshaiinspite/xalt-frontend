@@ -1,4 +1,3 @@
-import xaltLogo from '../../assets/images/logo/xalt-studios-logo.webp';
 import footerBanner from '../../assets/images/img/footer_banner_portal.png';
 import './Footer.css';
 
@@ -12,7 +11,7 @@ const Footer = () => {
       <div className="footer-content">
         {/* Left Column: Brand Logo + Contact Information */}
         <div className="footer-brand-col">
-          <img src={xaltLogo} alt="X.ALT Studios" className="footer-logo-img" />
+          <img src="/uploads/XALT LOGO - VERT (1).png" alt="X.ALT Studios" className="footer-logo-img" />
           <div className="footer-contact-info">
             <a href="mailto:info@xaltstudios.com" className="contact-link">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="contact-icon">

@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import './Showreel.css';
 import showreelVideo from '../../assets/video/show-reel/showreel.mp4';
+import { API_BASE_URL } from '../../config';
 
 const Showreel = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -8,7 +9,7 @@ const Showreel = () => {
   const [videoUrl, setVideoUrl] = useState(showreelVideo);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/reels')
+    fetch(`${API_BASE_URL}/reels`)
       .then(res => res.json())
       .then(data => {
         if (data && data.videoUrl) {

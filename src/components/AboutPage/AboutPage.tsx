@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './AboutPage.css';
+import { API_BASE_URL } from '../../config';
 
 // Import images
 import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
@@ -438,7 +439,7 @@ const AboutPage = () => {
   ]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/team-members')
+    fetch(`${API_BASE_URL}/team-members`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {

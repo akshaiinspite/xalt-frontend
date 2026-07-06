@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import emailjs from '@emailjs/browser';
 import './CareersPage.css';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../../config';
 
 // ----------------------------------------------------
 // THREE.JS PLEXUS BACKGROUND FOR CAREERS
@@ -169,7 +170,7 @@ const CareersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/jobs')
+    fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

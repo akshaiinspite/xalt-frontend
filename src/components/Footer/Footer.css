@@ -39,7 +39,7 @@
   max-width: 1200px;
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 5rem;
   gap: 4rem;
   position: relative;
@@ -54,7 +54,7 @@
 }
 
 .footer-logo-img {
-  height: 32px;
+  height: 120px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 0 8px rgba(225, 6, 0, 0.3));
@@ -96,7 +96,6 @@
   gap: 3rem;
   align-items: center;
   height: 100%;
-  padding-top: 0.5rem; /* Align vertically with logo top */
 }
 
 .footer-links a {

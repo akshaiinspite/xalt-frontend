@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import './ProjectsPage.css';
+import { API_BASE_URL } from '../../config';
 
 // Import images
 import commercialHero from '../../assets/images/services/commercial_landscape.png';
@@ -293,7 +294,7 @@ const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/portfolio')
+    fetch(`${API_BASE_URL}/portfolio`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {

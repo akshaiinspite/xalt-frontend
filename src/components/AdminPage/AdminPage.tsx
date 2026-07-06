@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AdminPage.css';
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../../config';
 
 interface Job {
   _id: string;
@@ -31,9 +32,6 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   onChange,
   acceptType
 }) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [dragActive, setDragActive] = useState(false);
   const [urlInput, setUrlInput] = useState(value || '');
 
   // Keep urlInput in sync when value changes externally
@@ -41,193 +39,80 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     setUrlInput(value || '');
   }, [value]);
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
+  const handleBlur = () => {
+    onChange(urlInput);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onChange(urlInput);
     }
   };
 
-  const uploadFile = (file: File) => {
-    if (!file) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const token = localStorage.getItem('xalt_admin_token');
-
-    // We use XMLHttpRequest to track upload progress
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:5000/api/upload', true);
-    if (token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    }
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress(percent);
-      }
-    };
-
-    xhr.onload = () => {
-      setIsUploading(false);
-      if (xhr.status === 200) {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          onChange(response.url);
-          toast.success('File uploaded successfully!');
-        } catch (error) {
-          toast.error('Failed to parse upload response.');
-        }
-      } else {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          toast.error(response.message || 'Upload failed.');
-        } catch (error) {
-          toast.error(`Upload failed with status ${xhr.status}`);
-        }
-      }
-    };
-
-    xhr.onerror = () => {
-      setIsUploading(false);
-      toast.error('Network error during file upload.');
-    };
-
-    xhr.send(formData);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      uploadFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      uploadFile(e.target.files[0]);
-    }
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleClear = () => {
+    setUrlInput('');
     onChange('');
   };
 
-  const hasValue = !!value;
-
   return (
-    <div className="premium-upload-widget" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {isUploading ? (
-        <div className="upload-progress-container">
-          <div className="upload-progress-text">
-            <span>Uploading file...</span>
-            <span>{uploadProgress}%</span>
-          </div>
-          <div className="upload-progress-bar-bg">
-            <div className="upload-progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
-          </div>
-        </div>
-      ) : hasValue ? (
-        <div className="upload-preview-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'stretch', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px' }}>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: 0, flex: 1 }}>
-              {isVideoUrl(value) ? (
-                <video className="upload-preview-media" src={getMediaUrl(value)} muted playsInline autoPlay loop style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }} />
-              ) : (
-                <img 
-                  className="upload-preview-media" 
-                  src={getMediaUrl(value)} 
-                  alt="Preview" 
-                  style={{ width: '50px', height: '35px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
-                  }} 
-                />
-              )}
-              <span className="upload-preview-name" style={{ fontSize: '0.75rem', fontWeight: 600, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', color: '#111827' }} title={value}>
-                {value.substring(value.lastIndexOf('/') + 1)}
-              </span>
-            </div>
-            <button type="button" className="upload-remove-btn" style={{ padding: '4px 8px', fontSize: '0.68rem', margin: 0 }} onClick={handleClear}>
-              Clear
-            </button>
-          </div>
-          
-          <div style={{ width: '100%' }}>
-            <input 
-              type="text" 
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              onBlur={() => onChange(urlInput)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onChange(urlInput); } }}
-              className="upload-cdn-url-input"
-              style={{ fontSize: '0.75rem', padding: '5px 8px', background: '#fff', border: '1px solid #d1d5db', borderRadius: '4px', width: '100%', color: '#374151', boxSizing: 'border-box', height: '32px' }}
-              placeholder="Direct Link / CDN URL"
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="upload-widget-empty-state" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <label 
-            className={`upload-dropzone ${dragActive ? 'dragging' : ''}`}
-            onDragEnter={handleDrag}
-            onDragOver={handleDrag}
-            onDragLeave={handleDrag}
-            onDrop={handleDrop}
+    <div className="cdn-link-widget" style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder={`Enter CDN ${acceptType === 'image' ? 'Image' : acceptType === 'video' ? 'Video' : 'Media'} URL...`}
+          value={urlInput}
+          onChange={(e) => setUrlInput(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          style={{ 
+            flex: 1, 
+            padding: '10px 14px', 
+            fontSize: '0.85rem', 
+            border: '1px solid #d1d5db', 
+            borderRadius: '4px', 
+            background: '#fff', 
+            color: '#1f2937', 
+            height: '42px',
+            boxSizing: 'border-box'
+          }}
+        />
+        {value && (
+          <button 
+            type="button" 
+            onClick={handleClear}
+            className="dashboard-btn secondary"
+            style={{ padding: '0 16px', height: '42px', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
-            <input 
-              type="file" 
-              style={{ display: 'none' }} 
-              onChange={handleChange}
-              accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'}
+            Clear
+          </button>
+        )}
+      </div>
+
+      {value && (
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '8px 12px' }}>
+          {isVideoUrl(value) ? (
+            <video 
+              src={getMediaUrl(value)} 
+              muted 
+              playsInline 
+              autoPlay 
+              loop 
+              style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }} 
             />
-            <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            <span className="upload-text">
-              <strong>Click to upload</strong> or drag & drop
-            </span>
-            <span className="upload-hint">
-              {acceptType === 'image' ? 'Supports JPEG, PNG, WEBP, SVG, GIF' : acceptType === 'video' ? 'Supports MP4, WEBM, MOV' : 'Images or Videos up to 100MB'}
-            </span>
-          </label>
-          
-          <div className="upload-cdn-link-section" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.05em' }}>— OR PASTE CDN / EXTERNAL MEDIA URL —</span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input 
-                type="text" 
-                placeholder="https://cdn.example.com/assets/media.mp4" 
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onChange(urlInput); } }}
-                style={{ flex: 1, padding: '6px 10px', fontSize: '0.8rem', border: '1px solid #d1d5db', borderRadius: '4px', background: '#fff', color: '#1f2937', height: '34px' }}
-              />
-              <button 
-                type="button" 
-                onClick={() => onChange(urlInput)}
-                className="dashboard-btn primary"
-                style={{ padding: '6px 12px', fontSize: '0.75rem', whiteSpace: 'nowrap', height: '34px', margin: 0 }}
-              >
-                Apply URL
-              </button>
-            </div>
-          </div>
+          ) : (
+            <img 
+              src={getMediaUrl(value)} 
+              alt="Preview" 
+              style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #d1d5db' }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+              }} 
+            />
+          )}
+          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }} title={value}>
+            Active URL: {value}
+          </span>
         </div>
       )}
     </div>
@@ -336,7 +221,7 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
     if (token) {
       // Validate token
-      fetch('http://localhost:5000/api/admin/verify', {
+      fetch(`${API_BASE_URL}/admin/verify`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => {
@@ -366,21 +251,21 @@ const AdminPage = () => {
 
   // --- Fetch API calls ---
   const fetchJobs = () => {
-    fetch('http://localhost:5000/api/jobs')
+    fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
       .then(data => setJobs(data))
       .catch(err => console.error('Error fetching jobs:', err));
   };
 
   const fetchPortfolio = () => {
-    fetch('http://localhost:5000/api/portfolio')
+    fetch(`${API_BASE_URL}/portfolio`)
       .then(res => res.json())
       .then(data => setPortfolio(data))
       .catch(err => console.error('Error fetching portfolio:', err));
   };
 
   const fetchReel = () => {
-    fetch('http://localhost:5000/api/reels')
+    fetch(`${API_BASE_URL}/reels`)
       .then(res => res.json())
       .then(data => {
         if (data) {
@@ -391,14 +276,14 @@ const AdminPage = () => {
   };
 
   const fetchExpertise = () => {
-    fetch('http://localhost:5000/api/expertise')
+    fetch(`${API_BASE_URL}/expertise`)
       .then(res => res.json())
       .then(data => setExpertiseItems(data))
       .catch(err => console.error('Error fetching expertise:', err));
   };
 
   const fetchTeamMembers = () => {
-    fetch('http://localhost:5000/api/team-members')
+    fetch(`${API_BASE_URL}/team-members`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -414,8 +299,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingExpertiseId 
-      ? `http://localhost:5000/api/expertise/${editingExpertiseId}` 
-      : 'http://localhost:5000/api/expertise';
+      ? `${API_BASE_URL}/expertise/${editingExpertiseId}` 
+      : `${API_BASE_URL}/expertise`;
     const method = editingExpertiseId ? 'PUT' : 'POST';
     
     fetch(url, {
@@ -478,7 +363,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently decommission this expertise item? This action will remove it from the live Homepage.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/expertise/${id}`, {
+        fetch(`${API_BASE_URL}/expertise/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -506,8 +391,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingTeamMemberId 
-      ? `http://localhost:5000/api/team-members/${editingTeamMemberId}` 
-      : 'http://localhost:5000/api/team-members';
+      ? `${API_BASE_URL}/team-members/${editingTeamMemberId}` 
+      : `${API_BASE_URL}/team-members`;
     const method = editingTeamMemberId ? 'PUT' : 'POST';
     
     fetch(url, {
@@ -571,7 +456,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently delete this team member? This action will remove them from the live About page.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/team-members/${id}`, {
+        fetch(`${API_BASE_URL}/team-members/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -604,7 +489,7 @@ const AdminPage = () => {
     setIsSubmitting(true);
     setLoginError('');
 
-    fetch('http://localhost:5000/api/admin/login', {
+    fetch(`${API_BASE_URL}/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -640,8 +525,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingJobId 
-      ? `http://localhost:5000/api/jobs/${editingJobId}` 
-      : 'http://localhost:5000/api/jobs';
+      ? `${API_BASE_URL}/jobs/${editingJobId}` 
+      : `${API_BASE_URL}/jobs`;
     const method = editingJobId ? 'PUT' : 'POST';
     
     fetch(url, {
@@ -696,7 +581,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently decommission this job opening? This action will remove it from the live Careers portal.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/jobs/${id}`, {
+        fetch(`${API_BASE_URL}/jobs/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -724,7 +609,7 @@ const AdminPage = () => {
     if (!editingCategory) return;
     const token = localStorage.getItem('xalt_admin_token');
 
-    fetch(`http://localhost:5000/api/portfolio/categories/${editingCategory.id}`, {
+    fetch(`${API_BASE_URL}/portfolio/categories/${editingCategory.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -757,8 +642,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingSubcategory._id 
-      ? `http://localhost:5000/api/portfolio/subcategories/${editingSubcategory._id}`
-      : 'http://localhost:5000/api/portfolio/subcategories';
+      ? `${API_BASE_URL}/portfolio/subcategories/${editingSubcategory._id}`
+      : `${API_BASE_URL}/portfolio/subcategories`;
     const method = editingSubcategory._id ? 'PUT' : 'POST';
 
     fetch(url, {
@@ -800,7 +685,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to delete this subcategory? This will also permanently purge all projects belonging to it.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/portfolio/subcategories/${id}`, {
+        fetch(`${API_BASE_URL}/portfolio/subcategories/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -826,8 +711,8 @@ const AdminPage = () => {
     const token = localStorage.getItem('xalt_admin_token');
 
     const url = editingProject._id 
-      ? `http://localhost:5000/api/projects/${editingProject._id}` 
-      : 'http://localhost:5000/api/projects';
+      ? `${API_BASE_URL}/projects/${editingProject._id}` 
+      : `${API_BASE_URL}/projects`;
     const method = editingProject._id ? 'PUT' : 'POST';
 
     fetch(url, {
@@ -872,7 +757,7 @@ const AdminPage = () => {
       message: 'Are you sure you want to permanently delete this project from the portfolio gallery?',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
-        fetch(`http://localhost:5000/api/projects/${id}`, {
+        fetch(`${API_BASE_URL}/projects/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
@@ -897,7 +782,7 @@ const AdminPage = () => {
     e.preventDefault();
     const token = localStorage.getItem('xalt_admin_token');
 
-    fetch('http://localhost:5000/api/reels', {
+    fetch(`${API_BASE_URL}/reels`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1334,28 +1219,14 @@ const AdminPage = () => {
                             rows={3}
                           />
                         </div>
-                        <div className="dashboard-form-group">
-                          <label>SECTOR HERO BANNER IMAGE</label>
-                          <FileUploadWidget 
-                            value={editingCategory.heroImage} 
-                            onChange={url => setEditingCategory({ ...editingCategory, heroImage: url })}
-                            acceptType="image"
-                          />
-                        </div>
                         <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
                           <button type="submit" className="dashboard-btn primary">Save Changes</button>
                           <button type="button" className="dashboard-btn secondary" onClick={() => setEditingCategory(null)}>Cancel</button>
                         </div>
                       </form>
                     ) : (
-                      <div className="category-overview-display" style={{ marginTop: '15px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <img src={getMediaUrl(cat.heroImage)} alt={cat.title} style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} onError={e => {
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop';
-                        }} />
-                        <div>
-                          <p style={{ margin: '0 0 5px 0', fontSize: '0.85rem', color: '#6b7280' }}><strong>Hero Image:</strong> {cat.heroImage}</p>
-                          <p style={{ margin: '0', fontSize: '0.9rem', color: '#374151', lineHeight: '1.4' }}>{cat.description}</p>
-                        </div>
+                      <div className="category-overview-display" style={{ marginTop: '15px' }}>
+                        <p style={{ margin: '0', fontSize: '0.9rem', color: '#374151', lineHeight: '1.4' }}>{cat.description}</p>
                       </div>
                     )}
                   </div>
