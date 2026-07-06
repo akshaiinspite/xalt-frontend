@@ -198,6 +198,7 @@ const CareersPage = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [careersFile, setCareersFile] = useState<File | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -330,18 +331,32 @@ const CareersPage = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.contactNumber || !careersFile) {
       setSubmitStatus('error');
-      setTimeout(() => setSubmitStatus('idle'), 3000);
+      setErrorMessage('Please complete all fields and attach CV before transmitting.');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage(null);
+      }, 3000);
       return;
     }
 
     setIsSubmitting(true);
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'your_service_id';
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CAREERS || 'your_careers_template_id';
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key';
+    const submissionData = new FormData();
+    submissionData.append('name', formData.name);
+    submissionData.append('email', formData.email);
+    submissionData.append('contactNumber', formData.contactNumber);
+    submissionData.append('job_title', selectedJob?.title || 'General Application');
+    submissionData.append('resume', careersFile);
 
-    emailjs.sendForm(serviceId, templateId, emailFormRef.current!, publicKey)
-      .then(() => {
+    fetch(`${API_BASE_URL}/contact/careers`, {
+      method: 'POST',
+      body: submissionData,
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || 'Server error occurred.');
+        }
         setIsSubmitting(false);
         setSubmitStatus('success');
         setFormData({ name: '', email: '', contactNumber: '' });
@@ -352,11 +367,13 @@ const CareersPage = () => {
         }, 3000);
       })
       .catch((err) => {
-        console.error('EmailJS Careers Error:', err);
+        console.error('Careers submission error:', err);
         setIsSubmitting(false);
         setSubmitStatus('error');
+        setErrorMessage(err.message || 'An error occurred while sending the email.');
         setTimeout(() => {
           setSubmitStatus('idle');
+          setErrorMessage(null);
         }, 5000);
       });
   };
@@ -607,7 +624,7 @@ const CareersPage = () => {
               
               {submitStatus === 'error' && (
                 <div className="submit-message error">
-                  <span>Please complete all fields and attach CV before transmitting.</span>
+                  <span>{errorMessage || 'Please complete all fields and attach CV before transmitting.'}</span>
                 </div>
               )}
 

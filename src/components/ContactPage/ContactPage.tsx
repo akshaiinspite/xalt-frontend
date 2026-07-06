@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import emailjs from '@emailjs/browser';
+import { API_BASE_URL } from '../../config';
 import './ContactPage.css';
 
 // ----------------------------------------------------
@@ -148,6 +149,7 @@ const ContactPage = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const formRef = useRef<HTMLDivElement>(null);
   const emailFormRef = useRef<HTMLFormElement>(null);
@@ -189,7 +191,11 @@ const ContactPage = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       setSubmitStatus('error');
-      setTimeout(() => setSubmitStatus('idle'), 3000);
+      setErrorMessage('Please fill in all required fields.');
+      setTimeout(() => {
+        setSubmitStatus('idle');
+        setErrorMessage(null);
+      }, 3000);
       return;
     }
 
@@ -199,7 +205,7 @@ const ContactPage = () => {
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT || 'your_contact_template_id';
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key';
 
-    emailjs.sendForm(serviceId, templateId, emailFormRef.current!, publicKey)
+    emailjs.sendForm(serviceId, templateId, emailFormRef.current!, { publicKey })
       .then(() => {
         setIsSubmitting(false);
         setSubmitStatus('success');
@@ -212,8 +218,10 @@ const ContactPage = () => {
         console.error('EmailJS Error:', err);
         setIsSubmitting(false);
         setSubmitStatus('error');
+        setErrorMessage(err?.text || err?.message || 'An error occurred while sending the email.');
         setTimeout(() => {
           setSubmitStatus('idle');
+          setErrorMessage(null);
         }, 5000);
       });
   };
@@ -388,7 +396,7 @@ const ContactPage = () => {
                 
                 {submitStatus === 'error' && (
                   <div className="submit-message error">
-                    <span>Please fill in all required fields.</span>
+                    <span>{errorMessage || 'Please fill in all required fields.'}</span>
                   </div>
                 )}
 
