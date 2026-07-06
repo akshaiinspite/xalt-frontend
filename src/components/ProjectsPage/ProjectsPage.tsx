@@ -274,11 +274,11 @@ const getMediaUrl = (url: string) => {
   // Convert legacy local paths that might be stored in the database to backend uploads
   if (url.startsWith('/src/assets/images/')) {
     const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `http://localhost:5000/uploads/${filename}`;
+    return `/uploads/${filename}`;
   }
   if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return `http://localhost:5000${cleanUrl}`;
+    return cleanUrl;
   }
   return url;
 };
