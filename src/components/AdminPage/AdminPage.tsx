@@ -458,6 +458,12 @@ const AdminPage = () => {
       link: item.link || '',
       order: item.order !== undefined ? item.order : 0
     });
+    setTimeout(() => {
+      const element = document.getElementById('expertise-form-container');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const cancelEditExpertise = () => {
@@ -561,8 +567,8 @@ const AdminPage = () => {
   const handleDeleteTeamMember = (id: string) => {
     setConfirmModal({
       isOpen: true,
-      title: 'Decommission Team Member Dossier',
-      message: 'Are you sure you want to permanently delete this team member dossier? This action will remove it from the live About page.',
+      title: 'Delete Team Member',
+      message: 'Are you sure you want to permanently delete this team member? This action will remove them from the live About page.',
       onConfirm: () => {
         const token = localStorage.getItem('xalt_admin_token');
         fetch(`http://localhost:5000/api/team-members/${id}`, {
@@ -577,7 +583,7 @@ const AdminPage = () => {
           if (editingTeamMemberId === id) {
             cancelEditTeamMember();
           }
-          toast.success('Team member dossier successfully deleted.');
+          toast.success('Team member successfully deleted.');
           fetchTeamMembers();
         })
         .catch(err => {
@@ -1067,7 +1073,7 @@ const AdminPage = () => {
             <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <span>Teams Manager</span>
+            <span>Teams Menu</span>
           </button>
         </nav>
 
@@ -1103,7 +1109,7 @@ const AdminPage = () => {
                 ? 'Projects Portfolio' 
                 : activeTab === 'home' 
                 ? 'Home Menu' 
-                : 'Teams Manager'}
+                : 'Teams Menu'}
             </h1>
             <p className="workspace-breadcrumbs">
               Console / {
@@ -1113,7 +1119,7 @@ const AdminPage = () => {
                   ? 'Portfolio Manager' 
                   : activeTab === 'home' 
                   ? 'Home Manager' 
-                  : 'Teams Manager'
+                  : 'Teams Menu'
               }
             </p>
           </div>
@@ -1749,10 +1755,10 @@ const AdminPage = () => {
               </div>
 
               {/* Add/Edit Expertise Card */}
-              <div className="dashboard-card">
+              <div className="dashboard-card" id="expertise-form-container">
                 <div className="dashboard-card-header">
-                  <h3>{editingExpertiseId ? 'Edit Expertise Item' : 'Create Expertise Item'}</h3>
-                  <p>{editingExpertiseId ? 'Modify details for the selected homepage item.' : 'Initialize and publish a new homepage item.'}</p>
+                  <h3>{editingExpertiseId ? 'Edit Expertise Item' : 'Add Expertise Item'}</h3>
+                  <p>{editingExpertiseId ? 'Modify details for the selected homepage item.' : 'Enter details for the new homepage item.'}</p>
                 </div>
 
                 {expertiseFeedback.message && (
@@ -1795,28 +1801,6 @@ const AdminPage = () => {
                     />
                   </div>
 
-                  <div className="dashboard-form-row">
-                    <div className="dashboard-form-group">
-                      <label>LINK TARGET (HASH OR PATH)</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. #projects/films"
-                        value={newExpertise.link}
-                        onChange={(e) => setNewExpertise({ ...newExpertise, link: e.target.value })}
-                      />
-                    </div>
-                    <div className="dashboard-form-group">
-                      <label>DISPLAY ORDER</label>
-                      <input 
-                        type="number" 
-                        placeholder="0"
-                        value={newExpertise.order}
-                        onChange={(e) => setNewExpertise({ ...newExpertise, order: parseInt(e.target.value) || 0 })}
-                        required
-                      />
-                    </div>
-                  </div>
-
                   <div className="dashboard-form-group">
                     <label>IMAGE</label>
                     <FileUploadWidget 
@@ -1828,11 +1812,11 @@ const AdminPage = () => {
 
                   <div className="dashboard-form-actions">
                     <button type="submit" className="dashboard-btn primary">
-                      {editingExpertiseId ? 'Save Changes' : 'Initialize Expertise Item'}
+                      {editingExpertiseId ? 'Save Changes' : 'Add Expertise Item'}
                     </button>
                     {editingExpertiseId && (
                       <button type="button" className="dashboard-btn secondary" onClick={cancelEditExpertise}>
-                        Cancel Edit
+                        Cancel
                       </button>
                     )}
                   </div>
@@ -1841,9 +1825,27 @@ const AdminPage = () => {
 
               {/* Active Expertise List */}
               <div className="dashboard-card">
-                <div className="dashboard-card-header">
-                  <h3>Homepage Expertise Items ({expertiseItems.length})</h3>
-                  <p>Currently active sections in "What We Do" and "OUR EXPERTISE" grids on the homepage.</p>
+                <div className="dashboard-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3>Homepage Expertise Items ({expertiseItems.length})</h3>
+                    <p>Currently active sections in "What We Do" and "OUR EXPERTISE" grids on the homepage.</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="dashboard-btn primary"
+                    style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
+                    onClick={() => {
+                      cancelEditExpertise();
+                      setTimeout(() => {
+                        const element = document.getElementById('expertise-form-container');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 100);
+                    }}
+                  >
+                    + Add Expertise Item
+                  </button>
                 </div>
 
                 <div className="dashboard-list-scroller">
@@ -1869,9 +1871,6 @@ const AdminPage = () => {
                           </div>
                         </div>
                         <p className="list-item-description" style={{ marginTop: '8px', fontSize: '0.8rem', color: '#6b7280' }}>{item.description}</p>
-                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '4px' }}>
-                          <span>Link: {item.link || 'None'} | Order: {item.order}</span>
-                        </div>
                         
                         <div className="list-item-actions" style={{ marginTop: '8px' }}>
                           <button 
@@ -1902,8 +1901,8 @@ const AdminPage = () => {
               {/* Form Card */}
               <div className="dashboard-card" id="team-form-container">
                 <div className="dashboard-card-header">
-                  <h3>{editingTeamMemberId ? 'Modify Personnel Dossier' : 'Commission Personnel Dossier'}</h3>
-                  <p>{editingTeamMemberId ? 'Adjust biographical logs and credentials.' : 'Initialize credentials and profile log for a new team member.'}</p>
+                  <h3>{editingTeamMemberId ? 'Edit Team Member' : 'Add Team Member'}</h3>
+                  <p>{editingTeamMemberId ? 'Update team member details and profile image.' : 'Enter details for the new team member.'}</p>
                 </div>
 
                 {teamFeedback.message && (
@@ -1925,7 +1924,7 @@ const AdminPage = () => {
                   </div>
 
                   <div className="dashboard-form-group">
-                    <label>PERSONNEL PHOTO / PORTRAIT</label>
+                    <label>PROFILE PHOTO</label>
                     <FileUploadWidget 
                       value={newTeamMember.image}
                       onChange={(url) => setNewTeamMember({ ...newTeamMember, image: url })}
@@ -1949,10 +1948,10 @@ const AdminPage = () => {
                   </div>
 
                   <div className="dashboard-form-group">
-                    <label>DOSSIER BIO SUMMARY</label>
+                    <label>BIO SUMMARY</label>
                     <textarea 
                       rows={5}
-                      placeholder="Log biographical profile..."
+                      placeholder="Enter team member bio details..."
                       value={newTeamMember.bio}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, bio: e.target.value })}
                       required
@@ -1961,11 +1960,11 @@ const AdminPage = () => {
 
                   <div className="dashboard-form-actions">
                     <button type="submit" className="dashboard-btn primary">
-                      {editingTeamMemberId ? 'Save Changes' : 'Publish Dossier'}
+                      {editingTeamMemberId ? 'Save Changes' : 'Add Team Member'}
                     </button>
                     {editingTeamMemberId && (
                       <button type="button" className="dashboard-btn secondary" onClick={cancelEditTeamMember}>
-                        Cancel Edit
+                        Cancel
                       </button>
                     )}
                   </div>
@@ -1974,15 +1973,33 @@ const AdminPage = () => {
 
               {/* List Card */}
               <div className="dashboard-card">
-                <div className="dashboard-card-header">
-                  <h3>Active Personnel Records ({teamMembers.length})</h3>
-                  <p>Current team dossiers displayed on the active About page.</p>
+                <div className="dashboard-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3>Active Team Members ({teamMembers.length})</h3>
+                    <p>Current team members displayed on the About page.</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="dashboard-btn primary"
+                    style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
+                    onClick={() => {
+                      cancelEditTeamMember();
+                      setTimeout(() => {
+                        const element = document.getElementById('team-form-container');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 100);
+                    }}
+                  >
+                    + Add Team Member
+                  </button>
                 </div>
 
                 <div className="dashboard-list-scroller">
                   {teamMembers.length === 0 ? (
                     <div className="dashboard-empty-state">
-                      <span>No personnel logs found.</span>
+                      <span>No team members found.</span>
                     </div>
                   ) : (
                     teamMembers.map((member) => (
