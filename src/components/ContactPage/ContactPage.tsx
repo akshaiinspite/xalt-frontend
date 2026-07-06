@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import emailjs from '@emailjs/browser';
-import { API_BASE_URL } from '../../config';
 import './ContactPage.css';
 
 // ----------------------------------------------------

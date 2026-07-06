@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import emailjs from '@emailjs/browser';
 import './CareersPage.css';
 import { toast } from 'react-toastify';
 import { API_BASE_URL } from '../../config';
