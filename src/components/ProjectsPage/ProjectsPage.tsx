@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import './ProjectsPage.css';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL, getMediaUrl } from '../../config';
 
 // Import images
 import commercialHero from '../../assets/images/services/commercial_landscape.png';
@@ -266,23 +266,6 @@ const CATEGORIES_DATA: CategorySection[] = [
     ]
   }
 ];
-
-const getMediaUrl = (url: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  // Convert legacy local paths that might be stored in the database to backend uploads
-  if (url.startsWith('/src/assets/images/')) {
-    const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `/uploads/${filename}`;
-  }
-  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
-    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return cleanUrl;
-  }
-  return url;
-};
 
 const ProjectsPage = () => {
   const [categoriesData, setCategoriesData] = useState<CategorySection[]>(CATEGORIES_DATA);

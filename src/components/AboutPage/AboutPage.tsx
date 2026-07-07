@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './AboutPage.css';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL, getMediaUrl } from '../../config';
 
 // Import images
 import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
@@ -168,22 +168,6 @@ interface TeamMember {
   bio?: string;
   image?: string;
 }
-
-const getMediaUrl = (url: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  if (url.startsWith('/src/assets/images/')) {
-    const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `/uploads/${filename}`;
-  }
-  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
-    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return cleanUrl;
-  }
-  return url;
-};
 
 interface TeamCardProps {
   member: TeamMember;

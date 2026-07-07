@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AdminPage.css';
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 import { toast } from 'react-toastify';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL, getMediaUrl } from '../../config';
 
 interface Job {
   _id: string;
@@ -117,23 +117,6 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
       )}
     </div>
   );
-};
-
-const getMediaUrl = (url: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  // Convert legacy local paths that might be stored in the database to backend uploads
-  if (url.startsWith('/src/assets/images/')) {
-    const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `/uploads/${filename}`;
-  }
-  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
-    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return cleanUrl;
-  }
-  return url;
 };
 
 const AdminPage = () => {

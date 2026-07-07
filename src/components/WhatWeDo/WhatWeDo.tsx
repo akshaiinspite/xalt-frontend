@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
 import { AnimatedUnderline } from '../AnimatedUnderline/AnimatedUnderline';
 import './WhatWeDo.css';
-import { API_BASE_URL } from '../../config';
+import { API_BASE_URL, getMediaUrl } from '../../config';
 
 import imgCommercial from '../../assets/images/services/commercial_landscape.png';
 import imgFilms from '../../assets/images/services/films_landscape.png';
@@ -32,22 +32,6 @@ const DEFAULT_SERVICES = [
     link: '#projects/immersive'
   }
 ];
-
-const getMediaUrl = (url: string) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
-  }
-  if (url.startsWith('/src/assets/images/')) {
-    const filename = url.substring(url.lastIndexOf('/') + 1);
-    return `/uploads/${filename}`;
-  }
-  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
-    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    return cleanUrl;
-  }
-  return url;
-};
 
 const AnimatedScrollCard = ({ 
   service, 
