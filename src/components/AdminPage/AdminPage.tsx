@@ -216,6 +216,21 @@ const AdminPage = () => {
     onConfirm: () => {}
   });
 
+  const scrollToForm = (formId: string) => {
+    setTimeout(() => {
+      const element = document.getElementById(formId);
+      if (element) {
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          lenis.scrollTo(element, { duration: 1.0, offset: -20 });
+        } else {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 100);
+  };
+
+
   // Check login state on mount
   useEffect(() => {
     const token = localStorage.getItem('xalt_admin_token');
@@ -343,12 +358,7 @@ const AdminPage = () => {
       link: item.link || '',
       order: item.order !== undefined ? item.order : 0
     });
-    setTimeout(() => {
-      const element = document.getElementById('expertise-form-container');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    scrollToForm('expertise-form-container');
   };
 
   const cancelEditExpertise = () => {
@@ -436,12 +446,7 @@ const AdminPage = () => {
       image: member.image || '',
       order: member.order !== undefined ? member.order : 0
     });
-    setTimeout(() => {
-      const element = document.getElementById('team-form-container');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    scrollToForm('team-form-container');
   };
 
   const cancelEditTeamMember = () => {
@@ -567,6 +572,7 @@ const AdminPage = () => {
       location: job.location,
       description: job.description
     });
+    scrollToForm('career-form-container');
   };
 
   const cancelEditJob = () => {
@@ -1022,7 +1028,7 @@ const AdminPage = () => {
             <div className="dashboard-grid">
               
               {/* Add/Edit Career Form */}
-              <div className="dashboard-card">
+              <div className="dashboard-card" id="career-form-container">
                 <div className="dashboard-card-header">
                   <h3>{editingJobId ? 'Edit Vacancy Node' : 'Create Vacancy Node'}</h3>
                   <p>{editingJobId ? 'Modify details for the selected vacancy opening.' : 'Initialize and broadcast a new vacancy vacancy.'}</p>
@@ -1707,12 +1713,7 @@ const AdminPage = () => {
                     style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
                     onClick={() => {
                       cancelEditExpertise();
-                      setTimeout(() => {
-                        const element = document.getElementById('expertise-form-container');
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 100);
+                      scrollToForm('expertise-form-container');
                     }}
                   >
                     + Add Expertise Item
@@ -1767,7 +1768,7 @@ const AdminPage = () => {
           )}
 
           {activeTab === 'team' && (
-            <div className="dashboard-grid-two-col animate-fade-in">
+            <div className="dashboard-grid animate-fade-in">
               
               {/* Form Card */}
               <div className="dashboard-card" id="team-form-container">
@@ -1790,6 +1791,17 @@ const AdminPage = () => {
                       placeholder="e.g. Alex Mercer"
                       value={newTeamMember.name}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>ROLE / DESIGNATION</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Founder / CEO"
+                      value={newTeamMember.role}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
                       required
                     />
                   </div>
@@ -1855,12 +1867,7 @@ const AdminPage = () => {
                     style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
                     onClick={() => {
                       cancelEditTeamMember();
-                      setTimeout(() => {
-                        const element = document.getElementById('team-form-container');
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 100);
+                      scrollToForm('team-form-container');
                     }}
                   >
                     + Add Team Member
@@ -1910,6 +1917,7 @@ const AdminPage = () => {
                           )}
                           <div>
                             <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{member.name}</span>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--color-primary, #e10600)', fontWeight: 600, display: 'block', margin: '2px 0' }}>{member.role || 'No Role Assigned'}</span>
                             <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
                               {member.department ? member.department.replace(/_/g, ' ') : 'CREATIVE 3D LAB'}
                             </span>

@@ -292,6 +292,20 @@ const ProjectsPage = () => {
   
   // viewMode controls: 'board' (Evidence Board) vs 'gallery' (Detailed New Page)
   const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
+  const [selectedProjectNode, setSelectedProjectNode] = useState<GalleryItem | null>(null);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedProjectNode(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/portfolio`)
@@ -633,6 +647,7 @@ const ProjectsPage = () => {
               <div 
                 key={idx} 
                 className="gallery-sharp-slot"
+                onClick={() => setSelectedProjectNode(item)}
               >
                 {/* Cyber Corner Brackets */}
                 <div className="slot-corners">
@@ -685,6 +700,64 @@ const ProjectsPage = () => {
 
 
 
+        </div>
+      )}
+
+      {/* Lightbox / Video Player Modal */}
+      {selectedProjectNode && (
+        <div className="project-lightbox-overlay" onClick={() => setSelectedProjectNode(null)}>
+          <div className="project-lightbox-card" onClick={(e) => e.stopPropagation()}>
+            {/* Close Button */}
+            <button className="lightbox-close-btn" onClick={() => setSelectedProjectNode(null)}>
+              [ CLOSE FILE ] ✕
+            </button>
+
+            {/* Media Display Area */}
+            <div className="lightbox-media-container">
+              {selectedProjectNode.video ? (
+                <video 
+                  src={getMediaUrl(selectedProjectNode.video)} 
+                  controls 
+                  autoPlay 
+                  className="lightbox-video" 
+                />
+              ) : (
+                <img 
+                  src={getMediaUrl(selectedProjectNode.image)} 
+                  alt={selectedProjectNode.title} 
+                  className="lightbox-image" 
+                />
+              )}
+            </div>
+
+            {/* HUD / Telemetry Details */}
+            <div className="lightbox-details-panel">
+              <div className="lightbox-details-corners">
+                <span className="corner tl"></span>
+                <span className="corner tr"></span>
+                <span className="corner bl"></span>
+                <span className="corner br"></span>
+              </div>
+              <div className="details-header">
+                <span className="details-tag">// SECURITY INTEL DECRYPTED</span>
+                <span className="details-status">SYSTEM_PLAYBACK_ACTIVE</span>
+              </div>
+              <div className="details-row">
+                <div className="details-item">
+                  <span className="details-label">PROJECT:</span>
+                  <span className="details-value">{selectedProjectNode.title}</span>
+                </div>
+                <div className="details-item">
+                  <span className="details-label">TYPE:</span>
+                  <span className="details-value">{selectedProjectNode.tag}</span>
+                </div>
+                <div className="details-item">
+                  <span className="details-label">CODE:</span>
+                  <span className="details-value text-red">{selectedProjectNode.code}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
