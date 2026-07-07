@@ -125,6 +125,7 @@ const AdminPage = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dbStatus, setDbStatus] = useState<string>('Checking...');
 
   // Dashboard Tabs: 'careers' | 'projects' | 'home' | 'team'
   const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home' | 'team'>('careers');
@@ -214,8 +215,22 @@ const AdminPage = () => {
   };
 
 
+  const fetchDbStatus = () => {
+    fetch(`${API_BASE_URL}/admin/status`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.database) {
+          setDbStatus(data.database);
+        } else {
+          setDbStatus('In-Memory Fallback');
+        }
+      })
+      .catch(() => setDbStatus('Offline'));
+  };
+
   // Check login state on mount
   useEffect(() => {
+    fetchDbStatus();
     const token = localStorage.getItem('xalt_admin_token');
     if (token) {
       // Validate token
@@ -239,6 +254,7 @@ const AdminPage = () => {
   // Fetch Dashboard data once logged in
   useEffect(() => {
     if (isLoggedIn) {
+      fetchDbStatus();
       fetchJobs();
       fetchPortfolio();
       fetchReel();
@@ -1006,8 +1022,16 @@ const AdminPage = () => {
           </div>
 
           <div className="workspace-status-badge">
-            <span className="status-dot green"></span>
-            <span className="status-text">Server Sync Online (In-Memory Fallback)</span>
+            <span className={`status-dot ${dbStatus === 'MongoDB' ? 'green' : dbStatus === 'Offline' ? 'red' : 'orange'}`}></span>
+            <span className="status-text">
+              {dbStatus === 'MongoDB' 
+                ? 'Server Sync Online (MongoDB Connected)' 
+                : dbStatus === 'In-Memory Fallback'
+                ? 'Server Sync Online (In-Memory Fallback)'
+                : dbStatus === 'Offline'
+                ? 'Server Offline'
+                : 'Checking Server Sync...'}
+            </span>
           </div>
         </header>
 
