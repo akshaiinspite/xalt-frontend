@@ -1367,6 +1367,42 @@
     max-width: 340px;
     height: 480px;
   }
+
+  .team-card-new.clicked {
+    width: 100% !important;
+    max-width: 360px !important;
+    height: auto !important;
+    min-height: 520px;
+  }
+
+  .team-card-new.clicked .card-inner-new {
+    height: auto !important;
+    padding-bottom: 20px;
+  }
+
+  .team-card-new.clicked .evidence-card-columns {
+    flex-direction: column !important;
+    height: auto !important;
+    gap: 16px !important;
+  }
+
+  .team-card-new.clicked .evidence-left-panel {
+    width: 100% !important;
+  }
+
+  .team-card-new.clicked .evidence-right-panel {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    padding-left: 0 !important;
+    padding-top: 16px !important;
+    opacity: 1 !important;
+  }
+
+  .evidence-side-vertical-right,
+  .evidence-side-vertical-left {
+    display: none !important;
+  }
 }
 
 /* ----------------------------------------------------
