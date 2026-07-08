@@ -267,23 +267,47 @@ const AdminPage = () => {
   const fetchJobs = () => {
     fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
-      .then(data => setJobs(data))
-      .catch(err => console.error('Error fetching jobs:', err));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setJobs(data);
+        } else {
+          setJobs([]);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching jobs:', err);
+        setJobs([]);
+      });
   };
 
   const fetchPortfolio = () => {
     fetch(`${API_BASE_URL}/portfolio`)
       .then(res => res.json())
-      .then(data => setPortfolio(data))
-      .catch(err => console.error('Error fetching portfolio:', err));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setPortfolio(data);
+        } else {
+          setPortfolio([]);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching portfolio:', err);
+        setPortfolio([]);
+      });
   };
 
   const fetchReel = () => {
     fetch(`${API_BASE_URL}/reels`)
       .then(res => res.json())
       .then(data => {
-        if (data) {
-          setReel({ title: data.title, videoUrl: data.videoUrl });
+        if (data && typeof data === 'object') {
+          const item = Array.isArray(data) ? data[0] : data;
+          if (item) {
+            setReel({ 
+              title: item.title || 'X.ALT Showreel', 
+              videoUrl: item.videoUrl || '/src/assets/videos/showreel.mp4' 
+            });
+          }
         }
       })
       .catch(err => console.error('Error fetching showreel:', err));
@@ -292,8 +316,17 @@ const AdminPage = () => {
   const fetchExpertise = () => {
     fetch(`${API_BASE_URL}/expertise`)
       .then(res => res.json())
-      .then(data => setExpertiseItems(data))
-      .catch(err => console.error('Error fetching expertise:', err));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setExpertiseItems(data);
+        } else {
+          setExpertiseItems([]);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching expertise:', err);
+        setExpertiseItems([]);
+      });
   };
 
   const fetchTeamMembers = () => {
