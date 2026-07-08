@@ -182,6 +182,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isClicked) return;
     const card = cardRef.current;
     if (!card) return;
 
@@ -192,33 +193,52 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
     const xc = rect.width / 2;
     const yc = rect.height / 2;
 
-    const angleX = -(y - yc) / 16;
-    const angleY = (x - xc) / 16;
+    const angleX = -(y - yc) / 14;
+    const angleY = (x - xc) / 14;
 
     setCoords({ x: angleY, y: angleX });
+
+    const px = (x / rect.width) * 100;
+    const py = (y / rect.height) * 100;
+    card.style.setProperty('--x', `${px}%`);
+    card.style.setProperty('--y', `${py}%`);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setCoords({ x: 0, y: 0 });
+    if (!isClicked) {
+      setCoords({ x: 0, y: 0 });
+    }
   };
 
   const isActive = isHovered || isClicked;
 
   const cardStyle = {
-    transform: isActive
-      ? `perspective(1000px) rotateX(${coords.y}deg) rotateY(${coords.x}deg) scale3d(1.02, 1.02, 1.02)`
+    background: member.gradient,
+    transform: isClicked
+      ? 'perspective(1000px) scale3d(1.05, 1.05, 1.05) translateZ(30px)'
+      : isHovered
+      ? `perspective(1000px) rotateX(${coords.y}deg) rotateY(${coords.x}deg) scale3d(1.03, 1.03, 1.03)`
       : 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
-    zIndex: isActive ? 10 : 2,
-    transition: isHovered ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+    zIndex: isClicked ? 99 : isHovered ? 20 : 2,
+    transition: isHovered && !isClicked ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease',
     filter: isActive ? 'grayscale(0%)' : 'grayscale(100%)',
-    borderColor: isActive ? 'rgba(225, 6, 0, 0.35)' : 'rgba(255, 255, 255, 0.08)',
+  };
+
+  const idNumber = String(index + 1).padStart(2, '0');
+
+  const getDepartment = () => {
+    return member.department || 'CREATIVE_3D_LAB';
+  };
+
+  const getDossierBio = () => {
+    return member.bio || 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.';
   };
 
   return (
     <div
       ref={cardRef}
-      className={`team-card-new ${isActive ? 'active' : ''}`}
+      className={`team-card-new ${isHovered ? 'hovered' : ''} ${isClicked ? 'clicked' : ''}`}
       style={cardStyle}
       data-index={index}
       onMouseMove={handleMouseMove}
@@ -227,71 +247,141 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
       onClick={onCardClick}
     >
       <div className="card-shine" />
+      
+      {/* Evidence Top HUD Header */}
+      <div className="evidence-card-top-hud">
+        <span className="hud-corner-bracket bracket-tl">[</span>
+        <span className="hud-status-text">
+          {isClicked ? 'SECURE_DOSSIER // DECRYPTED' : 'ENCRYPTED_FILE // RESTRICTED'}
+        </span>
+        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
+        <span className="hud-corner-bracket bracket-tr">]</span>
+      </div>
 
-      <div className="card-inner-new" style={{ padding: '0px', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        
-        {/* Square/Rectangle Avatar container covering the top section */}
-        <div className="card-avatar-container-square" style={{ 
-          width: '100%', 
-          height: '370px', 
-          overflow: 'hidden', 
-          position: 'relative',
-          background: '#0a0a0c'
-        }}>
-          {member.image ? (
-            <img 
-              src={getMediaUrl(member.image)} 
-              alt={member.name} 
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'cover', 
-                transition: 'transform 0.6s ease',
-                transform: isHovered ? 'scale(1.04)' : 'scale(1)'
-              }} 
-            />
-          ) : (
-            <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.1)' }}>
-              <svg viewBox="0 0 24 24" style={{ width: '64px', height: '64px' }} fill="none" stroke="currentColor" strokeWidth="0.8">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
+      <div className="card-inner-new">
+        {/* Active close mark */}
+        {isClicked && (
+          <div className="card-close-indicator">
+            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="3" fill="none">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+        )}
+
+        <div className="evidence-card-columns">
+          
+          {/* LEFT PANEL: Avatar, Name and Basic Info */}
+          <div className="evidence-left-panel">
+            
+            {/* Side HUD Rotated monospaces */}
+            <div className="evidence-side-vertical-right">
+              X.ALT INTEL // FILE_{idNumber}
             </div>
-          )}
+            <div className="evidence-side-vertical-left">
+              · · · · · · · · · · · ·
+            </div>
+
+            {/* Square/Rectangle Avatar container covering 60% of vertical height */}
+            <div className="card-avatar-container" style={{ 
+              position: 'relative', 
+              overflow: 'hidden',
+              borderRadius: '4px',
+              height: '260px',
+              width: '100%',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: '#050507',
+              marginBottom: '1.2rem'
+            }}>
+              <div className="avatar-scanlines"></div>
+              
+              <div style={{
+                position: 'absolute',
+                top: 8,
+                left: 8,
+                bottom: 8,
+                right: 8,
+                border: '1px solid rgba(225, 6, 0, 0.15)',
+                pointerEvents: 'none',
+                zIndex: 3
+              }}></div>
+
+              {member.image ? (
+                <img 
+                  src={getMediaUrl(member.image)} 
+                  alt={member.name} 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover', 
+                    borderRadius: '2px',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 2
+                  }} 
+                />
+              ) : (
+                <svg viewBox="0 0 24 24" className="avatar-placeholder-svg" fill="none" stroke="currentColor" strokeWidth="0.8">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              )}
+            </div>
+
+            <div className="evidence-card-basic-details" style={{ width: '100%', textAlign: 'center' }}>
+              <div className="evidence-index-label" style={{ 
+                fontFamily: 'Share Tech Mono, monospace', 
+                fontSize: '0.62rem', 
+                color: 'rgba(255, 255, 255, 0.4)', 
+                letterSpacing: '0.08em', 
+                textTransform: 'uppercase' 
+              }}>
+                EMP NO // FILE_{idNumber}
+              </div>
+              <h3 className="team-member-name" style={{ 
+                color: '#e10600', 
+                margin: '6px 0 2px 0', 
+                fontSize: '1.15rem', 
+                fontWeight: 700, 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.02em' 
+              }}>{member.name}</h3>
+              <p className="team-member-role" style={{ 
+                margin: 0, 
+                fontSize: '0.72rem', 
+                color: 'rgba(255, 255, 255, 0.65)', 
+                letterSpacing: '0.05em' 
+              }}>{member.role}</p>
+            </div>
+
+          </div>
+
+          {/* RIGHT PANEL: Dossier Details (Slides open when clicked) */}
+          <div className="evidence-right-panel">
+            <div className="dossier-panel-header">
+              <span className="dossier-tag">RESTRICTED DOSSIER // FILE_{idNumber}</span>
+              <span className="dossier-status-dot"></span>
+            </div>
+            
+            <div className="dossier-bio-section">
+              <h4 className="dossier-subheading">DEPARTMENT</h4>
+              <p className="dossier-dept-text" style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '0.75rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                {getDepartment().replace(/_/g, ' ')}
+              </p>
+            </div>
+
+            <div className="dossier-bio-section" style={{ marginTop: '8px' }}>
+              <h4 className="dossier-subheading">SUMMARY PROFILE</h4>
+              <p className="dossier-bio-text">{getDossierBio()}</p>
+            </div>
+          </div>
+
         </div>
 
-        {/* Info panel - containing name in red and role below */}
-        <div className="team-member-details-clean" style={{ 
-          padding: '24px 20px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          flexGrow: 1,
-          background: '#0a0a0c',
-          width: '100%',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)'
-        }}>
-          <h3 className="team-member-name-red" style={{ 
-            margin: '0 0 6px 0', 
-            fontSize: '1.2rem', 
-            fontWeight: 700, 
-            color: '#e10600', 
-            letterSpacing: '0.03em',
-            textTransform: 'uppercase'
-          }}>
-            {member.name}
-          </h3>
-          <p className="team-member-role-gray" style={{ 
-            margin: 0, 
-            fontSize: '0.75rem', 
-            color: 'rgba(255, 255, 255, 0.55)', 
-            fontWeight: 500,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>
-            {member.role}
-          </p>
+        {/* Action Button at the bottom */}
+        <div className="evidence-action-btn">
+          {isClicked ? '[ DISMISS DOSSIER ]' : '[ OPEN DATA FILE ]'}
         </div>
 
       </div>
