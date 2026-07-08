@@ -227,3 +227,48 @@ textarea:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
   caret-color: #ffffff;
 }
+
+/* --- Background Tech Diagram Overlay --- */
+.bg-diagram-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  overflow: hidden;
+  opacity: 0.15; /* subtle light opacity matching design */
+}
+
+.bg-diagram-svg {
+  width: 90%;
+  max-width: 1200px;
+  height: auto;
+  transform: scale(1.1);
+  transform-origin: top center;
+}
+
+.diagram-rotate-clockwise {
+  transform-origin: 500px 500px;
+  animation: rotateCW 180s linear infinite;
+}
+
+.diagram-rotate-counter {
+  transform-origin: 500px 500px;
+  animation: rotateCCW 240s linear infinite;
+}
+
+@keyframes rotateCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotateCCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}

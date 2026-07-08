@@ -771,7 +771,9 @@ const AdminPage = () => {
         subcategory: editingProject.subcategoryTitle,
         title: editingProject.title,
         tag: editingProject.tag,
-        code: editingProject.code,
+        year: editingProject.year || editingProject.code,
+        code: editingProject.code || editingProject.year,
+        client: editingProject.client || '',
         image: editingProject.image,
         video: editingProject.video || ''
       })
@@ -1437,7 +1439,7 @@ const AdminPage = () => {
                                 className="dashboard-btn primary"
                                 style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                 onClick={() => {
-                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', code: '', image: '', video: '' });
+                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', year: '', code: '', client: '', image: '', video: '' });
                                   setIsAddingProject(true);
                                 }}
                               >
@@ -1474,12 +1476,23 @@ const AdminPage = () => {
                                       />
                                     </div>
                                     <div className="dashboard-form-group">
-                                      <label>PROJECT CODE / SKU</label>
+                                      <label>PROJECT YEAR</label>
                                       <input 
                                         type="text" 
-                                        placeholder="e.g. FILM_CH_02" 
-                                        value={editingProject.code} 
-                                        onChange={e => setEditingProject({ ...editingProject, code: e.target.value })}
+                                        placeholder="e.g. 2026" 
+                                        value={editingProject.year || editingProject.code || ''} 
+                                        onChange={e => setEditingProject({ ...editingProject, year: e.target.value, code: e.target.value })}
+                                        style={{ height: '38px', fontSize: '0.85rem' }}
+                                        required 
+                                      />
+                                    </div>
+                                    <div className="dashboard-form-group">
+                                      <label>CLIENT</label>
+                                      <input 
+                                        type="text" 
+                                        placeholder="e.g. Chronos Inc." 
+                                        value={editingProject.client || ''} 
+                                        onChange={e => setEditingProject({ ...editingProject, client: e.target.value })}
                                         style={{ height: '38px', fontSize: '0.85rem' }}
                                         required 
                                       />
@@ -1514,7 +1527,7 @@ const AdminPage = () => {
                             {/* Projects Grid List */}
                             <div className="subcategory-projects-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' }}>
                               {sub.galleryItems && sub.galleryItems.map((proj: any) => (
-                                <div key={proj._id || proj.code} className="project-grid-item" style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px' }}>
+                                <div key={proj._id || proj.year || proj.code} className="project-grid-item" style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px' }}>
                                   {editingProject && editingProject._id === proj._id ? (
                                     <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '10px' }}>
                                       <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
@@ -1538,11 +1551,21 @@ const AdminPage = () => {
                                         />
                                       </div>
                                       <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
-                                        <label style={{ fontSize: '0.62rem' }}>CODE</label>
+                                        <label style={{ fontSize: '0.62rem' }}>YEAR</label>
                                         <input 
                                           type="text" 
-                                          value={editingProject.code} 
-                                          onChange={e => setEditingProject({ ...editingProject, code: e.target.value })}
+                                          value={editingProject.year || editingProject.code || ''} 
+                                          onChange={e => setEditingProject({ ...editingProject, year: e.target.value, code: e.target.value })}
+                                          style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
+                                          required 
+                                        />
+                                      </div>
+                                      <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>CLIENT</label>
+                                        <input 
+                                          type="text" 
+                                          value={editingProject.client || ''} 
+                                          onChange={e => setEditingProject({ ...editingProject, client: e.target.value })}
                                           style={{ padding: '5px 8px', fontSize: '0.78rem', height: '32px' }}
                                           required 
                                         />
@@ -1578,7 +1601,7 @@ const AdminPage = () => {
                                             {proj.title}
                                           </h6>
                                           <span style={{ fontSize: '0.65rem', color: '#e10600', fontWeight: '600', display: 'block' }}>
-                                            {proj.code}
+                                            {proj.year || proj.code}
                                           </span>
                                         </div>
                                       </div>
@@ -1599,7 +1622,9 @@ const AdminPage = () => {
                                               subcategoryTitle: sub.title, 
                                               title: proj.title, 
                                               tag: proj.tag, 
-                                              code: proj.code, 
+                                              year: proj.year || proj.code,
+                                              code: proj.code || proj.year,
+                                              client: proj.client || '',
                                               image: proj.image,
                                               video: proj.video || ''
                                             })}

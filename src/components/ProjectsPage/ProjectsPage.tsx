@@ -25,7 +25,9 @@ import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 interface GalleryItem {
   title: string;
   tag: string;
-  code: string;
+  code?: string;
+  year?: string;
+  client?: string;
   image: string;
   video?: string;
 }
@@ -437,45 +439,97 @@ const ProjectsPage = () => {
   return (
     <div className="projects-page-new">
       
+      {/* Background Tech Diagram Overlay */}
+      <div className="bg-diagram-overlay">
+        <svg viewBox="0 0 1000 1000" className="bg-diagram-svg">
+          <defs>
+            <radialGradient id="radialRed" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#e10600" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#e10600" stopOpacity="0" />
+            </radialGradient>
+          </defs>
 
+          {/* Rotating Concentric Rings */}
+          <g className="diagram-rotate-clockwise">
+            <circle cx="500" cy="500" r="100" stroke="rgba(225, 6, 0, 0.15)" strokeWidth="1" strokeDasharray="5,5" fill="none" />
+            <circle cx="500" cy="500" r="225" stroke="rgba(225, 6, 0, 0.2)" strokeWidth="1.5" strokeDasharray="15,10" fill="none" />
+            <circle cx="500" cy="500" r="480" stroke="rgba(225, 6, 0, 0.08)" strokeWidth="1" strokeDasharray="40,20" fill="none" />
+          </g>
+
+          <g className="diagram-rotate-counter">
+            <circle cx="500" cy="500" r="220" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" fill="none" />
+            <circle cx="500" cy="500" r="350" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" fill="none" />
+            <path d="M 500 20 A 480 480 0 0 1 980 500" stroke="rgba(225, 6, 0, 0.05)" strokeWidth="2" fill="none" strokeDasharray="5,20" />
+            <path d="M 500 980 A 480 480 0 0 1 20 500" stroke="rgba(225, 6, 0, 0.05)" strokeWidth="2" fill="none" strokeDasharray="5,20" />
+          </g>
+
+          {/* Static Crosshairs & Telemetry */}
+          <line x1="500" y1="20" x2="500" y2="980" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" strokeDasharray="5,15" />
+          <line x1="20" y1="500" x2="980" y2="500" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" strokeDasharray="5,15" />
+          <line x1="150" y1="150" x2="850" y2="850" stroke="rgba(225, 6, 0, 0.03)" strokeWidth="1" strokeDasharray="8,8" />
+          <line x1="150" y1="850" x2="850" y2="150" stroke="rgba(225, 6, 0, 0.03)" strokeWidth="1" strokeDasharray="8,8" />
+
+          {/* Coordinate Target Lock */}
+          <circle cx="518" cy="411" r="12" stroke="#e10600" strokeWidth="1.5" fill="none" opacity="0.5" />
+          <circle cx="518" cy="411" r="2" fill="#e10600" opacity="0.7" />
+          <line x1="518" y1="380" x2="518" y2="442" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
+          <line x1="487" y1="411" x2="549" y2="411" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
+
+          <text x="535" y="405" fill="#e10600" fontSize="12" fontFamily="Share Tech Mono, monospace" opacity="0.5">TARGET_LOCK // X: 518 Y: 411</text>
+          <text x="535" y="420" fill="rgba(255, 255, 255, 0.4)" fontSize="10" fontFamily="Share Tech Mono, monospace" opacity="0.4">SYS_REF: XALT_PROJ_SECTOR</text>
+
+          {/* Text Labels */}
+          <text x="50" y="80" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" letterSpacing="2">[ DIAGRAM: OPTICAL_PROJECTION_GRID ]</text>
+          <text x="50" y="100" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">SCALE: 1:1.5 // RES: 4K_NATIVE</text>
+          <text x="50" y="920" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">AZIMUTH: 312° // ELEVATION: 42°</text>
+          <text x="50" y="940" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace">SYSTEM: STABLE // SYS_DB: XALT_LOC_X</text>
+
+          <text x="950" y="80" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace" textAnchor="end">FRAME_RATIO: 1.77:1</text>
+          <text x="950" y="100" fill="rgba(225, 6, 0, 0.25)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">SECURE_SECTOR // DECRYPT_ACTIVE</text>
+          <text x="950" y="920" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">[ X.ALT STUDIOS // 2026 ]</text>
+          <text x="950" y="940" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace" textAnchor="end">REF_NODE_01_VFX</text>
+        </svg>
+      </div>
 
       {/* TOP DROPDOWN NAVIGATION BAR */}
       <div className="projects-nav-bar">
-        <div className="nav-logo-area" onClick={() => window.location.hash = '#home'}>
-          <img src={logoImg} alt="Xalt Studio" className="projects-nav-logo" />
-        </div>
+        <div className="projects-nav-container">
+          <div className="nav-logo-area" onClick={() => window.location.hash = '#home'}>
+            <img src={logoImg} alt="Xalt Studio" className="projects-nav-logo" />
+          </div>
 
-        <div className="projects-dropdowns-group">
-          {categoriesData.map((cat, idx) => (
-            <div 
-              key={cat.id}
-              className={`proj-dropdown-wrapper ${activeDropdown === idx ? 'expanded' : ''}`}
-              onMouseEnter={() => setActiveDropdown(idx)}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <button 
-                className={`proj-dropdown-trigger ${selectedCategoryIdx === idx ? 'active' : ''}`}
-                onClick={() => handleCategorySelect(idx)}
+          <div className="projects-dropdowns-group">
+            {categoriesData.map((cat, idx) => (
+              <div 
+                key={cat.id}
+                className={`proj-dropdown-wrapper ${activeDropdown === idx ? 'expanded' : ''}`}
+                onMouseEnter={() => setActiveDropdown(idx)}
+                onMouseLeave={() => setActiveDropdown(null)}
               >
-                <span>{cat.title}</span>
-                <span className="dropdown-caret">▼</span>
-              </button>
-              <div className="proj-dropdown-menu">
-                {cat.subCategories.map((sub, sIdx) => (
-                  <div 
-                    key={sIdx} 
-                    className={`proj-dropdown-item ${selectedCategoryIdx === idx && selectedSubcategoryIdx === sIdx ? 'selected' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelect(idx, sIdx);
-                    }}
-                  >
-                    {sub.title}
-                  </div>
-                ))}
+                <button 
+                  className={`proj-dropdown-trigger ${selectedCategoryIdx === idx ? 'active' : ''}`}
+                  onClick={() => handleCategorySelect(idx)}
+                >
+                  <span>{cat.title}</span>
+                  <span className="dropdown-caret">▼</span>
+                </button>
+                <div className="proj-dropdown-menu">
+                  {cat.subCategories.map((sub, sIdx) => (
+                    <div 
+                      key={sIdx} 
+                      className={`proj-dropdown-item ${selectedCategoryIdx === idx && selectedSubcategoryIdx === sIdx ? 'selected' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelect(idx, sIdx);
+                      }}
+                    >
+                      {sub.title}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -563,11 +617,20 @@ const ProjectsPage = () => {
         </div>
       ) : (
         /* VIEW STATE 2: NEW GALLERY PAGE LAYOUT */
-        <div className="gallery-new-page-container">
+        <div className="gallery-view-wrapper">
           
-          {/* SPLIT HERO HEADER: Left Text content, Right Category Image */}
-          <div className="gallery-new-header-split">
-            <div className="gallery-header-left">
+          {/* FULL SCREEN WIDTH HEADER BANNER */}
+          <div className="gallery-header-banner">
+            <div className="gallery-banner-image-container">
+              <img 
+                src={getMediaUrl(activeSubcategory.image)} 
+                alt="" 
+                className="gallery-banner-image" 
+              />
+              <div className="gallery-banner-gradient-overlay"></div>
+            </div>
+            
+            <div className="gallery-banner-content-inner">
               <div className="gallery-breadcrumb-bar">
                 <span className="gallery-header-mono">// SECTOR: {activeCategory.title} / {activeSubcategory.title.toUpperCase()}</span>
               </div>
@@ -605,84 +668,59 @@ const ProjectsPage = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="gallery-header-right">
-              <div className="gallery-hero-image-wrapper">
-                <div className="slot-corners">
-                  <span className="corner tl"></span>
-                  <span className="corner tr"></span>
-                  <span className="corner bl"></span>
-                  <span className="corner br"></span>
+          {/* CENTERED PROJECTS GRID SECTION */}
+          <div className="gallery-grid-container">
+            {/* Grid of Sharp Detailed Project Cells */}
+            <div className="gallery-sharp-grid">
+              {activeSubcategory.galleryItems.map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="gallery-sharp-slot"
+                  onClick={() => setSelectedProjectNode(item)}
+                >
+                  {/* Cyber Corner Brackets */}
+                  <div className="slot-corners">
+                    <span className="corner tl"></span>
+                    <span className="corner tr"></span>
+                    <span className="corner bl"></span>
+                    <span className="corner br"></span>
+                  </div>
+
+                  <div className="slot-img-wrapper">
+                    {item.video ? (
+                      <video 
+                        src={getMediaUrl(item.video)} 
+                        poster={getMediaUrl(item.image)} 
+                        muted 
+                        loop 
+                        playsInline 
+                        autoPlay
+                        className="slot-preview-img" 
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
+                    )}
+                    <div className="slot-cyber-overlay"></div>
+                  </div>
+
+                  <div className="slot-interactive-hud">
+                    <div className="hud-line">
+                      <span className="hud-label">PROJECT:</span>
+                      <span className="hud-val">{item.title}</span>
+                    </div>
+                  </div>
+
+                  <div className="slot-bottom-telemetry">
+                    <span>CLIENT: {item.client || item.tag || 'X.ALT STUDIOS'}</span>
+                    <span className="hud-val text-red">YEAR: {item.year || item.code || '2026'}</span>
+                  </div>
                 </div>
-                <img 
-                  src={getMediaUrl(activeSubcategory.image)} 
-                  alt={activeSubcategory.title} 
-                  className="gallery-hero-image" 
-                />
-                <div className="gallery-hero-image-overlay"></div>
-              </div>
+              ))}
             </div>
           </div>
-
-          {/* Grid of Sharp Detailed Project Cells */}
-          <div className="gallery-sharp-grid">
-            {activeSubcategory.galleryItems.map((item, idx) => (
-              <div 
-                key={idx} 
-                className="gallery-sharp-slot"
-                onClick={() => setSelectedProjectNode(item)}
-              >
-                {/* Cyber Corner Brackets */}
-                <div className="slot-corners">
-                  <span className="corner tl"></span>
-                  <span className="corner tr"></span>
-                  <span className="corner bl"></span>
-                  <span className="corner br"></span>
-                </div>
-
-                <div className="slot-img-wrapper">
-                  {item.video ? (
-                    <video 
-                      src={getMediaUrl(item.video)} 
-                      poster={getMediaUrl(item.image)} 
-                      muted 
-                      loop 
-                      playsInline 
-                      autoPlay
-                      className="slot-preview-img" 
-                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                    />
-                  ) : (
-                    <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
-                  )}
-                  <div className="slot-cyber-overlay"></div>
-                </div>
-
-                <div className="slot-interactive-hud">
-                  <div className="hud-line">
-                    <span className="hud-label">PROJECT:</span>
-                    <span className="hud-val">{item.title}</span>
-                  </div>
-                  <div className="hud-line">
-                    <span className="hud-label">TYPE:</span>
-                    <span className="hud-val">{item.tag}</span>
-                  </div>
-                  <div className="hud-line">
-                    <span className="hud-label">CODE:</span>
-                    <span className="hud-val text-red">{item.code}</span>
-                  </div>
-                </div>
-
-                <div className="slot-bottom-telemetry">
-                  <span>SECURE_FILE_0{idx + 1}</span>
-                  <span>SYSTEM_LOAD_OK</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-
-
         </div>
       )}
 
@@ -735,8 +773,8 @@ const ProjectsPage = () => {
                   <span className="details-value">{selectedProjectNode.tag}</span>
                 </div>
                 <div className="details-item">
-                  <span className="details-label">CODE:</span>
-                  <span className="details-value text-red">{selectedProjectNode.code}</span>
+                  <span className="details-label">YEAR:</span>
+                  <span className="details-value text-red">{selectedProjectNode.year || selectedProjectNode.code}</span>
                 </div>
               </div>
             </div>

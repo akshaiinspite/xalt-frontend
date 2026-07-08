@@ -182,7 +182,6 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isClicked) return;
     const card = cardRef.current;
     if (!card) return;
 
@@ -193,160 +192,106 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
     const xc = rect.width / 2;
     const yc = rect.height / 2;
 
-    const angleX = -(y - yc) / 14;
-    const angleY = (x - xc) / 14;
+    const angleX = -(y - yc) / 16;
+    const angleY = (x - xc) / 16;
 
     setCoords({ x: angleY, y: angleX });
-
-    const px = (x / rect.width) * 100;
-    const py = (y / rect.height) * 100;
-    card.style.setProperty('--x', `${px}%`);
-    card.style.setProperty('--y', `${py}%`);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    if (!isClicked) {
-      setCoords({ x: 0, y: 0 });
-    }
+    setCoords({ x: 0, y: 0 });
   };
+
+  const isActive = isHovered || isClicked;
 
   const cardStyle = {
-    background: member.gradient,
-    transform: isClicked
-      ? 'perspective(1000px) scale3d(1.05, 1.05, 1.05) translateZ(30px)'
-      : isHovered
-      ? `perspective(1000px) rotateX(${coords.y}deg) rotateY(${coords.x}deg) scale3d(1.03, 1.03, 1.03)`
+    transform: isActive
+      ? `perspective(1000px) rotateX(${coords.y}deg) rotateY(${coords.x}deg) scale3d(1.02, 1.02, 1.02)`
       : 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
-    zIndex: isClicked ? 99 : isHovered ? 20 : 2,
-    transition: isHovered && !isClicked ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease',
+    zIndex: isActive ? 10 : 2,
+    transition: isHovered ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+    filter: isActive ? 'grayscale(0%)' : 'grayscale(100%)',
+    borderColor: isActive ? 'rgba(225, 6, 0, 0.35)' : 'rgba(255, 255, 255, 0.08)',
   };
-
-  const idNumber = String(index + 1).padStart(2, '0');
-
-  const getDepartment = () => {
-    return member.department || 'CREATIVE_3D_LAB';
-  };
-
-  const getDossierBio = () => {
-    return member.bio || 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.';
-  };
-
 
   return (
     <div
       ref={cardRef}
-      className={`team-card-new ${isHovered ? 'hovered' : ''} ${isClicked ? 'clicked' : ''}`}
+      className={`team-card-new ${isActive ? 'active' : ''}`}
       style={cardStyle}
+      data-index={index}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       onClick={onCardClick}
     >
       <div className="card-shine" />
-      
-      {/* Evidence Top HUD Header */}
-      <div className="evidence-card-top-hud">
-        <span className="hud-corner-bracket bracket-tl">[</span>
-        <span className="hud-status-text">
-          {isClicked ? 'SECURE_DOSSIER // DECRYPTED' : 'ENCRYPTED_FILE // RESTRICTED'}
-        </span>
-        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
-        <span className="hud-corner-bracket bracket-tr">]</span>
-      </div>
 
-      <div className="card-inner-new">
-        {/* Active close mark */}
-        {isClicked && (
-          <div className="card-close-indicator">
-            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="3" fill="none">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </div>
-        )}
-
-        <div className="evidence-card-columns">
-          
-          {/* LEFT PANEL: Avatar, Name and Basic Info */}
-          <div className="evidence-left-panel">
-            
-            {/* Side HUD Rotated monospaces */}
-            <div className="evidence-side-vertical-right">
-              X.ALT INTEL // FILE_{idNumber}
-            </div>
-            <div className="evidence-side-vertical-left">
-              · · · · · · · · · · · ·
-            </div>
-
-            {/* HUD Surveillance photo container with scanlines */}
-            <div className="card-avatar-container" style={{ position: 'relative', overflow: 'hidden' }}>
-              <div className="avatar-scanlines"></div>
-              <div className="avatar-red-circle"></div>
-              
-              <svg className="avatar-hud-ring" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" fill="none" />
-                <circle cx="50" cy="50" r="45" stroke="var(--color-primary)" strokeWidth="1.5" fill="none" strokeDasharray="10 8" className="spinning-hud" />
+      <div className="card-inner-new" style={{ padding: '0px', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        
+        {/* Square/Rectangle Avatar container covering the top section */}
+        <div className="card-avatar-container-square" style={{ 
+          width: '100%', 
+          height: '370px', 
+          overflow: 'hidden', 
+          position: 'relative',
+          background: '#0a0a0c'
+        }}>
+          {member.image ? (
+            <img 
+              src={getMediaUrl(member.image)} 
+              alt={member.name} 
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover', 
+                transition: 'transform 0.6s ease',
+                transform: isHovered ? 'scale(1.04)' : 'scale(1)'
+              }} 
+            />
+          ) : (
+            <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.1)' }}>
+              <svg viewBox="0 0 24 24" style={{ width: '64px', height: '64px' }} fill="none" stroke="currentColor" strokeWidth="0.8">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
-
-              {member.image ? (
-                <img 
-                  src={getMediaUrl(member.image)} 
-                  alt={member.name} 
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover', 
-                    borderRadius: '50%',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    zIndex: 2,
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    filter: 'grayscale(35%) contrast(110%) brightness(95%)'
-                  }} 
-                />
-              ) : (
-                <svg viewBox="0 0 24 24" className="avatar-placeholder-svg" fill="none" stroke="currentColor" strokeWidth="0.8">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              )}
             </div>
-
-            <div className="evidence-card-basic-details">
-              <div className="evidence-index-label">EVIDENCE #{idNumber}</div>
-              <h3 className="team-member-name">{member.name}</h3>
-              <p className="team-member-role">{member.role}</p>
-            </div>
-
-          </div>
-
-          {/* RIGHT PANEL: Dossier Details (Slides open when clicked) */}
-          <div className="evidence-right-panel">
-            <div className="dossier-panel-header">
-              <span className="dossier-tag">RESTRICTED DOSSIER // FILE_{idNumber}</span>
-              <span className="dossier-status-dot"></span>
-            </div>
-            
-            <div className="dossier-bio-section">
-              <h4 className="dossier-subheading">DEPARTMENT</h4>
-              <p className="dossier-dept-text" style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '0.75rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-                {getDepartment().replace(/_/g, ' ')}
-              </p>
-            </div>
-
-            <div className="dossier-bio-section" style={{ marginTop: '8px' }}>
-              <h4 className="dossier-subheading">SUMMARY PROFILE</h4>
-              <p className="dossier-bio-text">{getDossierBio()}</p>
-            </div>
-          </div>
-
+          )}
         </div>
 
-        {/* Action Button at the bottom */}
-        <div className="evidence-action-btn">
-          {isClicked ? '[ DISMISS DOSSIER ]' : '[ OPEN DATA FILE ]'}
+        {/* Info panel - containing name in red and role below */}
+        <div className="team-member-details-clean" style={{ 
+          padding: '24px 20px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          flexGrow: 1,
+          background: '#0a0a0c',
+          width: '100%',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+        }}>
+          <h3 className="team-member-name-red" style={{ 
+            margin: '0 0 6px 0', 
+            fontSize: '1.2rem', 
+            fontWeight: 700, 
+            color: '#e10600', 
+            letterSpacing: '0.03em',
+            textTransform: 'uppercase'
+          }}>
+            {member.name}
+          </h3>
+          <p className="team-member-role-gray" style={{ 
+            margin: 0, 
+            fontSize: '0.75rem', 
+            color: 'rgba(255, 255, 255, 0.55)', 
+            fontWeight: 500,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            {member.role}
+          </p>
         </div>
 
       </div>
@@ -793,11 +738,56 @@ const AboutPage = () => {
       {/* SECTION 1: ABOUT US (Consolidated with Text and Office Photos) */}
       <section ref={aboutSectionRef} className="about-section-consolidated" id="about-hero">
         
-        {/* Concentric rings background pattern */}
-        <div className="story-concentric-bg-radial">
-          <div className="concentric-ring-circle ring-1"></div>
-          <div className="concentric-ring-circle ring-2"></div>
-          <div className="concentric-ring-circle ring-3"></div>
+        {/* Background Tech Diagram Overlay */}
+        <div className="bg-diagram-overlay">
+          <svg viewBox="0 0 1000 1000" className="bg-diagram-svg">
+            <defs>
+              <radialGradient id="radialRed" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#e10600" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="#e10600" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+
+            {/* Rotating Concentric Rings */}
+            <g className="diagram-rotate-clockwise">
+              <circle cx="500" cy="500" r="100" stroke="rgba(225, 6, 0, 0.15)" strokeWidth="1" strokeDasharray="5,5" fill="none" />
+              <circle cx="500" cy="500" r="225" stroke="rgba(225, 6, 0, 0.2)" strokeWidth="1.5" strokeDasharray="15,10" fill="none" />
+              <circle cx="500" cy="500" r="480" stroke="rgba(225, 6, 0, 0.08)" strokeWidth="1" strokeDasharray="40,20" fill="none" />
+            </g>
+
+            <g className="diagram-rotate-counter">
+              <circle cx="500" cy="500" r="220" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" fill="none" />
+              <circle cx="500" cy="500" r="350" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M 500 20 A 480 480 0 0 1 980 500" stroke="rgba(225, 6, 0, 0.05)" strokeWidth="2" fill="none" strokeDasharray="5,20" />
+              <path d="M 500 980 A 480 480 0 0 1 20 500" stroke="rgba(225, 6, 0, 0.05)" strokeWidth="2" fill="none" strokeDasharray="5,20" />
+            </g>
+
+            {/* Static Crosshairs & Telemetry */}
+            <line x1="500" y1="20" x2="500" y2="980" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" strokeDasharray="5,15" />
+            <line x1="20" y1="500" x2="980" y2="500" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="1" strokeDasharray="5,15" />
+            <line x1="150" y1="150" x2="850" y2="850" stroke="rgba(225, 6, 0, 0.03)" strokeWidth="1" strokeDasharray="8,8" />
+            <line x1="150" y1="850" x2="850" y2="150" stroke="rgba(225, 6, 0, 0.03)" strokeWidth="1" strokeDasharray="8,8" />
+
+            {/* Coordinate Target Lock */}
+            <circle cx="518" cy="411" r="12" stroke="#e10600" strokeWidth="1.5" fill="none" opacity="0.5" />
+            <circle cx="518" cy="411" r="2" fill="#e10600" opacity="0.7" />
+            <line x1="518" y1="380" x2="518" y2="442" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
+            <line x1="487" y1="411" x2="549" y2="411" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
+
+            <text x="535" y="405" fill="#e10600" fontSize="12" fontFamily="Share Tech Mono, monospace" opacity="0.5">TARGET_LOCK // X: 518 Y: 411</text>
+            <text x="535" y="420" fill="rgba(255, 255, 255, 0.4)" fontSize="10" fontFamily="Share Tech Mono, monospace" opacity="0.4">SYS_REF: XALT_PROJ_SECTOR</text>
+
+            {/* Text Labels */}
+            <text x="50" y="80" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" letterSpacing="2">[ DIAGRAM: OPTICAL_PROJECTION_GRID ]</text>
+            <text x="50" y="100" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">SCALE: 1:1.5 // RES: 4K_NATIVE</text>
+            <text x="50" y="920" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">AZIMUTH: 312° // ELEVATION: 42°</text>
+            <text x="50" y="940" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace">SYSTEM: STABLE // SYS_DB: XALT_LOC_X</text>
+
+            <text x="950" y="80" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace" textAnchor="end">FRAME_RATIO: 1.77:1</text>
+            <text x="950" y="100" fill="rgba(225, 6, 0, 0.25)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">SECURE_SECTOR // DECRYPT_ACTIVE</text>
+            <text x="950" y="920" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">[ X.ALT STUDIOS // 2026 ]</text>
+            <text x="950" y="940" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace" textAnchor="end">REF_NODE_01_VFX</text>
+          </svg>
         </div>
 
         <div className="consolidated-grid-new">
