@@ -182,6 +182,7 @@ const AdminPage = () => {
     bio: '',
     gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
     image: '',
+    empNo: '',
     order: 0
   });
   const [editingTeamMemberId, setEditingTeamMemberId] = useState<string | null>(null);
@@ -455,7 +456,7 @@ const AdminPage = () => {
         message: editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!' 
       });
       toast.success(editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!');
-      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', order: 0 });
+      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', empNo: '', order: 0 });
       setEditingTeamMemberId(null);
       fetchTeamMembers();
       setTimeout(() => setTeamFeedback({ type: '', message: '' }), 3000);
@@ -476,6 +477,7 @@ const AdminPage = () => {
       bio: member.bio || '',
       gradient: member.gradient || 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
       image: member.image || '',
+      empNo: member.empNo || '',
       order: member.order !== undefined ? member.order : 0
     });
     scrollToForm('team-form-container');
@@ -483,7 +485,7 @@ const AdminPage = () => {
 
   const cancelEditTeamMember = () => {
     setEditingTeamMemberId(null);
-    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', order: 0 });
+    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', empNo: '', order: 0 });
   };
 
   const handleDeleteTeamMember = (id: string) => {
@@ -1875,6 +1877,16 @@ const AdminPage = () => {
                       value={newTeamMember.role}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
                       required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>EMPLOYEE NUMBER</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 05"
+                      value={newTeamMember.empNo}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, empNo: e.target.value })}
                     />
                   </div>
 

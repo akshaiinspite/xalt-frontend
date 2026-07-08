@@ -167,6 +167,7 @@ interface TeamMember {
   department?: string;
   bio?: string;
   image?: string;
+  empNo?: string;
 }
 
 interface TeamCardProps {
@@ -337,7 +338,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
                 letterSpacing: '0.08em', 
                 textTransform: 'uppercase' 
               }}>
-                EMP NO // FILE_{idNumber}
+                EMP NO: {member.empNo || idNumber}
               </div>
               <h3 className="team-member-name" style={{ 
                 color: '#e10600', 
