@@ -1902,16 +1902,13 @@ const AdminPage = () => {
 
                   <div className="dashboard-form-group">
                     <label>DEPARTMENT SECTION</label>
-                    <select 
+                    <input 
+                      type="text" 
+                      placeholder="e.g. ADMINISTRATIVE CORE"
                       value={newTeamMember.department}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, department: e.target.value })}
-                      className="dashboard-select"
                       required
-                    >
-                      <option value="ADMINISTRATIVE_CORE">ADMINISTRATIVE CORE</option>
-                      <option value="OPERATION_MGMT">OPERATION MGMT</option>
-                      <option value="CREATIVE_3D_LAB">CREATIVE 3D LAB</option>
-                    </select>
+                    />
                   </div>
 
                   <div className="dashboard-form-group">
