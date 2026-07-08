@@ -22,8 +22,10 @@ const getApiBaseUrl = (): string => {
     }
   }
 
-  // Default fallback (e.g., when building or deployed on Vercel without env vars)
-  return envUrl || 'https://xalt-backend-zi62.onrender.com/api';
+  // Default fallback (e.g., when building or deployed on Vercel with local env vars or without env vars)
+  // If the envUrl contains localhost/127.0.0.1 and we are not running locally, it is a local dev URL
+  // accidentally bundled or configured for production. In this case, ignore it and use the live backend.
+  return 'https://xalt-backend-zi62.onrender.com/api';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
