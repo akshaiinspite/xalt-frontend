@@ -250,13 +250,18 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
       <div className="card-shine" />
       
       {/* Evidence Top HUD Header */}
-      <div className="evidence-card-top-hud">
-        <span className="hud-corner-bracket bracket-tl">[</span>
-        <span className="hud-status-text">
-          EMPLOYEE CODE // {member.empNo || idNumber}
-        </span>
-        <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
-        <span className="hud-corner-bracket bracket-tr">]</span>
+      <div className="evidence-card-top-hud" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px' }}>
+        <div className="hud-left-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span className="hud-corner-bracket bracket-tl" style={{ fontSize: '1rem', color: '#ff3333' }}>[</span>
+          <div className="hud-status-text" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1.25' }}>
+            <span className="hud-status-label" style={{ fontSize: '0.58rem', color: 'rgba(255, 255, 255, 0.45)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>EMPLOYEE CODE //</span>
+            <span className="hud-status-value" style={{ fontSize: '0.95rem', color: '#ff3333', fontWeight: 'bold', fontFamily: 'Share Tech Mono, monospace', letterSpacing: '0.08em', textShadow: '0 0 8px rgba(255, 51, 51, 0.65)' }}>{member.empNo || idNumber}</span>
+          </div>
+        </div>
+        <div className="hud-right-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span className="hud-open-text" style={{ fontSize: '0.65rem' }}>{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
+          <span className="hud-corner-bracket bracket-tr" style={{ fontSize: '1rem', color: '#ff3333' }}>]</span>
+        </div>
       </div>
 
       <div className="card-inner-new">
