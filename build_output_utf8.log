@@ -1,0 +1,55 @@
+﻿
+> xalt-studio-new@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v8.1.0 [32mbuilding client environment for production...[36m[39m
+[2K
+transforming...Γ£ô 362 modules transformed.
+node.exe : [31mΓ£ù[39m Build failed in 924ms
+At line:1 char:1
++ & "C:\nvm4w\nodejs/node.exe" "C:\nvm4w\nodejs/node_modules/npm/bin/np ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([31mΓ£ù[39m Build failed in 924ms:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31merror during build:
+[31mBuild failed with 1 error:
+
+[plugin vite:css-post]
+SyntaxError: [lightningcss minify] Unexpected token Comma
+4867 |    border-color: #ff3333 !important;
+4868 |    box-shadow: 
+4869 |      0 25px 50px rgba(255, 51, 51, 0.3) !important,
+     |                                                   ^
+4870 |      0 20px 45px rgba(0, 0, 0, 0.85) !important;
+4871 |    transform: scale(1.2) translateY(-20px) !important;
+    at Module.<anonymous> (E:\digital spy\xalt\xalt-studio-new\frontend\node_modules\lightningcss\node\index.js:56:14)
+    at minifyCSS 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:22463:59)
+    at async finalizeCss 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:22308:36)
+    at async Promise.all (index 1)
+    at async Object.run 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:2737:22)
+    at async PluginContextImpl.renderChunk 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:21841:19)
+    at async plugin (file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/rolldown/dist/shared/bindingif
+y-input-options-CzVhGygm.mjs:1620:16)
+    at async plugin.<computed> (file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/rolldown/dist/share
+d/bindingify-input-options-CzVhGygm.mjs:1961:12)[31m
+    at aggregateBindingErrorsIntoJsError 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/rolldown/dist/shared/error-B68YLzl3.mjs:48:18)
+    at unwrapBindingResult 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/rolldown/dist/shared/error-B68YLzl3.mjs:18:128)
+    at #build (file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/rolldown/dist/shared/rolldown-build-
+DR0wzp0V.mjs:3256:34)
+    at async buildEnvironment 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:32575:66)
+    at async Object.build 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:32997:19)
+    at async Object.buildApp 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/chunks/node.js:32994:153)
+    at async CAC.<anonymous> 
+(file:///E:/digital%20spy/xalt/xalt-studio-new/frontend/node_modules/vite/dist/node/cli.js:777:3) {
+  errors: [Getter/Setter]
+}[39m
