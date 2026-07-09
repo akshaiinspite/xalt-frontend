@@ -253,7 +253,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
       <div className="evidence-card-top-hud">
         <span className="hud-corner-bracket bracket-tl">[</span>
         <span className="hud-status-text">
-          {isClicked ? 'SECURE_DOSSIER // DECRYPTED' : 'ENCRYPTED_FILE // RESTRICTED'}
+          EMPLOYEE CODE // {member.empNo || idNumber}
         </span>
         <span className="hud-open-text">{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
         <span className="hud-corner-bracket bracket-tr">]</span>
@@ -331,18 +331,9 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
             </div>
 
             <div className="evidence-card-basic-details" style={{ width: '100%', textAlign: 'center' }}>
-              <div className="evidence-index-label" style={{ 
-                fontFamily: 'Share Tech Mono, monospace', 
-                fontSize: '0.62rem', 
-                color: 'rgba(255, 255, 255, 0.4)', 
-                letterSpacing: '0.08em', 
-                textTransform: 'uppercase' 
-              }}>
-                EMP NO: {member.empNo || idNumber}
-              </div>
               <h3 className="team-member-name" style={{ 
                 color: '#e10600', 
-                margin: '6px 0 2px 0', 
+                margin: '2px 0 4px 0', 
                 fontSize: '1.15rem', 
                 fontWeight: 700, 
                 textTransform: 'uppercase', 
@@ -458,6 +449,16 @@ const AboutPage = () => {
     },
   ]);
 
+  interface AboutPhoto {
+    _id?: string;
+    key: string;
+    title: string;
+    label: string;
+    imageUrl: string;
+  }
+
+  const [aboutPhotos, setAboutPhotos] = useState<AboutPhoto[]>([]);
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/team-members`)
       .then(res => res.json())
@@ -470,6 +471,29 @@ const AboutPage = () => {
         console.warn('Backend offline or error fetching team members, using local dummy list.', err);
       });
   }, []);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/about`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setAboutPhotos(data);
+        }
+      })
+      .catch(err => {
+        console.warn('Backend offline or error fetching about photos, using local dummy list.', err);
+      });
+  }, []);
+
+  const getAboutPhotoUrl = (key: string, fallback: string) => {
+    const photo = aboutPhotos.find(p => p.key === key);
+    return photo ? getMediaUrl(photo.imageUrl) : fallback;
+  };
+
+  const getAboutPhotoLabel = (key: string, fallback: string) => {
+    const photo = aboutPhotos.find(p => p.key === key);
+    return photo ? photo.label : fallback;
+  };
 
   // Mouse wheel scroll horizontal listener
   useEffect(() => {
@@ -923,7 +947,7 @@ const AboutPage = () => {
           <div ref={aboutRightRef} className="about-photos-column-new">
             <div className="story-offset-wrapper wrap-1">
               <img
-                src={studioWorkspaceImg}
+                src={getAboutPhotoUrl('about_us_1', studioWorkspaceImg)}
                 alt="X.Alt Modern Creative Studio Workspace"
                 className="story-parallax-img"
               />
@@ -932,7 +956,7 @@ const AboutPage = () => {
 
             <div className="story-offset-wrapper wrap-2">
               <img
-                src={designArtistsImg}
+                src={getAboutPhotoUrl('about_us_2', designArtistsImg)}
                 alt="X.Alt Design Artists at Workstations"
                 className="story-parallax-img"
               />
@@ -990,17 +1014,17 @@ const AboutPage = () => {
             {/* Right Column: Stacked / Offset Images */}
             <div className="floor-images-column">
               <div className="floor-img-frame frame-1">
-                <img src={studioFloorVfxImg} alt="VFX Synthesis Bay" className="floor-display-img" />
+                <img src={getAboutPhotoUrl('studio_floor_1', studioFloorVfxImg)} alt="VFX Synthesis Bay" className="floor-display-img" />
                 <div className="floor-frame-overlay">
-                  <span className="frame-label">// ZONE_01: VFX SYNTHESIS BAY</span>
+                  <span className="frame-label">{getAboutPhotoLabel('studio_floor_1', '// ZONE_01: VFX SYNTHESIS BAY')}</span>
                 </div>
                 <div className="floor-scanlines"></div>
               </div>
 
               <div className="floor-img-frame frame-2">
-                <img src={studioFloorAudioImg} alt="Sonic Resonance Lab" className="floor-display-img" />
+                <img src={getAboutPhotoUrl('studio_floor_2', studioFloorAudioImg)} alt="Sonic Resonance Lab" className="floor-display-img" />
                 <div className="floor-frame-overlay">
-                  <span className="frame-label">// ZONE_02: SONIC MIXING SUITE</span>
+                  <span className="frame-label">{getAboutPhotoLabel('studio_floor_2', '// ZONE_02: SONIC MIXING SUITE')}</span>
                 </div>
                 <div className="floor-scanlines"></div>
               </div>

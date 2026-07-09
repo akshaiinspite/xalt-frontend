@@ -127,10 +127,21 @@ const AdminPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dbStatus, setDbStatus] = useState<string>('Checking...');
 
-  // Dashboard Tabs: 'careers' | 'projects' | 'home' | 'team'
-  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home' | 'team'>('careers');
+  // Dashboard Tabs: 'careers' | 'projects' | 'home' | 'team' | 'about'
+  const [activeTab, setActiveTab] = useState<'careers' | 'projects' | 'home' | 'team' | 'about'>('careers');
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // --- About State ---
+  const [aboutPhotos, setAboutPhotos] = useState<any[]>([]);
+  const [newAboutPhoto, setNewAboutPhoto] = useState({
+    key: '',
+    title: '',
+    label: '',
+    imageUrl: ''
+  });
+  const [editingAboutPhotoId, setEditingAboutPhotoId] = useState<string | null>(null);
+  const [aboutFeedback, setAboutFeedback] = useState({ type: '', message: '' });
 
   // --- Careers State ---
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -261,6 +272,7 @@ const AdminPage = () => {
       fetchReel();
       fetchExpertise();
       fetchTeamMembers();
+      fetchAboutPhotos();
     }
   }, [isLoggedIn]);
 
@@ -512,6 +524,102 @@ const AdminPage = () => {
         })
         .catch(err => {
           toast.error('Error deleting team member: ' + err.message);
+        });
+      }
+    });
+  };
+
+  // --- About CRUD Handlers ---
+  const fetchAboutPhotos = () => {
+    fetch(`${API_BASE_URL}/about`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setAboutPhotos(data);
+        }
+      })
+      .catch(err => console.error('Error fetching about photos:', err));
+  };
+
+  const handleAboutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('xalt_admin_token');
+
+    const url = editingAboutPhotoId 
+      ? `${API_BASE_URL}/about/${editingAboutPhotoId}` 
+      : `${API_BASE_URL}/about`;
+    const method = editingAboutPhotoId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(newAboutPhoto)
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to save about photo');
+      }
+      setAboutFeedback({ 
+        type: 'success', 
+        message: editingAboutPhotoId ? 'About photo updated successfully!' : 'About photo created successfully!' 
+      });
+      toast.success(editingAboutPhotoId ? 'About photo updated successfully!' : 'About photo created successfully!');
+      setNewAboutPhoto({ key: '', title: '', label: '', imageUrl: '' });
+      setEditingAboutPhotoId(null);
+      fetchAboutPhotos();
+      setTimeout(() => setAboutFeedback({ type: '', message: '' }), 3000);
+    })
+    .catch(err => {
+      setAboutFeedback({ type: 'error', message: err.message });
+      toast.error('Failed to save about photo: ' + err.message);
+      setTimeout(() => setAboutFeedback({ type: '', message: '' }), 4000);
+    });
+  };
+
+  const startEditAboutPhoto = (photo: any) => {
+    setEditingAboutPhotoId(photo._id);
+    setNewAboutPhoto({
+      key: photo.key,
+      title: photo.title || '',
+      label: photo.label || '',
+      imageUrl: photo.imageUrl || ''
+    });
+    scrollToForm('about-form-container');
+  };
+
+  const cancelEditAboutPhoto = () => {
+    setEditingAboutPhotoId(null);
+    setNewAboutPhoto({ key: '', title: '', label: '', imageUrl: '' });
+  };
+
+  const handleDeleteAboutPhoto = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete About Photo Slot',
+      message: 'Are you sure you want to permanently delete this photo slot entry? This will revert it to the static default on the live site.',
+      onConfirm: () => {
+        const token = localStorage.getItem('xalt_admin_token');
+        fetch(`${API_BASE_URL}/about/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Failed to delete about photo');
+          }
+          if (editingAboutPhotoId === id) {
+            cancelEditAboutPhoto();
+          }
+          toast.success('About photo successfully deleted.');
+          fetchAboutPhotos();
+        })
+        .catch(err => {
+          toast.error('Error deleting about photo: ' + err.message);
         });
       }
     });
@@ -1009,6 +1117,19 @@ const AdminPage = () => {
             </svg>
             <span>Teams Menu</span>
           </button>
+
+          <button 
+            className={`sidebar-nav-btn ${activeTab === 'about' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('about');
+              setIsMobileSidebarOpen(false);
+            }}
+          >
+            <svg className="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>About Menu</span>
+          </button>
         </nav>
 
         <div className="sidebar-footer">
@@ -1043,7 +1164,9 @@ const AdminPage = () => {
                 ? 'Projects Portfolio' 
                 : activeTab === 'home' 
                 ? 'Home Menu' 
-                : 'Teams Menu'}
+                : activeTab === 'team'
+                ? 'Teams Menu'
+                : 'About Menu'}
             </h1>
             <p className="workspace-breadcrumbs">
               Console / {
@@ -1053,7 +1176,9 @@ const AdminPage = () => {
                   ? 'Portfolio Manager' 
                   : activeTab === 'home' 
                   ? 'Home Manager' 
-                  : 'Teams Menu'
+                  : activeTab === 'team'
+                  ? 'Teams Menu'
+                  : 'About Menu'
               }
             </p>
           </div>
@@ -2019,6 +2144,172 @@ const AdminPage = () => {
                           <button 
                             className="list-action-btn delete"
                             onClick={() => handleDeleteTeamMember(member._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {activeTab === 'about' && (
+            <div className="dashboard-grid animate-fade-in">
+              
+              {/* Form Card */}
+              <div className="dashboard-card" id="about-form-container">
+                <div className="dashboard-card-header">
+                  <h3>{editingAboutPhotoId ? 'Edit About Photo' : 'Add About Photo'}</h3>
+                  <p>{editingAboutPhotoId ? 'Update photo details and image URL.' : 'Enter details for a new photo card.'}</p>
+                </div>
+
+                {aboutFeedback.message && (
+                  <div className={`feedback-alert ${aboutFeedback.type}`}>
+                    {aboutFeedback.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleAboutSubmit} className="dashboard-form">
+                  <div className="dashboard-form-group">
+                    <label>IDENTIFIER KEY</label>
+                    <select
+                      value={newAboutPhoto.key}
+                      onChange={(e) => setNewAboutPhoto({ ...newAboutPhoto, key: e.target.value })}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        fontSize: '0.85rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        background: '#fff',
+                        color: '#1f2937',
+                        height: '42px',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <option value="">Select photo slot/position...</option>
+                      <option value="about_us_1">About Us - Workspace Image 1</option>
+                      <option value="about_us_2">About Us - Artists Image 2</option>
+                      <option value="studio_floor_1">Studio Floor - VFX Bay Image 3</option>
+                      <option value="studio_floor_2">Studio Floor - Audio Suite Image 4</option>
+                    </select>
+                    <small className="field-hint">// Selecting a key binds it to the corresponding image frame on the About Page.</small>
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>TITLE / ALT TEXT</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. VFX Synthesis Bay"
+                      value={newAboutPhoto.title}
+                      onChange={(e) => setNewAboutPhoto({ ...newAboutPhoto, title: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>LABEL TEXT (FOR STUDIO FLOOR)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. // ZONE_01: VFX SYNTHESIS BAY"
+                      value={newAboutPhoto.label}
+                      onChange={(e) => setNewAboutPhoto({ ...newAboutPhoto, label: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="dashboard-form-group">
+                    <label>PHOTO IMAGE URL</label>
+                    <FileUploadWidget 
+                      value={newAboutPhoto.imageUrl}
+                      onChange={(url) => setNewAboutPhoto({ ...newAboutPhoto, imageUrl: url })}
+                      acceptType="image"
+                    />
+                    <small className="field-hint">// Upload about photo or paste a CDN URL.</small>
+                  </div>
+
+                  <div className="dashboard-form-actions">
+                    <button type="submit" className="dashboard-btn primary">
+                      {editingAboutPhotoId ? 'Save Changes' : 'Add Photo'}
+                    </button>
+                    {editingAboutPhotoId && (
+                      <button type="button" className="dashboard-btn secondary" onClick={cancelEditAboutPhoto}>
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* List Card */}
+              <div className="dashboard-card">
+                <div className="dashboard-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3>Active About Page Photos ({aboutPhotos.length})</h3>
+                    <p>Current images displayed on the About Us and Studio Floor sections.</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="dashboard-btn primary"
+                    style={{ margin: 0, padding: '8px 16px', fontSize: '0.8rem' }}
+                    onClick={() => {
+                      cancelEditAboutPhoto();
+                      scrollToForm('about-form-container');
+                    }}
+                  >
+                    + Add Photo
+                  </button>
+                </div>
+
+                <div className="dashboard-list-scroller">
+                  {aboutPhotos.length === 0 ? (
+                    <div className="dashboard-empty-state">
+                      <span>No photos found.</span>
+                    </div>
+                  ) : (
+                    aboutPhotos.map((photo) => (
+                      <div key={photo._id} className="dashboard-list-item">
+                        <div className="list-item-header" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                          <img 
+                            src={getMediaUrl(photo.imageUrl)} 
+                            alt={photo.title || photo.key} 
+                            style={{ 
+                              width: '70px', 
+                              height: '50px', 
+                              borderRadius: '6px', 
+                              objectFit: 'cover',
+                              border: '1px solid rgba(0, 0, 0, 0.1)'
+                            }} 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=70&auto=format&fit=crop';
+                            }}
+                          />
+                          <div>
+                            <span className="item-title" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>{photo.title || 'No Title'}</span>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--color-primary, #e10600)', fontWeight: 600, display: 'block', margin: '2px 0' }}>
+                              Key Slot: {photo.key}
+                            </span>
+                            {photo.label && (
+                              <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                                {photo.label}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="list-item-actions" style={{ marginTop: '8px' }}>
+                          <button 
+                            className="list-action-btn edit"
+                            onClick={() => startEditAboutPhoto(photo)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="list-action-btn delete"
+                            onClick={() => handleDeleteAboutPhoto(photo._id)}
                           >
                             Delete
                           </button>

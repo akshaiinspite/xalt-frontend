@@ -155,14 +155,15 @@
    ---------------------------------------------------- */
 .cinematic-heading-group {
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  padding-bottom: 1rem;
 }
 
 .about-hero-backdrop-text, .about-team-backdrop-text {
   font-family: var(--font-anton);
-  font-size: clamp(6rem, 15vw, 15rem);
+  font-size: clamp(5rem, 11vw, 11rem);
   font-weight: 900;
-  line-height: 0.8;
+  line-height: 0.95;
   color: transparent;
   -webkit-text-stroke: 1.5px rgba(225, 6, 0, 0.15);
   letter-spacing: 0.05em;
@@ -174,16 +175,17 @@
 
 .about-hero-fore-title, .about-team-fore-title {
   position: absolute;
-  top: 40%;
-  left: 4%;
+  top: 35%;
+  left: 0;
   font-family: var(--font-anton);
   font-size: clamp(3rem, 7vw, 7rem);
   font-weight: 900;
   line-height: 0.9;
   color: var(--color-text-white);
-  text-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  z-index: 10;
 }
 
 /* ----------------------------------------------------
@@ -193,7 +195,7 @@
   background: radial-gradient(circle at 50% 50%, #0d090b 0%, #030304 100%);
   display: flex;
   min-height: 100vh;
-  padding: 160px 4rem;
+  padding: 100px 4rem;
   position: relative;
   width: 100%;
   z-index: 1;
@@ -204,10 +206,10 @@
 
 .consolidated-grid-new {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 80px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 100px;
   width: 100%;
-  max-width: 1360px;
+  max-width: 1600px;
   margin: 0 auto;
   align-items: center;
   position: relative;
@@ -331,19 +333,21 @@
 .about-photos-column-new {
   display: flex;
   flex-direction: column;
-  gap: 70px;
+  gap: 40px;
   position: relative;
 }
 
 .story-offset-wrapper {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 24px;
-  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.65);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   position: relative;
   transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.6s ease, box-shadow 0.6s ease;
-  width: 88%;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 16 / 9;
 }
 
 .story-offset-wrapper.wrap-1 {
@@ -353,14 +357,14 @@
 
 .story-offset-wrapper.wrap-2 {
   align-self: flex-end;
-  margin-top: -90px;
+  margin-top: -10px;
   animation: floatStoryImg2 8s infinite ease-in-out;
 }
 
 .story-parallax-img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
   transition: transform 0.8s ease;
 }
@@ -488,7 +492,7 @@
   display: flex;
   justify-content: center;
   left: 0;
-  padding: 60px 4rem;
+  padding: 40px 4rem;
   position: relative;
   top: 0;
   width: 100vw;
@@ -910,6 +914,7 @@
 }
 
 .avatar-scanlines {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -1309,6 +1314,7 @@
 
   .story-offset-wrapper {
     width: 100%;
+    max-width: 100%;
   }
 
   .story-offset-wrapper.wrap-2,
@@ -1351,7 +1357,7 @@
 
   .about-hero-fore-title, .about-team-fore-title {
     font-size: clamp(2rem, 6vw, 5rem);
-    left: 2%;
+    left: 0;
   }
 
   .story-inspiration-title {
@@ -1412,7 +1418,7 @@
   background: radial-gradient(circle at 50% 50%, #08080a 0%, #030304 100%);
   display: flex;
   min-height: 100vh;
-  padding: 140px 4rem;
+  padding: 100px 4rem;
   position: relative;
   width: 100%;
   z-index: 2;
@@ -1423,7 +1429,7 @@
 
 .studio-floor-container {
   width: 100%;
-  max-width: 1360px;
+  max-width: 1600px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -1438,9 +1444,9 @@
 
 .floor-backdrop-text {
   font-family: var(--font-anton);
-  font-size: clamp(6rem, 15vw, 15rem);
+  font-size: clamp(5rem, 11vw, 11rem);
   font-weight: 900;
-  line-height: 0.8;
+  line-height: 0.95;
   color: transparent;
   -webkit-text-stroke: 1.5px rgba(225, 6, 0, 0.15);
   letter-spacing: 0.05em;
@@ -1452,21 +1458,22 @@
 
 .floor-fore-title {
   position: absolute;
-  top: 40%;
-  left: 4%;
+  top: 35%;
+  left: 0;
   font-family: var(--font-anton);
   font-size: clamp(3rem, 7vw, 7rem);
   font-weight: 900;
   line-height: 0.9;
   color: var(--color-text-white);
-  text-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  z-index: 10;
 }
 
 .floor-grid-split {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 100px;
   position: relative;
   width: 100%;
@@ -1502,7 +1509,7 @@
 .floor-img-frame {
   position: relative;
   width: 100%;
-  max-width: 460px;
+  max-width: 520px;
   aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
@@ -1597,7 +1604,7 @@
   }
   .floor-fore-title {
     font-size: clamp(2rem, 6vw, 5rem);
-    left: 2%;
+    left: 0;
   }
 }
 
