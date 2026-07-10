@@ -160,6 +160,25 @@ const DUMMY_JOBS: Job[] = [
   },
 ];
 
+const formatExperience = (exp: string) => {
+  if (!exp) return '';
+  const val = exp.trim();
+  
+  if (/^\d+$/.test(val)) {
+    return `${val} years of experience`;
+  }
+  if (/^\d+\+$/.test(val)) {
+    return `${val} years of experience`;
+  }
+  if (val.toLowerCase().includes('experience')) {
+    return val;
+  }
+  if (val.toLowerCase().includes('year') || val.toLowerCase().includes('yr')) {
+    return `${val} of experience`;
+  }
+  return `${val} years of experience`;
+};
+
 // ----------------------------------------------------
 // CAREERS PAGE COMPONENT
 // ----------------------------------------------------
@@ -440,7 +459,7 @@ const CareersPage = () => {
                   </div>
 
                   <div className="job-card-header">
-                    <span className="job-card-experience">{job.experience} Experience</span>
+                    <span className="job-card-experience">{formatExperience(job.experience)}</span>
                     <span className="job-card-location">[{job.location}]</span>
                   </div>
                   <div className="job-card-body">
@@ -490,7 +509,7 @@ const CareersPage = () => {
               <div className="prefilled-position-badge">APPLYING FOR</div>
               <h2 className="prefilled-position-title">{selectedJob.title}</h2>
               <div className="prefilled-position-meta">
-                <span>{selectedJob.experience} Experience</span>
+                <span>{formatExperience(selectedJob.experience)}</span>
                 <span className="meta-separator">//</span>
                 <span>{selectedJob.location}</span>
               </div>
