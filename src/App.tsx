@@ -42,7 +42,7 @@ function App() {
         setCurrentTab('about');
       } else if (window.location.hash.startsWith('#projects')) {
         setCurrentTab('projects');
-      } else if (window.location.hash === '#contact') {
+      } else if (window.location.hash.startsWith('#contact')) {
         setCurrentTab('contact');
       } else if (window.location.hash.startsWith('#careers')) {
         setCurrentTab('careers');

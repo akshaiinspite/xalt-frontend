@@ -26,11 +26,11 @@ const CTASection = () => {
             </p>
 
             <div className="cta-button-group">
-              <button className="btn-primary cta-btn">
+              <button 
+                className="btn-primary cta-btn"
+                onClick={() => window.location.hash = '#contact?focus=true'}
+              >
                 Let's Talk
-              </button>
-              <button className="btn-secondary cta-btn">
-                Download Profile
               </button>
             </div>
           </div>

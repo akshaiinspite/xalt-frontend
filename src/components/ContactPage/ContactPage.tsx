@@ -152,6 +152,32 @@ const ContactPage = () => {
   
   const formRef = useRef<HTMLDivElement>(null);
   const emailFormRef = useRef<HTMLFormElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (window.location.hash.includes('focus=true')) {
+      const timer = setTimeout(() => {
+        const input = nameInputRef.current || document.querySelector('input[name="name"]') as HTMLInputElement;
+        if (input) {
+          input.focus();
+          
+          const lenisInstance = (window as any).lenis;
+          if (lenisInstance) {
+            lenisInstance.scrollTo('.cyber-form-wrapper', { 
+              offset: -120, 
+              duration: 1.2,
+              immediate: false
+            });
+          } else {
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }, 800);
+
+      window.history.replaceState(null, '', '#contact');
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Subtle 3D Card Tilt Mouse Tracker
   const handleFormMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -321,6 +347,7 @@ const ContactPage = () => {
                     <span className="label-index">01.</span> FULL NAME <span className="req">*</span>
                   </label>
                   <input
+                    ref={nameInputRef}
                     type="text"
                     name="name"
                     value={formData.name}
