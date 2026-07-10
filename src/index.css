@@ -29,7 +29,6 @@
 html {
   scrollbar-width: thin;
   scrollbar-color: var(--color-primary) var(--color-bg);
-  scroll-behavior: smooth;
 }
 
 body {
