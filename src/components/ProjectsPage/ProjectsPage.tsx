@@ -370,10 +370,17 @@ const ProjectsPage = () => {
       }
     };
 
+    const handleOutsideClick = () => {
+      setActiveDropdown(null);
+    };
+
     handleHashCheck();
     window.addEventListener('hashchange', handleHashCheck);
+    window.addEventListener('click', handleOutsideClick);
+    
     return () => {
       window.removeEventListener('hashchange', handleHashCheck);
+      window.removeEventListener('click', handleOutsideClick);
     };
   }, []);
 
@@ -508,16 +515,35 @@ const ProjectsPage = () => {
               >
                 <button 
                   className={`proj-dropdown-trigger ${selectedCategoryIdx === idx ? 'active' : ''}`}
-                  onClick={() => handleCategorySelect(idx)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveDropdown(activeDropdown === idx ? null : idx);
+                  }}
                 >
                   <span>{cat.title}</span>
-                  <span className="dropdown-caret">▼</span>
+                  <span className="dropdown-caret" style={{
+                    fontSize: '0.6rem',
+                    opacity: 0.5,
+                    marginLeft: '8px',
+                    transition: 'transform 0.3s ease',
+                    transform: activeDropdown === idx ? 'rotate(180deg)' : 'none',
+                    display: 'inline-block'
+                  }}>▼</span>
                 </button>
                 <div className="proj-dropdown-menu">
+                  <div 
+                    className={`proj-dropdown-item ${selectedCategoryIdx === idx && viewMode === 'board' ? 'selected' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCategorySelect(idx);
+                    }}
+                  >
+                    Category Overview
+                  </div>
                   {cat.subCategories.map((sub, sIdx) => (
                     <div 
                       key={sIdx} 
-                      className={`proj-dropdown-item ${selectedCategoryIdx === idx && selectedSubcategoryIdx === sIdx ? 'selected' : ''}`}
+                      className={`proj-dropdown-item ${selectedCategoryIdx === idx && selectedSubcategoryIdx === sIdx && viewMode === 'gallery' ? 'selected' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSelect(idx, sIdx);

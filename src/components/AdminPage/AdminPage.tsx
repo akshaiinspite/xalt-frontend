@@ -194,7 +194,7 @@ const AdminPage = () => {
     gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
     image: '',
     empNo: '',
-    order: 0
+    order: 1
   });
   const [editingTeamMemberId, setEditingTeamMemberId] = useState<string | null>(null);
   const [teamFeedback, setTeamFeedback] = useState({ type: '', message: '' });
@@ -347,7 +347,8 @@ const AdminPage = () => {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setTeamMembers(data);
+          const sorted = [...data].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          setTeamMembers(sorted);
         }
       })
       .catch(err => console.error('Error fetching team members:', err));
@@ -468,7 +469,7 @@ const AdminPage = () => {
         message: editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!' 
       });
       toast.success(editingTeamMemberId ? 'Team member updated successfully!' : 'Team member created successfully!');
-      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', empNo: '', order: 0 });
+      setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', empNo: '', order: 1 });
       setEditingTeamMemberId(null);
       fetchTeamMembers();
       setTimeout(() => setTeamFeedback({ type: '', message: '' }), 3000);
@@ -490,14 +491,14 @@ const AdminPage = () => {
       gradient: member.gradient || 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
       image: member.image || '',
       empNo: member.empNo || '',
-      order: member.order !== undefined ? member.order : 0
+      order: member.order !== undefined ? member.order : 1
     });
     scrollToForm('team-form-container');
   };
 
   const cancelEditTeamMember = () => {
     setEditingTeamMemberId(null);
-    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', empNo: '', order: 0 });
+    setNewTeamMember({ name: '', role: '', department: 'CREATIVE_3D_LAB', bio: '', gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)', image: '', empNo: '', order: 1 });
   };
 
   const handleDeleteTeamMember = (id: string) => {
@@ -2005,14 +2006,25 @@ const AdminPage = () => {
                     />
                   </div>
 
-                  <div className="dashboard-form-group">
-                    <label>EMPLOYEE NUMBER</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. 05"
-                      value={newTeamMember.empNo}
-                      onChange={(e) => setNewTeamMember({ ...newTeamMember, empNo: e.target.value })}
-                    />
+                  <div className="dashboard-form-row">
+                    <div className="dashboard-form-group">
+                      <label>EMPLOYEE NUMBER</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 05"
+                        value={newTeamMember.empNo}
+                        onChange={(e) => setNewTeamMember({ ...newTeamMember, empNo: e.target.value })}
+                      />
+                    </div>
+                    <div className="dashboard-form-group">
+                      <label>DISPLAY ORDER</label>
+                      <input 
+                        type="number" 
+                        placeholder="e.g. 1 (Lower numbers show first)"
+                        value={newTeamMember.order}
+                        onChange={(e) => setNewTeamMember({ ...newTeamMember, order: parseInt(e.target.value) || 1 })}
+                      />
+                    </div>
                   </div>
 
                   <div className="dashboard-form-group">
@@ -2126,6 +2138,11 @@ const AdminPage = () => {
                             <span style={{ fontSize: '0.72rem', color: 'var(--color-primary, #e10600)', fontWeight: 600, display: 'block', margin: '2px 0' }}>{member.role || 'No Role Assigned'}</span>
                             <span style={{ fontSize: '0.65rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
                               {member.department ? member.department.replace(/_/g, ' ') : 'CREATIVE 3D LAB'}
+                            </span>
+                          </div>
+                          <div style={{ marginLeft: 'auto' }}>
+                            <span style={{ fontSize: '0.72rem', background: '#dc2626', color: '#fff', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                              Order: {member.order !== undefined ? member.order : 0}
                             </span>
                           </div>
                         </div>

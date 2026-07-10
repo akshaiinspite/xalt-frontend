@@ -176,33 +176,33 @@ const Header = () => {
       {/* MOBILE DRAWER OVERLAY */}
       <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
         <nav className="mobile-nav-links">
-          <a href="#home" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#home')}>
+          <a href="#home" className={`mobile-nav-link ${activeTab === 'home' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#home')}>
             Home
           </a>
-          <a href="#about" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#about')}>
+          <a href="#about" className={`mobile-nav-link ${activeTab === 'about' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#about')}>
             About
           </a>
           
           <div className="mobile-projects-wrapper">
             <span className="mobile-projects-label">Projects</span>
             <div className="mobile-projects-sublinks">
-              <a href="#projects/commercial" className="mobile-sub-link" onClick={(e) => handleDropdownClick(e, '#projects/commercial')}>
+              <a href="#projects/commercial" className={`mobile-sub-link ${window.location.hash.startsWith('#projects/commercial') ? 'active' : ''}`} onClick={(e) => handleDropdownClick(e, '#projects/commercial')}>
                 Commercial Projects
               </a>
-              <a href="#projects/films" className="mobile-sub-link" onClick={(e) => handleDropdownClick(e, '#projects/films')}>
+              <a href="#projects/films" className={`mobile-sub-link ${window.location.hash.startsWith('#projects/films') ? 'active' : ''}`} onClick={(e) => handleDropdownClick(e, '#projects/films')}>
                 Films & Entertainment
               </a>
-              <a href="#projects/immersive" className="mobile-sub-link" onClick={(e) => handleDropdownClick(e, '#projects/immersive')}>
+              <a href="#projects/immersive" className={`mobile-sub-link ${window.location.hash.startsWith('#projects/immersive') ? 'active' : ''}`} onClick={(e) => handleDropdownClick(e, '#projects/immersive')}>
                 AR & VR Experiences
               </a>
             </div>
           </div>
 
-          <a href="#careers" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#careers')}>
+          <a href="#careers" className={`mobile-nav-link ${activeTab === 'careers' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#careers')}>
             Careers
           </a>
 
-          <a href="#contact" className="mobile-nav-link" onClick={(e) => handleLinkClick(e, '#contact')}>
+          <a href="#contact" className={`mobile-nav-link ${activeTab === 'contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#contact')}>
             Contact Us
           </a>
         </nav>

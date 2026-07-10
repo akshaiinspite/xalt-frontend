@@ -332,3 +332,26 @@
     padding: 4rem 2rem;
   }
 }
+
+@media (max-width: 480px) {
+  .services-section {
+    padding: 3.5rem 1.25rem;
+  }
+  .service-card {
+    height: 380px;
+  }
+  .service-card-content {
+    padding: 1.5rem 1.25rem;
+  }
+  .service-card-title {
+    font-size: 1.3rem;
+  }
+  .service-card-desc {
+    font-size: 0.82rem;
+    -webkit-line-clamp: 2;
+  }
+  .corner.tl { top: 8px; left: 8px; }
+  .corner.tr { top: 8px; right: 8px; }
+  .corner.bl { bottom: 8px; left: 8px; }
+  .corner.br { bottom: 8px; right: 8px; }
+}

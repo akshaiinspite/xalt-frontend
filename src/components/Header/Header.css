@@ -294,7 +294,22 @@
   transition: all 0.3s ease;
 }
 
-.mobile-sub-link:hover {
+.mobile-sub-link:hover,
+.mobile-sub-link.active {
   color: var(--color-primary);
+  font-weight: 600;
+}
+
+.mobile-nav-link.active {
+  color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .logo {
+    height: 3.2rem;
+  }
+  .header.scrolled .logo {
+    height: 2.8rem;
+  }
 }
 

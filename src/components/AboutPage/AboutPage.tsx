@@ -469,7 +469,8 @@ const AboutPage = () => {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          setTeamMembers(data);
+          const sorted = [...data].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          setTeamMembers(sorted);
         }
       })
       .catch(err => {

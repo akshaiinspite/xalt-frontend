@@ -121,3 +121,12 @@ body, * {
   pointer-events: none;
   white-space: nowrap;
 }
+
+@media (pointer: coarse), (max-width: 1024px) {
+  body, * {
+    cursor: auto !important;
+  }
+  .custom-cursor-container {
+    display: none !important;
+  }
+}
