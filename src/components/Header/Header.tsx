@@ -29,7 +29,7 @@ const Header = () => {
         setActiveTab('about');
       } else if (hash.startsWith('#projects')) {
         setActiveTab('projects');
-      } else if (hash === '#contact') {
+      } else if (hash.startsWith('#contact')) {
         setActiveTab('contact');
       } else if (hash.startsWith('#careers')) {
         setActiveTab('careers');

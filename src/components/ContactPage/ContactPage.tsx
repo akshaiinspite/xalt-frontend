@@ -159,20 +159,20 @@ const ContactPage = () => {
       const timer = setTimeout(() => {
         const input = nameInputRef.current || document.querySelector('input[name="name"]') as HTMLInputElement;
         if (input) {
-          input.focus();
+          input.focus({ preventScroll: true });
           
           const lenisInstance = (window as any).lenis;
-          if (lenisInstance) {
-            lenisInstance.scrollTo('.cyber-form-wrapper', { 
-              offset: -120, 
-              duration: 1.2,
+          if (lenisInstance && formRef.current) {
+            lenisInstance.scrollTo(formRef.current, { 
+              offset: -100, 
+              duration: 1.5,
               immediate: false
             });
           } else {
             input.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
-      }, 800);
+      }, 600);
 
       window.history.replaceState(null, '', '#contact');
       return () => clearTimeout(timer);
