@@ -802,7 +802,7 @@ const AboutPage = () => {
       mm.revert();
       clearTimeout(timer);
     };
-  }, []);
+  }, [teamMembers.length]);
 
   const handleOutsideClick = () => {
     setActiveMember(null);
@@ -1141,7 +1141,9 @@ const AboutPage = () => {
           </div>
           <div className="team-progress-labels">
             <span className="telemetry-label">SYSTEM_INDEX</span>
-            <span className="telemetry-val">{Math.min(6, Math.max(1, Math.round(scrollProgress / 16.6) + 1))} // 06</span>
+            <span className="telemetry-val">
+              {String(Math.min(teamMembers.length, Math.max(1, Math.round((scrollProgress / 100) * (teamMembers.length - 1)) + 1))).padStart(2, '0')} // {String(teamMembers.length).padStart(2, '0')}
+            </span>
           </div>
         </div>
 
