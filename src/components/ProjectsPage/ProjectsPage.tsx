@@ -731,7 +731,7 @@ const ProjectsPage = () => {
               <div className="immersive-gallery-layout">
                 {/* Horizontal scrolling row of images */}
                 <div className="immersive-scroll-row-container">
-                  <h3 className="immersive-scroll-title">// PROJECT TILES (CLICK FOR FULL SCREEN DETAILED VIEW)</h3>
+                  <h3 className="immersive-scroll-title">PROJECT TILES (CLICK FOR FULL SCREEN DETAILED VIEW)</h3>
                   <div className="immersive-scroll-row">
                     {paginatedItems.map((item, idx) => {
                       return (
@@ -763,7 +763,7 @@ const ProjectsPage = () => {
                 {/* Single Video Showcase fully covering (Subcategory Showcase Video) */}
                 <div className="immersive-video-showcase-section">
                   <h3 className="immersive-video-title">
-                    // SHOWCASE SHOWREEL: {activeSubcategory.title.toUpperCase()}
+                    SHOWCASE SHOWREEL: {activeSubcategory.title.toUpperCase()}
                   </h3>
                   <div className="immersive-video-wrapper">
                     <div className="immersive-video-corners">
@@ -949,7 +949,7 @@ const ProjectsPage = () => {
             {/* Gallery Section */}
             {selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img).length > 0 && (
               <div className="lightbox-gallery-section">
-                <h4 className="lightbox-gallery-title">// PROJECT GALLERY</h4>
+                <h4 className="lightbox-gallery-title">PROJECT GALLERY</h4>
                 <div className="lightbox-gallery-grid">
                   {selectedProjectNode.galleryImages.filter(img => img).map((imgUrl, imgIdx) => (
                     <div key={imgIdx} className="lightbox-gallery-item">

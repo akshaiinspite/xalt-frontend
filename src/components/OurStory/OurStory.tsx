@@ -76,7 +76,6 @@ const OurStory = () => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 1.0, ease: "easeOut" }}
         >
-          <div className="story-badge">// SECURE NODE ACCESS: STUDIO PROFILE</div>
           
           <h2 className="story-title">WHO WE <span className="story-highlight">ARE</span></h2>
           
