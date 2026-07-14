@@ -56,7 +56,7 @@ const CATEGORIES_DATA: CategorySection[] = [
   {
     id: 'commercial',
     title: 'COMMERCIAL PROJECTS',
-    description: 'We create high-end commercial visual experiences for brands, corporations, real estate, hospitality, retail, and luxury businesses through cinematic storytelling and cutting-edge production.',
+    description: 'From cinematic product showcases to high-end advertising visuals, our commercial animation services combine creativity, storytelling, and cutting-edge technology to deliver impactful results.',
     heroImage: commercialHero,
     subCategories: [
       {
@@ -129,7 +129,7 @@ const CATEGORIES_DATA: CategorySection[] = [
   {
     id: 'films',
     title: 'FILMS & ENTERTAINMENT',
-    description: 'Bringing stories to life with cinematic production, visual effects, immersive editing, and professional filmmaking.',
+    description: 'From music videos and motion graphics to high-end CGI and visual effects, we help artists, production houses, brands, and creators transform ideas into immersive visual experiences that captivate audiences and leave a lasting impression.',
     heroImage: filmsHero,
     subCategories: [
       {
@@ -202,7 +202,7 @@ const CATEGORIES_DATA: CategorySection[] = [
   {
     id: 'immersive',
     title: 'AR & VR EXPERIENCES',
-    description: 'Creating interactive digital experiences using Augmented Reality, Virtual Reality, Mixed Reality, and immersive technologies.',
+    description: 'Creating immersive AR and VR experiences that inspire, educate, and connect people through next-generation interactive technology',
     heroImage: arvrHero,
     subCategories: [
       {
@@ -394,7 +394,7 @@ const ProjectsPage = () => {
   }, [selectedProjectNode]);
 
   const fetchPortfolio = () => {
-    fetch(`${API_BASE_URL}/portfolio`)
+    fetch(`${API_BASE_URL}/portfolio?t=${Date.now()}`)
       .then(res => res.json())
       .then(data => {
         if (data && data.length > 0) {

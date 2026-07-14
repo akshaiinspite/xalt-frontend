@@ -1154,15 +1154,15 @@ const AboutPage = () => {
 
               <div className="cinematic-heading-group">
                 <div className="floor-backdrop-text">FACILITY</div>
-                <h2 className="floor-fore-title">STUDIO FLOOR</h2>
+                <h2 className="floor-fore-title">MOCAP FLOOR</h2>
               </div>
 
               <div className="floor-intro-text-block">
                 <p>
-                  Spanning across two custom-designed levels, the X.Alt Studio space is architected for peak creative synergy and technological horsepower. We integrate high-speed computing pipelines with acoustic optimization to bridge the gap between imagination and execution.
+                  Our dedicated Motion Capture Floor enables us to capture authentic human movement with exceptional precision, bringing digital characters and performances to life. Equipped for high-quality animation production, our facility streamlines the creation of realistic character motion for films, games, commercials, virtual production, and immersive XR experiences.
                 </p>
                 <p>
-                  From raw environment synthesis to post-production color mastering and multi-channel sound staging, our floor plan is designed to streamline workflow collaboration between digital artists and directors.
+                  By combining advanced motion capture technology with our animation expertise, we deliver natural, expressive performances while accelerating production workflows.
                 </p>
               </div>
             </div>
@@ -1212,8 +1212,8 @@ const AboutPage = () => {
             </div>
 
             <div className="cinematic-heading-group">
-              <div className="about-team-backdrop-text">OUR TEAM</div>
-              <h2 className="about-team-fore-title">OUR TEAM</h2>
+              <div className="about-team-backdrop-text">PEOPLE BEHIND</div>
+              <h2 className="about-team-fore-title">PEOPLE BEHIND</h2>
             </div>
 
             <div className="team-subtitle-column">
@@ -1222,8 +1222,7 @@ const AboutPage = () => {
                 <span className="cta-highlight">OF VISUAL STORYTELLING.</span>
               </h3>
               <p className="team-intro-desc">
-                We believe in the power of visuals to transport audiences and ignite emotions. 
-                <strong> Click on any card below to open and reveal personnel dossiers.</strong>
+                We believe every great idea deserves exceptional execution. Our multidisciplinary team of artists, designers, animators, and technical specialists works collaboratively to deliver visually stunning solutions tailored to each client's vision and objectives. By combining cutting-edge technology with thoughtful storytelling, we create experiences that resonate with audiences and elevate brands. <strong style={{ color: 'var(--color-primary, #e10600)' }}>Click on any card below to open and reveal personnel dossiers.</strong>
               </p>
             </div>
 
