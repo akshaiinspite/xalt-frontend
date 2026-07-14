@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import gsap from 'gsap';
 import './ProjectsPage.css';
 import { API_BASE_URL, getMediaUrl } from '../../config';
@@ -294,6 +294,55 @@ const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
   const [selectedProjectNode, setSelectedProjectNode] = useState<GalleryItem | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollLeft = () => {
+    if (scrollRef.current) {
+      const container = scrollRef.current;
+      const width = container.clientWidth;
+      container.scrollBy({ left: -width, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (scrollRef.current) {
+      const container = scrollRef.current;
+      const width = container.clientWidth;
+      container.scrollBy({ left: width, behavior: 'smooth' });
+    }
+  };
+
+  // Enable mouse wheel scroll horizontal mapping
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    let isScrolling = false;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        
+        if (isScrolling) return;
+        isScrolling = true;
+        
+        const width = container.clientWidth;
+        const direction = e.deltaY > 0 ? 1 : -1;
+        
+        container.scrollBy({ left: direction * width, behavior: 'smooth' });
+        
+        setTimeout(() => {
+          isScrolling = false;
+        }, 600);
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [selectedCategoryIdx, selectedSubcategoryIdx, viewMode]);
 
   const fetchPortfolio = () => {
     fetch(`${API_BASE_URL}/portfolio`)
@@ -729,35 +778,84 @@ const ProjectsPage = () => {
           <div className="gallery-grid-container">
             {activeCategory.id === 'immersive' ? (
               <div className="immersive-gallery-layout">
-                {/* Horizontal scrolling row of images */}
-                <div className="immersive-scroll-row-container">
-                  <h3 className="immersive-scroll-title">PROJECT TILES (CLICK FOR FULL SCREEN DETAILED VIEW)</h3>
-                  <div className="immersive-scroll-row">
-                    {paginatedItems.map((item, idx) => {
+                {/* Premium Horizontal Full-Screen Slider */}
+                <div className="immersive-slider-container">
+                  <div className="immersive-slider-corners">
+                    <span className="corner tl"></span>
+                    <span className="corner tr"></span>
+                    <span className="corner bl"></span>
+                    <span className="corner br"></span>
+                  </div>
+
+                  <button className="slider-nav-btn prev" onClick={handleScrollLeft} aria-label="Previous Project">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+
+                  <div className="immersive-slider-track" ref={scrollRef}>
+                    {activeSubcategory.galleryItems.map((item, idx) => {
                       return (
                         <div
                           key={idx}
-                          className="immersive-scroll-card"
+                          className="immersive-slider-slide"
                           onClick={() => setSelectedProjectNode(item)}
                         >
-                          <div className="immersive-card-corners">
-                            <span className="corner tl"></span>
-                            <span className="corner tr"></span>
-                            <span className="corner bl"></span>
-                            <span className="corner br"></span>
+                          <div className="slide-media-wrapper">
+                            {item.video ? (
+                              <video 
+                                src={getMediaUrl(item.video)} 
+                                poster={getMediaUrl(item.image)} 
+                                muted 
+                                loop 
+                                playsInline 
+                                autoPlay
+                                className="slide-media"
+                              />
+                            ) : (
+                              <img src={getMediaUrl(item.image)} alt={item.title} className="slide-media" />
+                            )}
+                            <div className="slide-gradient-overlay"></div>
                           </div>
-                          <div className="immersive-card-img-wrapper">
-                            <img src={getMediaUrl(item.image)} alt={item.title} className="immersive-card-img" />
-                            <div className="immersive-card-overlay"></div>
-                          </div>
-                          <div className="immersive-card-info">
-                            <span className="immersive-card-title">{item.title}</span>
-                            <span className="immersive-card-tag">{item.tag}</span>
+
+                          <div className="slide-content-overlay">
+                            <div className="slide-telemetry-badge">
+                              <span className="rec-dot-active"></span>
+                              <span>PROJECT {String(idx + 1).padStart(2, '0')} / {String(activeSubcategory.galleryItems.length).padStart(2, '0')}</span>
+                            </div>
+
+                            <h2 className="slide-project-title">{item.title}</h2>
+                            <p className="slide-project-tag">{item.tag}</p>
+
+                            <div className="slide-telemetry-details">
+                              <div className="slide-detail-field">
+                                <span className="detail-field-label">CLIENT:</span>
+                                <span className="detail-field-val">{item.client || 'X.ALT STUDIOS'}</span>
+                              </div>
+                              <div className="slide-detail-field">
+                                <span className="detail-field-label">YEAR:</span>
+                                <span className="detail-field-val accent-text">{item.year || item.code || '2026'}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="slide-action-btn">
+                              <span className="action-btn-text">LAUNCH IMMERSIVE VIEW</span>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginLeft: '8px' }}>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       );
                     })}
                   </div>
+
+                  <button className="slider-nav-btn next" onClick={handleScrollRight} aria-label="Next Project">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
                 </div>
 
                 {/* Single Video Showcase fully covering (Subcategory Showcase Video) */}
