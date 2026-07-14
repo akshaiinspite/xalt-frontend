@@ -344,6 +344,55 @@ const ProjectsPage = () => {
     };
   }, [selectedCategoryIdx, selectedSubcategoryIdx, viewMode]);
 
+  const lightboxScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleLightboxScrollLeft = () => {
+    if (lightboxScrollRef.current) {
+      const container = lightboxScrollRef.current;
+      const width = container.clientWidth;
+      container.scrollBy({ left: -width, behavior: 'smooth' });
+    }
+  };
+
+  const handleLightboxScrollRight = () => {
+    if (lightboxScrollRef.current) {
+      const container = lightboxScrollRef.current;
+      const width = container.clientWidth;
+      container.scrollBy({ left: width, behavior: 'smooth' });
+    }
+  };
+
+  // Enable mouse wheel scroll horizontal mapping for Lightbox Gallery
+  useEffect(() => {
+    const container = lightboxScrollRef.current;
+    if (!container) return;
+
+    let isScrolling = false;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        
+        if (isScrolling) return;
+        isScrolling = true;
+        
+        const width = container.clientWidth;
+        const direction = e.deltaY > 0 ? 1 : -1;
+        
+        container.scrollBy({ left: direction * width, behavior: 'smooth' });
+        
+        setTimeout(() => {
+          isScrolling = false;
+        }, 600);
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [selectedProjectNode]);
+
   const fetchPortfolio = () => {
     fetch(`${API_BASE_URL}/portfolio`)
       .then(res => res.json())
@@ -1048,32 +1097,58 @@ const ProjectsPage = () => {
             {selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img).length > 0 && (
               <div className="lightbox-gallery-section">
                 <h4 className="lightbox-gallery-title">PROJECT GALLERY</h4>
-                <div className="lightbox-gallery-grid">
-                  {selectedProjectNode.galleryImages.filter(img => img).map((imgUrl, imgIdx) => (
-                    <div key={imgIdx} className="lightbox-gallery-item">
-                      <div className="gallery-item-corners">
-                        <span className="corner tl"></span>
-                        <span className="corner tr"></span>
-                        <span className="corner bl"></span>
-                        <span className="corner br"></span>
+                
+                <div className="lightbox-slider-container">
+                  <div className="lightbox-slider-corners">
+                    <span className="corner tl"></span>
+                    <span className="corner tr"></span>
+                    <span className="corner bl"></span>
+                    <span className="corner br"></span>
+                  </div>
+
+                  <button className="lightbox-nav-btn prev" onClick={handleLightboxScrollLeft} aria-label="Previous Image">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+
+                  <div className="lightbox-slider-track" ref={lightboxScrollRef}>
+                    {selectedProjectNode.galleryImages.filter(img => img).map((imgUrl, imgIdx) => (
+                      <div key={imgIdx} className="lightbox-slider-slide">
+                        <div className="lightbox-slide-corners">
+                          <span className="corner tl"></span>
+                          <span className="corner tr"></span>
+                          <span className="corner bl"></span>
+                          <span className="corner br"></span>
+                        </div>
+
+                        {isVideoUrl(imgUrl) ? (
+                          <video 
+                            src={getMediaUrl(imgUrl)} 
+                            controls
+                            className="lightbox-slider-media"
+                          />
+                        ) : (
+                          <img 
+                            src={getMediaUrl(imgUrl)} 
+                            alt={`${selectedProjectNode.title} gallery ${imgIdx + 1}`} 
+                            className="lightbox-slider-media"
+                            onClick={() => window.open(getMediaUrl(imgUrl), '_blank')}
+                          />
+                        )}
+
+                        <div className="lightbox-slide-badge">
+                          <span>IMAGE {String(imgIdx + 1).padStart(2, '0')} / {String(selectedProjectNode.galleryImages?.filter(img => img).length || 0).padStart(2, '0')}</span>
+                        </div>
                       </div>
-                      {isVideoUrl(imgUrl) ? (
-                        <video 
-                          src={getMediaUrl(imgUrl)} 
-                          controls
-                          className="lightbox-gallery-img"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <img 
-                          src={getMediaUrl(imgUrl)} 
-                          alt={`${selectedProjectNode.title} gallery ${imgIdx + 1}`} 
-                          className="lightbox-gallery-img"
-                          onClick={() => window.open(getMediaUrl(imgUrl), '_blank')}
-                        />
-                      )}
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+
+                  <button className="lightbox-nav-btn next" onClick={handleLightboxScrollRight} aria-label="Next Image">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
                 </div>
               </div>
             )}
