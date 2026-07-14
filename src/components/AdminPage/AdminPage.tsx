@@ -1752,8 +1752,8 @@ const AdminPage = () => {
                                     <label>ADDITIONAL GALLERY IMAGES / VIDEOS ({editingProject.galleryImages?.length || 0})</label>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
                                       {editingProject.galleryImages && editingProject.galleryImages.map((imgUrl: string, idx: number) => (
-                                        <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                          <span style={{ fontSize: '0.75rem', color: '#6b7280', width: '20px' }}>{idx + 1}.</span>
+                                        <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', marginBottom: '8px' }}>
+                                          <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#475569', width: '20px', marginTop: '10px', textAlign: 'center' }}>{idx + 1}.</span>
                                           <div style={{ flex: 1 }}>
                                             <FileUploadWidget 
                                               value={imgUrl}
@@ -1771,7 +1771,7 @@ const AdminPage = () => {
                                           <button 
                                             type="button" 
                                             className="dashboard-btn delete" 
-                                            style={{ padding: '0 10px', height: '42px', margin: 0, fontSize: '0.75rem' }}
+                                            style={{ padding: '0 15px', height: '42px', margin: 0, fontSize: '0.75rem', alignSelf: 'flex-start' }}
                                             onClick={() => {
                                               const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
                                               setEditingProject((prev: any) => ({
@@ -1876,8 +1876,8 @@ const AdminPage = () => {
                                         <label style={{ fontSize: '0.62rem' }}>ADDITIONAL GALLERY IMAGES / VIDEOS ({editingProject.galleryImages?.length || 0})</label>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
                                           {editingProject.galleryImages && editingProject.galleryImages.map((imgUrl: string, idx: number) => (
-                                            <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                              <span style={{ fontSize: '0.75rem', color: '#6b7280', width: '20px' }}>{idx + 1}.</span>
+                                            <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', marginBottom: '8px' }}>
+                                              <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#475569', width: '20px', marginTop: '10px', textAlign: 'center' }}>{idx + 1}.</span>
                                               <div style={{ flex: 1 }}>
                                                 <FileUploadWidget 
                                                   value={imgUrl}
@@ -1895,7 +1895,7 @@ const AdminPage = () => {
                                               <button 
                                                 type="button" 
                                                 className="dashboard-btn delete" 
-                                                style={{ padding: '0 10px', height: '42px', margin: 0, fontSize: '0.75rem' }}
+                                                style={{ padding: '0 15px', height: '42px', margin: 0, fontSize: '0.75rem', alignSelf: 'flex-start' }}
                                                 onClick={() => {
                                                   const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
                                                   setEditingProject((prev: any) => ({
