@@ -1087,8 +1087,8 @@ const AboutPage = () => {
             </div>
 
             <div className="cinematic-heading-group">
-              <div className="about-hero-backdrop-text">ABOUT US</div>
-              <h1 className="about-hero-fore-title">ABOUT US</h1>
+              <div className="about-hero-backdrop-text">THE STUDIO</div>
+              <h1 className="about-hero-fore-title">THE STUDIO</h1>
             </div>
 
             <div className="story-badge-new">THE CHRONICLE</div>
@@ -1101,16 +1101,13 @@ const AboutPage = () => {
             <div className="story-body-text-new">
               <span className="story-decor-corner-indicator"></span>
               <p>
-                "X.Alt is a visionary visual media company, deriving its name from 
-                <strong> 'exalted,'</strong> symbolizing unparalleled excellence and power. 
-                With an alternate interpretation suggesting it as the premier alternative 
-                for subject X, X.Alt promises innovative and dynamic solutions in the 
-                realm of visual media."
+                We are X.ALT Studios, a creative technology studio dedicated to transforming ideas into extraordinary visual experiences. By blending artistry, innovation, and technical expertise, we create compelling digital content that inspires, engages, and leaves a lasting impact.
               </p>
               <p>
-                Our studio bridges the gap between raw imagination and technical execution. 
-                We craft high-end visual effects, interactive 3D assets, and immersive XR 
-                experiences that do not just tell a story—they transport audiences entirely.
+                Our expertise spans 3D Animation, Visual Effects (VFX), Motion Graphics, CGI, Product Visualization, Virtual Production, and Extended Reality (XR). Whether it's a cinematic sequence, a commercial campaign, an immersive virtual experience, or a photorealistic architectural visualization, we produce visuals that craft immersive experiences that connect imagination with reality. Every frame we create reflects our passion for innovation, attention to detail, and relentless pursuit of creative excellence.
+              </p>
+              <p style={{ fontWeight: 'bold', color: 'var(--color-primary, #e10600)', marginTop: '1.5rem' }}>
+                Creating extraordinary visuals. Building unforgettable experiences.
               </p>
             </div>
           </div>

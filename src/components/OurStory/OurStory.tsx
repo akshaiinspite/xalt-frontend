@@ -77,14 +77,14 @@ const OurStory = () => {
           transition={{ duration: 1.0, ease: "easeOut" }}
         >
           
-          <h2 className="story-title">WHO WE <span className="story-highlight">ARE</span></h2>
+          <h2 className="story-title">REIMAGINING <span className="story-highlight">REALITY</span></h2>
           
           <div className="about-description-box">
             <p className="about-hud-text">
-              At X.ALT Studios, we are a team of visionary creators, tech innovators, and visual artists pushing the boundaries of what is possible in the digital realm.
+              We transform ideas into immersive visual experiences by combining artistic excellence with cutting-edge technology. From cinematic visual effects and high-end 3D content to interactive real-time experiences and extended reality (XR) solutions, every project is crafted to captivate, inspire, and leave a lasting impression.
             </p>
             <p className="about-hud-text">
-              X.ALT Studio bridges the gap between raw imagination and technical execution. We craft high-end visual effects, interactive 3D assets, and immersive XR experiences that do not just tell a story—they transport audiences entirely.
+              At X.ALT Studios, we don't just create visuals, we build experiences that blur the line between imagination and reality.
             </p>
           </div>
 
