@@ -438,6 +438,18 @@ const ProjectsPage = () => {
     };
   }, []);
 
+  // Prevent background scrolling when lightbox is open to eliminate double scrollbars
+  useEffect(() => {
+    if (selectedProjectNode) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedProjectNode]);
+
   useEffect(() => {
     fetchPortfolio();
   }, []);
@@ -1040,7 +1052,7 @@ const ProjectsPage = () => {
 
       {/* Lightbox / Video Player Modal */}
       {selectedProjectNode && (
-        <div className="project-lightbox-overlay" onClick={() => setSelectedProjectNode(null)}>
+        <div className="project-lightbox-overlay" onClick={() => setSelectedProjectNode(null)} data-lenis-prevent>
           <div className="project-lightbox-card" onClick={(e) => e.stopPropagation()}>
             {/* Close Button */}
             <button className="lightbox-close-btn" onClick={() => setSelectedProjectNode(null)}>
@@ -1095,9 +1107,9 @@ const ProjectsPage = () => {
 
             {/* Gallery Section */}
             {(() => {
-              const galleryList = (selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img).length > 0)
-                ? selectedProjectNode.galleryImages.filter(img => img)
-                : [selectedProjectNode.image].filter(img => img);
+              const galleryList = (selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img && img.trim()).length > 0)
+                ? selectedProjectNode.galleryImages.filter(img => img && img.trim()).map(img => img.trim())
+                : [selectedProjectNode.image].filter(img => img && img.trim()).map(img => img.trim());
 
               if (galleryList.length === 0) return null;
 
@@ -1105,7 +1117,7 @@ const ProjectsPage = () => {
                 <div className="lightbox-gallery-section">
                   <h4 className="lightbox-gallery-title">PROJECT GALLERY</h4>
                   
-                  <div className="lightbox-slider-container">
+                  <div className="lightbox-slider-container" data-lenis-prevent>
                     <div className="lightbox-slider-corners">
                       <span className="corner tl"></span>
                       <span className="corner tr"></span>

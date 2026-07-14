@@ -15,6 +15,7 @@ interface FileUploadWidgetProps {
   value: string;
   onChange: (url: string) => void;
   acceptType: 'image' | 'video' | 'any';
+  onRemove?: () => void;
 }
 
 // Detect file type from URL
@@ -30,7 +31,8 @@ const isVideoUrl = (url: string) => {
 const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   value,
   onChange,
-  acceptType
+  acceptType,
+  onRemove
 }) => {
   const [urlInput, setUrlInput] = useState(value || '');
   const [isUploading, setIsUploading] = useState(false);
@@ -93,42 +95,45 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
 
   return (
     <div className="cdn-link-widget" style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
-        <input 
-          type="text" 
-          placeholder={`Enter CDN ${acceptType === 'image' ? 'Image' : acceptType === 'video' ? 'Video' : 'Media'} URL...`}
-          value={urlInput}
-          onChange={(e) => setUrlInput(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          style={{ 
-            flex: 1, 
-            minWidth: 0,
-            padding: '10px 14px', 
-            fontSize: '0.85rem', 
-            border: '1px solid #d1d5db', 
-            borderRadius: '4px', 
-            background: '#fff', 
-            color: '#1f2937', 
-            height: '42px',
-            boxSizing: 'border-box'
-          }}
-        />
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          style={{ display: 'none' }} 
-          accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'} 
-          onChange={handleFileChange}
-        />
+      <input 
+        type="text" 
+        placeholder={`Enter CDN ${acceptType === 'image' ? 'Image' : acceptType === 'video' ? 'Video' : 'Media'} URL...`}
+        value={urlInput}
+        onChange={(e) => {
+          setUrlInput(e.target.value);
+          onChange(e.target.value);
+        }}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        style={{ 
+          width: '100%', 
+          padding: '10px 14px', 
+          fontSize: '0.85rem', 
+          border: '1px solid #d1d5db', 
+          borderRadius: '4px', 
+          background: '#fff', 
+          color: '#1f2937', 
+          height: '42px',
+          boxSizing: 'border-box'
+        }}
+      />
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        style={{ display: 'none' }} 
+        accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'} 
+        onChange={handleFileChange}
+      />
+      
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%', boxSizing: 'border-box', flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           className="dashboard-btn primary"
           disabled={isUploading}
           style={{ 
-            padding: '0 20px', 
-            height: '42px', 
+            padding: '0 16px', 
+            height: '36px', 
             margin: 0, 
             display: 'flex', 
             alignItems: 'center', 
@@ -137,6 +142,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
             boxSizing: 'border-box',
             borderRadius: '4px',
             lineHeight: '1',
+            fontSize: '0.75rem',
             flexShrink: 0
           }}
         >
@@ -148,8 +154,8 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
             onClick={handleClear}
             className="dashboard-btn secondary"
             style={{ 
-              padding: '0 20px', 
-              height: '42px', 
+              padding: '0 16px', 
+              height: '36px', 
               margin: 0, 
               display: 'flex', 
               alignItems: 'center', 
@@ -157,10 +163,34 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
               boxSizing: 'border-box',
               borderRadius: '4px',
               lineHeight: '1',
+              fontSize: '0.75rem',
               flexShrink: 0
             }}
           >
             Clear
+          </button>
+        )}
+        {onRemove && (
+          <button 
+            type="button" 
+            onClick={onRemove}
+            className="dashboard-btn delete"
+            style={{ 
+              padding: '0 16px', 
+              height: '36px', 
+              margin: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              boxSizing: 'border-box',
+              borderRadius: '4px',
+              lineHeight: '1',
+              fontSize: '0.75rem',
+              flexShrink: 0,
+              marginLeft: 'auto'
+            }}
+          >
+            Remove
           </button>
         )}
       </div>
@@ -1753,8 +1783,8 @@ const AdminPage = () => {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
                                       {editingProject.galleryImages && editingProject.galleryImages.map((imgUrl: string, idx: number) => (
                                         <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', marginBottom: '8px' }}>
-                                          <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#475569', width: '20px', marginTop: '10px', textAlign: 'center' }}>{idx + 1}.</span>
-                                          <div style={{ flex: 1 }}>
+                                          <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#475569', width: '20px', marginTop: '12px', textAlign: 'center' }}>{idx + 1}.</span>
+                                          <div style={{ flex: 1, minWidth: 0 }}>
                                             <FileUploadWidget 
                                               value={imgUrl}
                                               onChange={(url) => {
@@ -1766,22 +1796,15 @@ const AdminPage = () => {
                                                 }));
                                               }}
                                               acceptType="any"
+                                              onRemove={() => {
+                                                const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
+                                                setEditingProject((prev: any) => ({
+                                                  ...prev,
+                                                  galleryImages: updated
+                                                }));
+                                              }}
                                             />
                                           </div>
-                                          <button 
-                                            type="button" 
-                                            className="dashboard-btn delete" 
-                                            style={{ padding: '0 15px', height: '42px', margin: 0, fontSize: '0.75rem', alignSelf: 'flex-start' }}
-                                            onClick={() => {
-                                              const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
-                                              setEditingProject((prev: any) => ({
-                                                ...prev,
-                                                galleryImages: updated
-                                              }));
-                                            }}
-                                          >
-                                            Remove
-                                          </button>
                                         </div>
                                       ))}
                                       <button 
@@ -1814,7 +1837,17 @@ const AdminPage = () => {
                             {/* Projects Grid List */}
                             <div className="subcategory-projects-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' }}>
                               {sub.galleryItems && sub.galleryItems.map((proj: any) => (
-                                <div key={proj._id || proj.year || proj.code} className="project-grid-item" style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '12px' }}>
+                                <div 
+                                  key={proj._id || proj.year || proj.code} 
+                                  className="project-grid-item" 
+                                  style={{ 
+                                    background: '#f9fafb', 
+                                    border: '1px solid #e5e7eb', 
+                                    borderRadius: '6px', 
+                                    padding: '12px',
+                                    gridColumn: editingProject && editingProject._id === proj._id ? '1 / -1' : 'auto'
+                                  }}
+                                >
                                   {editingProject && editingProject._id === proj._id ? (
                                     <form onSubmit={handleProjectSave} className="dashboard-form" style={{ gap: '10px' }}>
                                       <div className="dashboard-form-group" style={{ marginBottom: '6px' }}>
@@ -1877,8 +1910,8 @@ const AdminPage = () => {
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
                                           {editingProject.galleryImages && editingProject.galleryImages.map((imgUrl: string, idx: number) => (
                                             <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px', marginBottom: '8px' }}>
-                                              <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#475569', width: '20px', marginTop: '10px', textAlign: 'center' }}>{idx + 1}.</span>
-                                              <div style={{ flex: 1 }}>
+                                              <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#475569', width: '20px', marginTop: '12px', textAlign: 'center' }}>{idx + 1}.</span>
+                                              <div style={{ flex: 1, minWidth: 0 }}>
                                                 <FileUploadWidget 
                                                   value={imgUrl}
                                                   onChange={(url) => {
@@ -1890,22 +1923,15 @@ const AdminPage = () => {
                                                     }));
                                                   }}
                                                   acceptType="any"
+                                                  onRemove={() => {
+                                                    const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
+                                                    setEditingProject((prev: any) => ({
+                                                      ...prev,
+                                                      galleryImages: updated
+                                                    }));
+                                                  }}
                                                 />
                                               </div>
-                                              <button 
-                                                type="button" 
-                                                className="dashboard-btn delete" 
-                                                style={{ padding: '0 15px', height: '42px', margin: 0, fontSize: '0.75rem', alignSelf: 'flex-start' }}
-                                                onClick={() => {
-                                                  const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
-                                                  setEditingProject((prev: any) => ({
-                                                    ...prev,
-                                                    galleryImages: updated
-                                                  }));
-                                                }}
-                                              >
-                                                Remove
-                                              </button>
                                             </div>
                                           ))}
                                           <button 

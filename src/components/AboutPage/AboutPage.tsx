@@ -396,19 +396,109 @@ interface ImageSliderProps {
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, altText, className }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const validUrls = Array.isArray(imageUrls) ? imageUrls.filter(url => !!url) : [];
   const slides = validUrls.length > 0 ? validUrls : [fallbackImage];
 
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setCurrentIndex(prev => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setCurrentIndex(prev => (prev === slides.length - 1 ? 0 : prev + 1));
   };
+
+  // Mouse wheel and drag scrolling handler
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const container = sliderRef.current;
+    if (!container) return;
+
+    let isThrottled = false;
+    let startX = 0;
+    let isDragging = false;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Check if user scrolled enough vertically or horizontally
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) < 8) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (isThrottled) return;
+      isThrottled = true;
+
+      if (delta > 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+
+      setTimeout(() => {
+        isThrottled = false;
+      }, 700);
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      startX = e.clientX;
+      isDragging = true;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const diffX = e.clientX - startX;
+      if (Math.abs(diffX) > 60) {
+        isDragging = false;
+        if (diffX > 0) {
+          handlePrev();
+        } else {
+          handleNext();
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      const diffX = e.touches[0].clientX - startX;
+      if (Math.abs(diffX) > 50) {
+        isDragging = false;
+        if (diffX > 0) {
+          handlePrev();
+        } else {
+          handleNext();
+        }
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [slides.length, currentIndex]);
 
   if (slides.length <= 1) {
     return (
@@ -422,7 +512,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, alt
   }
 
   return (
-    <div className={`about-image-slider ${className || ''}`}>
+    <div className={`about-image-slider ${className || ''}`} ref={sliderRef} data-lenis-prevent>
       <div className="slider-images-container">
         {slides.map((slide, idx) => (
           <img

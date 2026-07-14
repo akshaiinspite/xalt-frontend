@@ -593,6 +593,18 @@
   border-color: #d1d5db;
 }
 
+.dashboard-btn.delete {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
+.dashboard-btn.delete:hover {
+  background-color: #fee2e2;
+  border-color: #f87171;
+  color: #991b1b;
+}
+
 /* Feedback message */
 .feedback-alert {
   font-family: 'Inter', var(--font-inter), sans-serif;

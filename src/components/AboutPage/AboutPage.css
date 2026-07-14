@@ -357,7 +357,7 @@
 
 .story-offset-wrapper.wrap-2 {
   align-self: flex-end;
-  margin-top: -10px;
+  margin-top: 20px;
   animation: floatStoryImg2 8s infinite ease-in-out;
 }
 
@@ -1525,7 +1525,7 @@
 
 .floor-img-frame.frame-2 {
   align-self: flex-end;
-  margin-top: -10px;
+  margin-top: 20px;
 }
 
 .floor-img-frame:hover {
@@ -1616,14 +1616,14 @@
     max-width: 580px;
   }
   .story-offset-wrapper.wrap-2 {
-    margin-top: -60px;
+    margin-top: 30px;
   }
   .floor-img-frame {
     width: 100%;
     max-width: 580px;
   }
   .floor-img-frame.frame-2 {
-    margin-top: -60px;
+    margin-top: 30px;
   }
 }
 
@@ -1632,13 +1632,13 @@
     max-width: 680px;
   }
   .story-offset-wrapper.wrap-2 {
-    margin-top: -120px;
+    margin-top: 40px;
   }
   .floor-img-frame {
     max-width: 680px;
   }
   .floor-img-frame.frame-2 {
-    margin-top: -120px;
+    margin-top: 40px;
   }
 }
 
@@ -1686,7 +1686,7 @@
   height: 42px;
   display: flex;
   align-items: center;
-  justifyContent: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 12;
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
