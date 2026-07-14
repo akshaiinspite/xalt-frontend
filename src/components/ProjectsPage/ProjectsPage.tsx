@@ -23,6 +23,9 @@ import img3 from '../../assets/images/img/img-3.jpg';
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 
 interface GalleryItem {
+  _id?: string;
+  category?: string;
+  subcategory?: string;
   title: string;
   tag: string;
   code?: string;
@@ -30,12 +33,14 @@ interface GalleryItem {
   client?: string;
   image: string;
   video?: string;
+  galleryImages?: string[];
 }
 
 interface SubCategory {
   title: string;
   description: string;
   image: string;
+  video?: string;
   galleryItems: GalleryItem[];
 }
 
@@ -269,15 +274,58 @@ const CATEGORIES_DATA: CategorySection[] = [
   }
 ];
 
+const isVideoUrl = (url: string) => {
+  if (!url) return false;
+  const cleanUrl = url.split('?')[0].toLowerCase();
+  return cleanUrl.endsWith('.mp4') || 
+         cleanUrl.endsWith('.webm') || 
+         cleanUrl.endsWith('.ogg') ||
+         cleanUrl.endsWith('.mov') ||
+         url.includes('/video/') ||
+         url.includes('stream');
+};
+
 const ProjectsPage = () => {
   const [categoriesData, setCategoriesData] = useState<CategorySection[]>(CATEGORIES_DATA);
   const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<number>(1); // Default: Films & Entertainment
   const [selectedSubcategoryIdx, setSelectedSubcategoryIdx] = useState<number>(2); // Default: CGI & VFX
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   
-  // viewMode controls: 'board' (Evidence Board) vs 'gallery' (Detailed New Page)
   const [viewMode, setViewMode] = useState<'board' | 'gallery'>('board');
   const [selectedProjectNode, setSelectedProjectNode] = useState<GalleryItem | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const fetchPortfolio = () => {
+    fetch(`${API_BASE_URL}/portfolio`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setCategoriesData(data);
+          
+          if (selectedProjectNode) {
+            let foundNode = null;
+            for (const cat of data) {
+              for (const sub of cat.subCategories) {
+                for (const proj of sub.galleryItems) {
+                  if (proj._id === selectedProjectNode._id || (proj.title === selectedProjectNode.title && proj.code === selectedProjectNode.code)) {
+                    foundNode = proj;
+                    break;
+                  }
+                }
+                if (foundNode) break;
+              }
+              if (foundNode) break;
+            }
+            if (foundNode) {
+              setSelectedProjectNode(foundNode);
+            }
+          }
+        }
+      })
+      .catch(err => {
+        console.warn('Backend offline or error loading portfolio', err);
+      });
+  };
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -293,16 +341,7 @@ const ProjectsPage = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/portfolio`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.length > 0) {
-          setCategoriesData(data);
-        }
-      })
-      .catch(err => {
-        console.warn('Backend offline or error loading portfolio, using static projects data.', err);
-      });
+    fetchPortfolio();
   }, []);
 
 
@@ -385,6 +424,7 @@ const ProjectsPage = () => {
   }, []);
 
   useEffect(() => {
+    setCurrentPage(1);
     if (viewMode === 'board') {
       gsap.fromTo(
         '.board-header',
@@ -435,10 +475,18 @@ const ProjectsPage = () => {
   const activeCategory = categoriesData[selectedCategoryIdx] || categoriesData[0] || null;
   const activeSubcategory = activeCategory?.subCategories[selectedSubcategoryIdx] || activeCategory?.subCategories[0] || null;
 
+  const itemsPerPage = 6;
+  const totalItems = activeSubcategory?.galleryItems?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedItems = activeSubcategory?.galleryItems?.slice(startIndex, endIndex) || [];
+
   if (!activeCategory || !activeSubcategory) {
     return (
-      <div className="projects-page-new loading-state" style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: '#070709', color: '#ffffff', fontFamily: 'monospace' }}>
-        // LOADING PROJECT NODES...
+      <div className="projects-page-new loading-state" style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: '#070709', color: '#ffffff', fontFamily: 'inherit' }}>
+        LOADING PROJECTS...
       </div>
     );
   }
@@ -482,19 +530,7 @@ const ProjectsPage = () => {
           <line x1="518" y1="380" x2="518" y2="442" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
           <line x1="487" y1="411" x2="549" y2="411" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
 
-          <text x="535" y="405" fill="#e10600" fontSize="12" fontFamily="Share Tech Mono, monospace" opacity="0.5">TARGET_LOCK // X: 518 Y: 411</text>
-          <text x="535" y="420" fill="rgba(255, 255, 255, 0.4)" fontSize="10" fontFamily="Share Tech Mono, monospace" opacity="0.4">SYS_REF: XALT_PROJ_SECTOR</text>
-
-          {/* Text Labels */}
-          <text x="50" y="80" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" letterSpacing="2">[ DIAGRAM: OPTICAL_PROJECTION_GRID ]</text>
-          <text x="50" y="100" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">SCALE: 1:1.5 // RES: 4K_NATIVE</text>
-          <text x="50" y="920" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">AZIMUTH: 312° // ELEVATION: 42°</text>
-          <text x="50" y="940" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace">SYSTEM: STABLE // SYS_DB: XALT_LOC_X</text>
-
-          <text x="950" y="80" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace" textAnchor="end">FRAME_RATIO: 1.77:1</text>
-          <text x="950" y="100" fill="rgba(225, 6, 0, 0.25)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">SECURE_SECTOR // DECRYPT_ACTIVE</text>
-          <text x="950" y="920" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">[ X.ALT STUDIOS // 2026 ]</text>
-          <text x="950" y="940" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace" textAnchor="end">REF_NODE_01_VFX</text>
+          {/* Coordinates and labels removed for clean aesthetic */}
         </svg>
       </div>
 
@@ -565,8 +601,8 @@ const ProjectsPage = () => {
           <div className="board-header">
             <div className="board-meta">
               <span className="rec-blink-dot"></span>
-              <span className="board-tag">// SYSTEM: EVIDENCE_BOARD</span>
-              <span className="board-status">SECTOR: SELECT_NODE</span>
+              <span className="board-tag">PROJECTS OVERVIEW</span>
+              <span className="board-status">SELECT CATEGORY</span>
             </div>
             <h2 className="board-category-title">
               {renderHighlightedTitle(activeCategory.title)}
@@ -574,7 +610,7 @@ const ProjectsPage = () => {
 
             {/* Direct category hopping shortcuts */}
             <div className="board-category-shortcuts">
-              <span className="shortcut-label">// HOP TO:</span>
+              <span className="shortcut-label">JUMP TO:</span>
               <div className="shortcut-buttons">
                 {categoriesData.map((cat, idx) => {
                   const isActive = selectedCategoryIdx === idx;
@@ -626,15 +662,8 @@ const ProjectsPage = () => {
                     <div className="board-subcard-filter"></div>
                   </div>
 
-                  {/* High-tech telemetry data displayed on card */}
-                  <div className="card-telemetry-overlay">
-                    <div className="telemetry-line"><span>NODE:</span> <span>0{sIdx + 1}_VFX</span></div>
-                    <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
-                    <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">ACCESS_READY</span></div>
-                  </div>
-
                   <div className="board-subcard-indicator">
-                    <span>{isSelected ? '>> ACTIVE NODE' : '>> CLICK TO OPEN'}</span>
+                    <span>{isSelected ? 'ACTIVE' : 'CLICK TO VIEW'}</span>
                   </div>
                 </div>
               );
@@ -658,7 +687,7 @@ const ProjectsPage = () => {
             
             <div className="gallery-banner-content-inner">
               <div className="gallery-breadcrumb-bar">
-                <span className="gallery-header-mono">// SECTOR: {activeCategory.title} / {activeSubcategory.title.toUpperCase()}</span>
+                <span className="gallery-header-mono">{activeCategory.title} / {activeSubcategory.title.toUpperCase()}</span>
               </div>
               <span className="gallery-category-badge">{activeCategory.title}</span>
               <h1 className="gallery-sharp-title">{activeSubcategory.title}</h1>
@@ -675,7 +704,7 @@ const ProjectsPage = () => {
                 </button>
                 
                 <div className="gallery-minimal-nav-header">
-                  <span className="nav-footer-label">// JUMP TO OTHER SECTORS:</span>
+                  <span className="nav-footer-label">JUMP TO OTHER SECTORS:</span>
                   <div className="nav-footer-links">
                     {activeCategory.subCategories.map((sub, sIdx) => (
                       <span key={sIdx} className="nav-footer-link-wrapper">
@@ -698,54 +727,166 @@ const ProjectsPage = () => {
 
           {/* CENTERED PROJECTS GRID SECTION */}
           <div className="gallery-grid-container">
-            {/* Grid of Sharp Detailed Project Cells */}
-            <div className="gallery-sharp-grid">
-              {activeSubcategory.galleryItems.map((item, idx) => (
-                <div 
-                  key={idx} 
-                  className="gallery-sharp-slot"
-                  onClick={() => setSelectedProjectNode(item)}
-                >
-                  {/* Cyber Corner Brackets */}
-                  <div className="slot-corners">
-                    <span className="corner tl"></span>
-                    <span className="corner tr"></span>
-                    <span className="corner bl"></span>
-                    <span className="corner br"></span>
-                  </div>
-
-                  <div className="slot-img-wrapper">
-                    {item.video ? (
-                      <video 
-                        src={getMediaUrl(item.video)} 
-                        poster={getMediaUrl(item.image)} 
-                        muted 
-                        loop 
-                        playsInline 
-                        autoPlay
-                        className="slot-preview-img" 
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
-                    ) : (
-                      <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
-                    )}
-                    <div className="slot-cyber-overlay"></div>
-                  </div>
-
-                  <div className="slot-interactive-hud">
-                    <div className="hud-line">
-                      <span className="hud-label">PROJECT:</span>
-                      <span className="hud-val">{item.title}</span>
-                    </div>
-                  </div>
-
-                  <div className="slot-bottom-telemetry">
-                    <span>CLIENT: {item.client || item.tag || 'X.ALT STUDIOS'}</span>
-                    <span className="hud-val text-red">YEAR: {item.year || item.code || '2026'}</span>
+            {activeCategory.id === 'immersive' ? (
+              <div className="immersive-gallery-layout">
+                {/* Horizontal scrolling row of images */}
+                <div className="immersive-scroll-row-container">
+                  <h3 className="immersive-scroll-title">// PROJECT TILES (CLICK FOR FULL SCREEN DETAILED VIEW)</h3>
+                  <div className="immersive-scroll-row">
+                    {paginatedItems.map((item, idx) => {
+                      return (
+                        <div
+                          key={idx}
+                          className="immersive-scroll-card"
+                          onClick={() => setSelectedProjectNode(item)}
+                        >
+                          <div className="immersive-card-corners">
+                            <span className="corner tl"></span>
+                            <span className="corner tr"></span>
+                            <span className="corner bl"></span>
+                            <span className="corner br"></span>
+                          </div>
+                          <div className="immersive-card-img-wrapper">
+                            <img src={getMediaUrl(item.image)} alt={item.title} className="immersive-card-img" />
+                            <div className="immersive-card-overlay"></div>
+                          </div>
+                          <div className="immersive-card-info">
+                            <span className="immersive-card-title">{item.title}</span>
+                            <span className="immersive-card-tag">{item.tag}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Single Video Showcase fully covering (Subcategory Showcase Video) */}
+                <div className="immersive-video-showcase-section">
+                  <h3 className="immersive-video-title">
+                    // SHOWCASE SHOWREEL: {activeSubcategory.title.toUpperCase()}
+                  </h3>
+                  <div className="immersive-video-wrapper">
+                    <div className="immersive-video-corners">
+                      <span className="corner tl"></span>
+                      <span className="corner tr"></span>
+                      <span className="corner bl"></span>
+                      <span className="corner br"></span>
+                    </div>
+                    <video
+                      key={activeSubcategory.video || 'default'} // Force reload video when category/subcategory changes
+                      src={getMediaUrl(activeSubcategory.video || '/src/assets/videos/showreel.mp4')}
+                      controls
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="immersive-showcase-video"
+                    />
+                  </div>
+                  <div className="immersive-video-details">
+                    <div className="immersive-details-row">
+                      <div className="immersive-detail-item" style={{ gridColumn: 'span 3' }}>
+                        <span className="immersive-detail-label">SECTOR SUMMARY:</span>
+                        <span className="immersive-detail-val" style={{ fontSize: '0.95rem', fontWeight: '400', color: 'rgba(255,255,255,0.7)', fontFamily: 'sans-serif' }}>
+                          {activeSubcategory.description}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Grid of Sharp Detailed Project Cells */
+              <div className="gallery-sharp-grid">
+                {paginatedItems.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="gallery-sharp-slot"
+                    onClick={() => setSelectedProjectNode(item)}
+                  >
+                    {/* Cyber Corner Brackets */}
+                    <div className="slot-corners">
+                      <span className="corner tl"></span>
+                      <span className="corner tr"></span>
+                      <span className="corner bl"></span>
+                      <span className="corner br"></span>
+                    </div>
+
+                    <div className="slot-img-wrapper">
+                      {item.video ? (
+                        <video 
+                          src={getMediaUrl(item.video)} 
+                          poster={getMediaUrl(item.image)} 
+                          muted 
+                          loop 
+                          playsInline 
+                          autoPlay
+                          className="slot-preview-img" 
+                          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                        />
+                      ) : (
+                        <img src={getMediaUrl(item.image)} alt={item.title} className="slot-preview-img" />
+                      )}
+                      <div className="slot-cyber-overlay"></div>
+                    </div>
+
+                    <div className="slot-interactive-hud">
+                      <div className="hud-line">
+                        <span className="hud-label">PROJECT:</span>
+                        <span className="hud-val">{item.title}</span>
+                      </div>
+                    </div>
+
+                    <div className="slot-bottom-telemetry">
+                      <span>CLIENT: {item.client || item.tag || 'X.ALT STUDIOS'}</span>
+                      <span className="hud-val text-red">YEAR: {item.year || item.code || '2026'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* TELEMETRY PAGINATION CONTROLS */}
+            {totalPages > 1 && (
+              <div className="telemetry-pagination">
+                <button 
+                  className="pagination-btn prev" 
+                  disabled={currentPage === 1}
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1));
+                    window.scrollTo({ top: 380, behavior: 'smooth' });
+                  }}
+                >
+                  [ PREV ]
+                </button>
+                
+                <div className="pagination-pages">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      className={`pagination-page-btn ${currentPage === page ? 'active' : ''}`}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scrollTo({ top: 380, behavior: 'smooth' });
+                      }}
+                    >
+                      {page.toString().padStart(2, '0')}
+                    </button>
+                  ))}
+                </div>
+                
+                <button 
+                  className="pagination-btn next" 
+                  disabled={currentPage === totalPages}
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                    window.scrollTo({ top: 380, behavior: 'smooth' });
+                  }}
+                >
+                  [ NEXT ]
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -756,7 +897,7 @@ const ProjectsPage = () => {
           <div className="project-lightbox-card" onClick={(e) => e.stopPropagation()}>
             {/* Close Button */}
             <button className="lightbox-close-btn" onClick={() => setSelectedProjectNode(null)}>
-              [ CLOSE FILE ] ✕
+              CLOSE ✕
             </button>
 
             {/* Media Display Area */}
@@ -786,8 +927,8 @@ const ProjectsPage = () => {
                 <span className="corner br"></span>
               </div>
               <div className="details-header">
-                <span className="details-tag">// SECURITY INTEL DECRYPTED</span>
-                <span className="details-status">SYSTEM_PLAYBACK_ACTIVE</span>
+                <span className="details-tag">PROJECT SPECIFICATION</span>
+                <span className="details-status">ACTIVE</span>
               </div>
               <div className="details-row">
                 <div className="details-item">
@@ -804,6 +945,40 @@ const ProjectsPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Gallery Section */}
+            {selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img).length > 0 && (
+              <div className="lightbox-gallery-section">
+                <h4 className="lightbox-gallery-title">// PROJECT GALLERY</h4>
+                <div className="lightbox-gallery-grid">
+                  {selectedProjectNode.galleryImages.filter(img => img).map((imgUrl, imgIdx) => (
+                    <div key={imgIdx} className="lightbox-gallery-item">
+                      <div className="gallery-item-corners">
+                        <span className="corner tl"></span>
+                        <span className="corner tr"></span>
+                        <span className="corner bl"></span>
+                        <span className="corner br"></span>
+                      </div>
+                      {isVideoUrl(imgUrl) ? (
+                        <video 
+                          src={getMediaUrl(imgUrl)} 
+                          controls
+                          className="lightbox-gallery-img"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <img 
+                          src={getMediaUrl(imgUrl)} 
+                          alt={`${selectedProjectNode.title} gallery ${imgIdx + 1}`} 
+                          className="lightbox-gallery-img"
+                          onClick={() => window.open(getMediaUrl(imgUrl), '_blank')}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

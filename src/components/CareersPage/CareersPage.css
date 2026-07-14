@@ -193,7 +193,7 @@
 }
 
 .job-card-title {
-  font-family: var(--font-oswald, 'Montserrat', sans-serif);
+  font-family: var(--font-oswald, sans-serif);
   font-size: 1.35rem;
   font-weight: 500;
   letter-spacing: 0.03em;

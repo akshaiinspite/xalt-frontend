@@ -249,18 +249,16 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
     >
       <div className="card-shine" />
       
-      {/* Evidence Top HUD Header */}
+      {/* Evidence Top Header */}
       <div className="evidence-card-top-hud" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px' }}>
         <div className="hud-left-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="hud-corner-bracket bracket-tl" style={{ fontSize: '1rem', color: '#ff3333' }}>[</span>
           <div className="hud-status-text" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1.25' }}>
-            <span className="hud-status-label" style={{ fontSize: '0.58rem', color: 'rgba(255, 255, 255, 0.45)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>EMPLOYEE CODE //</span>
+            <span className="hud-status-label" style={{ fontSize: '0.58rem', color: 'rgba(255, 255, 255, 0.45)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>MEMBER ID</span>
             <span className="hud-status-value" style={{ fontSize: '0.95rem', color: '#ff3333', fontWeight: 'bold', fontFamily: 'Share Tech Mono, monospace', letterSpacing: '0.08em', textShadow: '0 0 8px rgba(255, 51, 51, 0.65)' }}>{member.empNo || idNumber}</span>
           </div>
         </div>
         <div className="hud-right-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="hud-open-text" style={{ fontSize: '0.65rem' }}>{isClicked ? '>> ACCESSING DATA' : '>> CLICK TO OPEN'}</span>
-          <span className="hud-corner-bracket bracket-tr" style={{ fontSize: '1rem', color: '#ff3333' }}>]</span>
+          <span className="hud-open-text" style={{ fontSize: '0.65rem' }}>{isClicked ? 'VIEWING PROFILE' : 'CLICK TO VIEW'}</span>
         </div>
       </div>
 
@@ -280,9 +278,9 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
           {/* LEFT PANEL: Avatar, Name and Basic Info */}
           <div className="evidence-left-panel">
             
-            {/* Side HUD Rotated monospaces */}
+            {/* Side Rotated label */}
             <div className="evidence-side-vertical-right">
-              X.ALT INTEL // FILE_{idNumber}
+              STUDIO TEAM MEMBER {idNumber}
             </div>
             <div className="evidence-side-vertical-left">
               · · · · · · · · · · · ·
@@ -292,7 +290,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
             <div className="card-avatar-container" style={{ 
               position: 'relative', 
               overflow: 'hidden',
-              borderRadius: '4px',
+              borderRadius: '0',
               height: '260px',
               width: '100%',
               border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -320,7 +318,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
                     width: '100%', 
                     height: '100%', 
                     objectFit: 'cover', 
-                    borderRadius: '2px',
+                    borderRadius: '0',
                     position: 'absolute',
                     top: 0,
                     left: 0,
@@ -354,10 +352,10 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
 
           </div>
 
-          {/* RIGHT PANEL: Dossier Details (Slides open when clicked) */}
+          {/* RIGHT PANEL: Profile Details (Slides open when clicked) */}
           <div className="evidence-right-panel">
             <div className="dossier-panel-header">
-              <span className="dossier-tag">RESTRICTED DOSSIER // FILE_{idNumber}</span>
+              <span className="dossier-tag">PROFILE</span>
               <span className="dossier-status-dot"></span>
             </div>
             
@@ -369,7 +367,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
             </div>
 
             <div className="dossier-bio-section" style={{ marginTop: '8px' }}>
-              <h4 className="dossier-subheading">SUMMARY PROFILE</h4>
+              <h4 className="dossier-subheading">SUMMARY</h4>
               <p className="dossier-bio-text">{getDossierBio()}</p>
             </div>
           </div>
@@ -378,9 +376,96 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
 
         {/* Action Button at the bottom */}
         <div className="evidence-action-btn">
-          {isClicked ? '[ DISMISS DOSSIER ]' : '[ OPEN DATA FILE ]'}
+          {isClicked ? '[ CLOSE PROFILE ]' : '[ VIEW PROFILE ]'}
         </div>
 
+      </div>
+    </div>
+  );
+};
+
+// ----------------------------------------------------
+// IMAGE CAROUSEL / SLIDER COMPONENT
+// ----------------------------------------------------
+interface ImageSliderProps {
+  imageUrls: string[];
+  fallbackImage: string;
+  altText: string;
+  className?: string;
+}
+
+const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, altText, className }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const validUrls = Array.isArray(imageUrls) ? imageUrls.filter(url => !!url) : [];
+  const slides = validUrls.length > 0 ? validUrls : [fallbackImage];
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex(prev => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex(prev => (prev === slides.length - 1 ? 0 : prev + 1));
+  };
+
+  if (slides.length <= 1) {
+    return (
+      <img
+        src={getMediaUrl(slides[0])}
+        alt={altText}
+        className={className}
+        style={{ borderRadius: 0, objectFit: 'cover' }}
+      />
+    );
+  }
+
+  return (
+    <div className={`about-image-slider ${className || ''}`}>
+      <div className="slider-images-container">
+        {slides.map((slide, idx) => (
+          <img
+            key={idx}
+            src={getMediaUrl(slide)}
+            alt={`${altText} - Slide ${idx + 1}`}
+            className={`slider-img ${idx === currentIndex ? 'active' : ''}`}
+            style={{ borderRadius: 0 }}
+          />
+        ))}
+      </div>
+      
+      <button
+        onClick={handlePrev}
+        className="slider-nav-btn prev-btn"
+        aria-label="Previous image"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <button
+        onClick={handleNext}
+        className="slider-nav-btn next-btn"
+        aria-label="Next image"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <div className="slider-indicators">
+        {slides.map((_, idx) => (
+          <span
+            key={idx}
+            className={`indicator-dot ${idx === currentIndex ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentIndex(idx);
+            }}
+          />
+        ))}
       </div>
     </div>
   );
@@ -460,6 +545,7 @@ const AboutPage = () => {
     title: string;
     label: string;
     imageUrl: string;
+    imageUrls?: string[];
   }
 
   const [aboutPhotos, setAboutPhotos] = useState<AboutPhoto[]>([]);
@@ -491,9 +577,12 @@ const AboutPage = () => {
       });
   }, []);
 
-  const getAboutPhotoUrl = (key: string, fallback: string) => {
+  const getAboutPhotoUrls = (key: string, fallback: string): string[] => {
     const photo = aboutPhotos.find(p => p.key === key);
-    return photo ? getMediaUrl(photo.imageUrl) : fallback;
+    if (photo && Array.isArray(photo.imageUrls) && photo.imageUrls.length > 0) {
+      return photo.imageUrls;
+    }
+    return photo && photo.imageUrl ? [photo.imageUrl] : [fallback];
   };
 
   const getAboutPhotoLabel = (key: string, fallback: string) => {
@@ -895,19 +984,7 @@ const AboutPage = () => {
             <line x1="518" y1="380" x2="518" y2="442" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
             <line x1="487" y1="411" x2="549" y2="411" stroke="#e10600" strokeWidth="0.8" opacity="0.3" />
 
-            <text x="535" y="405" fill="#e10600" fontSize="12" fontFamily="Share Tech Mono, monospace" opacity="0.5">TARGET_LOCK // X: 518 Y: 411</text>
-            <text x="535" y="420" fill="rgba(255, 255, 255, 0.4)" fontSize="10" fontFamily="Share Tech Mono, monospace" opacity="0.4">SYS_REF: XALT_PROJ_SECTOR</text>
-
-            {/* Text Labels */}
-            <text x="50" y="80" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" letterSpacing="2">[ DIAGRAM: OPTICAL_PROJECTION_GRID ]</text>
-            <text x="50" y="100" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">SCALE: 1:1.5 // RES: 4K_NATIVE</text>
-            <text x="50" y="920" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace">AZIMUTH: 312° // ELEVATION: 42°</text>
-            <text x="50" y="940" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace">SYSTEM: STABLE // SYS_DB: XALT_LOC_X</text>
-
-            <text x="950" y="80" fill="rgba(255, 255, 255, 0.15)" fontSize="10" fontFamily="Share Tech Mono, monospace" textAnchor="end">FRAME_RATIO: 1.77:1</text>
-            <text x="950" y="100" fill="rgba(225, 6, 0, 0.25)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">SECURE_SECTOR // DECRYPT_ACTIVE</text>
-            <text x="950" y="920" fill="rgba(255, 255, 255, 0.2)" fontSize="11" fontFamily="Share Tech Mono, monospace" textAnchor="end">[ X.ALT STUDIOS // 2026 ]</text>
-            <text x="950" y="940" fill="rgba(255, 255, 255, 0.1)" fontSize="9" fontFamily="Share Tech Mono, monospace" textAnchor="end">REF_NODE_01_VFX</text>
+            {/* Coordinates and labels removed for clean aesthetic */}
           </svg>
         </div>
 
@@ -916,7 +993,6 @@ const AboutPage = () => {
           {/* Left Column: Heading, Badge, Subheadings & Story Text */}
           <div ref={aboutLeftRef} className="about-text-column-new">
             <div className="brand-accent-chevron-group">
-              <span className="accent-chevron-red">&gt;&gt;</span>
               <span className="accent-badge-text">STUDIO PROFILE</span>
             </div>
 
@@ -952,18 +1028,20 @@ const AboutPage = () => {
           {/* Right Column: Stacked Premium Office Images */}
           <div ref={aboutRightRef} className="about-photos-column-new">
             <div className="story-offset-wrapper wrap-1">
-              <img
-                src={getAboutPhotoUrl('about_us_1', studioWorkspaceImg)}
-                alt="X.Alt Modern Creative Studio Workspace"
+              <ImageSlider
+                imageUrls={getAboutPhotoUrls('about_us_1', studioWorkspaceImg)}
+                fallbackImage={studioWorkspaceImg}
+                altText="X.Alt Modern Creative Studio Workspace"
                 className="story-parallax-img"
               />
               <div className="img-glass-overlay-new"></div>
             </div>
 
             <div className="story-offset-wrapper wrap-2">
-              <img
-                src={getAboutPhotoUrl('about_us_2', designArtistsImg)}
-                alt="X.Alt Design Artists at Workstations"
+              <ImageSlider
+                imageUrls={getAboutPhotoUrls('about_us_2', designArtistsImg)}
+                fallbackImage={designArtistsImg}
+                altText="X.Alt Design Artists at Workstations"
                 className="story-parallax-img"
               />
               <div className="img-glass-overlay-new"></div>
@@ -976,20 +1054,6 @@ const AboutPage = () => {
 
       {/* SECTION 1.5: STUDIO FLOOR */}
       <section className="studio-floor-section" id="about-floor">
-        
-        {/* Surveillance Corner HUD Indicators */}
-        <div className="surveillance-hud-overlay tl">
-          <span className="rec-dot-pulse"></span>
-          <span className="hud-mono-red">CAM_07 [SECURE]</span>
-          <span className="hud-divider">//</span>
-          <span className="hud-mono-green">FACILITY_MONITOR</span>
-        </div>
-
-        <div className="surveillance-hud-overlay tr">
-          <span className="hud-mono-gray">FLOOR_PLAN: V4.01</span>
-          <span className="hud-divider">//</span>
-          <span className="hud-mono-red-blink">ONLINE</span>
-        </div>
 
         <div className="studio-floor-container">
           
@@ -998,7 +1062,6 @@ const AboutPage = () => {
             {/* Left Column: Title & Text Content */}
             <div className="floor-text-column">
               <div className="floor-badge-group">
-                <span className="accent-chevron-red">&gt;&gt;</span>
                 <span className="accent-badge-text">PHYSICAL ARCHITECTURE</span>
               </div>
 
@@ -1020,17 +1083,27 @@ const AboutPage = () => {
             {/* Right Column: Stacked / Offset Images */}
             <div className="floor-images-column">
               <div className="floor-img-frame frame-1">
-                <img src={getAboutPhotoUrl('studio_floor_1', studioFloorVfxImg)} alt="VFX Synthesis Bay" className="floor-display-img" />
+                <ImageSlider 
+                  imageUrls={getAboutPhotoUrls('studio_floor_1', studioFloorVfxImg)} 
+                  fallbackImage={studioFloorVfxImg} 
+                  altText="VFX Synthesis Bay" 
+                  className="floor-display-img" 
+                />
                 <div className="floor-frame-overlay">
-                  <span className="frame-label">{getAboutPhotoLabel('studio_floor_1', '// ZONE_01: VFX SYNTHESIS BAY')}</span>
+                  <span className="frame-label">{getAboutPhotoLabel('studio_floor_1', 'ZONE 01: VFX SYNTHESIS BAY').replace(/^\/\/\s*/, '')}</span>
                 </div>
                 <div className="floor-scanlines"></div>
               </div>
 
               <div className="floor-img-frame frame-2">
-                <img src={getAboutPhotoUrl('studio_floor_2', studioFloorAudioImg)} alt="Sonic Resonance Lab" className="floor-display-img" />
+                <ImageSlider 
+                  imageUrls={getAboutPhotoUrls('studio_floor_2', studioFloorAudioImg)} 
+                  fallbackImage={studioFloorAudioImg} 
+                  altText="Sonic Resonance Lab" 
+                  className="floor-display-img" 
+                />
                 <div className="floor-frame-overlay">
-                  <span className="frame-label">{getAboutPhotoLabel('studio_floor_2', '// ZONE_02: SONIC MIXING SUITE')}</span>
+                  <span className="frame-label">{getAboutPhotoLabel('studio_floor_2', 'ZONE 02: SONIC MIXING SUITE').replace(/^\/\/\s*/, '')}</span>
                 </div>
                 <div className="floor-scanlines"></div>
               </div>
@@ -1044,25 +1117,10 @@ const AboutPage = () => {
       {/* SECTION 2: TEAM (OUR TEAM) */}
       <section ref={teamSectionRef} className="team-section-new" id="about-team">
         
-        {/* Surveillance Corner HUD Indicators */}
-        <div className="surveillance-hud-overlay tl">
-          <span className="rec-dot-pulse"></span>
-          <span className="hud-mono-red">CAM_04 [REC]</span>
-          <span className="hud-divider">//</span>
-          <span className="hud-mono-green">SIGNAL_STRONG</span>
-        </div>
-
-        <div className="surveillance-hud-overlay tr">
-          <span className="hud-mono-gray">SECTOR: PERSONNEL_INTEL</span>
-          <span className="hud-divider">//</span>
-          <span className="hud-mono-red-blink">SCANNING: ACTIVE</span>
-        </div>
-
         <div className="team-header-split-sticky">
           <div className="team-header-container">
             
             <div className="team-badge-group">
-              <span className="accent-chevron-red">&gt;&gt;</span>
               <span className="accent-badge-text">CREATIVE MINDSET</span>
             </div>
 
@@ -1140,9 +1198,9 @@ const AboutPage = () => {
             ></div>
           </div>
           <div className="team-progress-labels">
-            <span className="telemetry-label">SYSTEM_INDEX</span>
-            <span className="telemetry-val">
-              {String(Math.min(teamMembers.length, Math.max(1, Math.round((scrollProgress / 100) * (teamMembers.length - 1)) + 1))).padStart(2, '0')} // {String(teamMembers.length).padStart(2, '0')}
+            <span className="progress-label">INDEX</span>
+            <span className="progress-val">
+              {String(Math.min(teamMembers.length, Math.max(1, Math.round((scrollProgress / 100) * (teamMembers.length - 1)) + 1))).padStart(2, '0')} / {String(teamMembers.length).padStart(2, '0')}
             </span>
           </div>
         </div>

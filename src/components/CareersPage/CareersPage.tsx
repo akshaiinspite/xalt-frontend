@@ -422,7 +422,6 @@ const CareersPage = () => {
         {/* Careers Header */}
         <div className="careers-header-section">
           <div className="brand-accent-chevron-group">
-            <span className="accent-chevron-red">&gt;&gt;</span>
             <span className="accent-badge-text">JOIN X.ALT CREATIVE CO.</span>
           </div>
 
@@ -435,13 +434,13 @@ const CareersPage = () => {
         {/* Full-width Grid of Vacancies */}
         <div className="careers-full-panel">
           <p className="careers-subtitle-text">
-            We are constantly seeking digital architects, boundary-pushing CGI artists, and innovative developers to join our elite studio. Select an active vacancy below to initialize your application.
+            We are constantly seeking digital architects, boundary-pushing CGI artists, and innovative developers to join our elite studio. Select an active vacancy below to apply.
           </p>
 
           <div className="careers-jobs-grid">
             {jobs.length === 0 ? (
-              <div className="careers-empty-state" style={{ gridColumn: 'span 3', padding: '60px 40px', border: '1.5px dashed rgba(255, 255, 255, 0.06)', textAlign: 'center', fontFamily: "'Share Tech Mono', monospace", color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.85rem', letterSpacing: '0.08em' }}>
-                // NO ACTIVE VACANCIES AT THIS MOMENT. STANDBY FOR TRANSMISSION SOURCE.
+              <div className="careers-empty-state" style={{ gridColumn: 'span 3', padding: '60px 40px', border: '1.5px dashed rgba(255, 255, 255, 0.06)', textAlign: 'center', fontFamily: "inherit", color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.85rem', letterSpacing: '0.08em' }}>
+                No active vacancies at this moment.
               </div>
             ) : (
               jobs.map((job, idx) => (
@@ -469,7 +468,7 @@ const CareersPage = () => {
                   </div>
                   <div className="job-card-footer">
                     <button className="job-card-apply-btn">
-                      INITIALIZE APPLICATION &gt;&gt;
+                      APPLY NOW
                     </button>
                   </div>
                 </div>
@@ -494,14 +493,14 @@ const CareersPage = () => {
           >
             {/* Close Button */}
             <button className="close-modal-btn" onClick={closeModal} aria-label="Close modal">
-              <span>[ CLOSE TRANSMISSION ]</span>
+              <span>CLOSE</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             <div className="form-header-bar">
-              <span className="form-header-status">TRANSMITTING CV</span>
+              <span className="form-header-status">SUBMIT CV</span>
               <span className="form-header-line"></span>
             </div>
 
@@ -510,7 +509,7 @@ const CareersPage = () => {
               <h2 className="prefilled-position-title">{selectedJob.title}</h2>
               <div className="prefilled-position-meta">
                 <span>{formatExperience(selectedJob.experience)}</span>
-                <span className="meta-separator">//</span>
+                <span className="meta-separator">|</span>
                 <span>{selectedJob.location}</span>
               </div>
             </div>
@@ -636,13 +635,13 @@ const CareersPage = () => {
               {/* Submit Feedback Bar */}
               {submitStatus === 'success' && (
                 <div className="submit-message success">
-                  <span>CV transmitted successfully. Our talent team will initiate contact.</span>
+                  <span>CV submitted successfully. Our team will contact you soon.</span>
                 </div>
               )}
               
               {submitStatus === 'error' && (
                 <div className="submit-message error">
-                  <span>{errorMessage || 'Please complete all fields and attach CV before transmitting.'}</span>
+                  <span>{errorMessage || 'Please complete all fields and attach CV before submitting.'}</span>
                 </div>
               )}
 
@@ -653,9 +652,8 @@ const CareersPage = () => {
                 className={`form-submit-btn ${isSubmitting ? 'submitting' : ''}`}
               >
                 <span className="submit-btn-text">
-                  {isSubmitting ? 'TRANSMITTING CV...' : 'SUBMIT APPLICATION'}
+                  {isSubmitting ? 'SUBMITTING CV...' : 'SUBMIT APPLICATION'}
                 </span>
-                <span className="submit-btn-arrow">&gt;&gt;</span>
               </button>
 
             </form>

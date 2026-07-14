@@ -114,12 +114,11 @@
 
 /* Left alignment for professional monospace visual structure */
 .about-hud-text {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.86rem;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.75;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--font-inter);
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  font-weight: 300;
   margin: 0;
   text-align: left;
 }
@@ -198,7 +197,6 @@
     padding-left: 1rem;
   }
   .about-hud-text {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
+    font-size: 0.95rem;
   }
 }

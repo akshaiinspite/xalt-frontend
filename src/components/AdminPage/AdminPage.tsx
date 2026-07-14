@@ -33,6 +33,8 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
   acceptType
 }) => {
   const [urlInput, setUrlInput] = useState(value || '');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Keep urlInput in sync when value changes externally
   React.useEffect(() => {
@@ -55,9 +57,43 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
     onChange('');
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const token = localStorage.getItem('xalt_admin_token');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setIsUploading(true);
+    fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Upload failed');
+      }
+      toast.success('File uploaded successfully!');
+      setUrlInput(data.url);
+      onChange(data.url);
+    })
+    .catch(err => {
+      toast.error('File upload failed: ' + err.message);
+      console.error(err);
+    })
+    .finally(() => {
+      setIsUploading(false);
+    });
+  };
+
   return (
     <div className="cdn-link-widget" style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
         <input 
           type="text" 
           placeholder={`Enter CDN ${acceptType === 'image' ? 'Image' : acceptType === 'video' ? 'Video' : 'Media'} URL...`}
@@ -67,6 +103,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
           onKeyDown={handleKeyDown}
           style={{ 
             flex: 1, 
+            minWidth: 0,
             padding: '10px 14px', 
             fontSize: '0.85rem', 
             border: '1px solid #d1d5db', 
@@ -77,12 +114,51 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
             boxSizing: 'border-box'
           }}
         />
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          style={{ display: 'none' }} 
+          accept={acceptType === 'image' ? 'image/*' : acceptType === 'video' ? 'video/*' : 'image/*,video/*'} 
+          onChange={handleFileChange}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="dashboard-btn primary"
+          disabled={isUploading}
+          style={{ 
+            padding: '0 20px', 
+            height: '42px', 
+            margin: 0, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            whiteSpace: 'nowrap',
+            boxSizing: 'border-box',
+            borderRadius: '4px',
+            lineHeight: '1',
+            flexShrink: 0
+          }}
+        >
+          {isUploading ? 'Uploading...' : 'Browse...'}
+        </button>
         {value && (
           <button 
             type="button" 
             onClick={handleClear}
             className="dashboard-btn secondary"
-            style={{ padding: '0 16px', height: '42px', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ 
+              padding: '0 20px', 
+              height: '42px', 
+              margin: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              boxSizing: 'border-box',
+              borderRadius: '4px',
+              lineHeight: '1',
+              flexShrink: 0
+            }}
           >
             Clear
           </button>
@@ -134,11 +210,18 @@ const AdminPage = () => {
 
   // --- About State ---
   const [aboutPhotos, setAboutPhotos] = useState<any[]>([]);
-  const [newAboutPhoto, setNewAboutPhoto] = useState({
+  const [newAboutPhoto, setNewAboutPhoto] = useState<{
+    key: string;
+    title: string;
+    label: string;
+    imageUrl: string;
+    imageUrls: string[];
+  }>({
     key: '',
     title: '',
     label: '',
-    imageUrl: ''
+    imageUrl: '',
+    imageUrls: []
   });
   const [editingAboutPhotoId, setEditingAboutPhotoId] = useState<string | null>(null);
   const [aboutFeedback, setAboutFeedback] = useState({ type: '', message: '' });
@@ -168,6 +251,7 @@ const AdminPage = () => {
   const [reel, setReel] = useState({
     title: 'X.ALT Showreel',
     videoUrl: '/src/assets/videos/showreel.mp4',
+    heroVideoUrl: '/uploads/logo video xalt.mp4',
   });
   const [reelFeedback, setReelFeedback] = useState({ type: '', message: '' });
 
@@ -318,7 +402,8 @@ const AdminPage = () => {
           if (item) {
             setReel({ 
               title: item.title || 'X.ALT Showreel', 
-              videoUrl: item.videoUrl || '/src/assets/videos/showreel.mp4' 
+              videoUrl: item.videoUrl || '/src/assets/videos/showreel.mp4',
+              heroVideoUrl: item.heroVideoUrl || '/uploads/logo video xalt.mp4'
             });
           }
         }
@@ -569,7 +654,7 @@ const AdminPage = () => {
         message: editingAboutPhotoId ? 'About photo updated successfully!' : 'About photo created successfully!' 
       });
       toast.success(editingAboutPhotoId ? 'About photo updated successfully!' : 'About photo created successfully!');
-      setNewAboutPhoto({ key: '', title: '', label: '', imageUrl: '' });
+      setNewAboutPhoto({ key: '', title: '', label: '', imageUrl: '', imageUrls: [] });
       setEditingAboutPhotoId(null);
       fetchAboutPhotos();
       setTimeout(() => setAboutFeedback({ type: '', message: '' }), 3000);
@@ -587,14 +672,17 @@ const AdminPage = () => {
       key: photo.key,
       title: photo.title || '',
       label: photo.label || '',
-      imageUrl: photo.imageUrl || ''
+      imageUrl: photo.imageUrl || '',
+      imageUrls: Array.isArray(photo.imageUrls) && photo.imageUrls.length > 0
+        ? photo.imageUrls
+        : (photo.imageUrl ? [photo.imageUrl] : [])
     });
     scrollToForm('about-form-container');
   };
 
   const cancelEditAboutPhoto = () => {
     setEditingAboutPhotoId(null);
-    setNewAboutPhoto({ key: '', title: '', label: '', imageUrl: '' });
+    setNewAboutPhoto({ key: '', title: '', label: '', imageUrl: '', imageUrls: [] });
   };
 
   const handleDeleteAboutPhoto = (id: string) => {
@@ -812,7 +900,8 @@ const AdminPage = () => {
         category: editingSubcategory.categoryId,
         title: editingSubcategory.title,
         description: editingSubcategory.description,
-        image: editingSubcategory.image
+        image: editingSubcategory.image,
+        video: editingSubcategory.video || ''
       })
     })
     .then(async res => {
@@ -886,7 +975,8 @@ const AdminPage = () => {
         code: editingProject.code || editingProject.year,
         client: editingProject.client || '',
         image: editingProject.image,
-        video: editingProject.video || ''
+        video: editingProject.video || '',
+        galleryImages: editingProject.galleryImages || []
       })
     })
     .then(async res => {
@@ -1420,7 +1510,7 @@ const AdminPage = () => {
                     <button 
                       className="dashboard-btn primary" 
                       onClick={() => {
-                        setEditingSubcategory({ categoryId: cat.id, title: '', description: '', image: '' });
+                        setEditingSubcategory({ categoryId: cat.id, title: '', description: '', image: '', video: '' });
                         setIsAddingSubcategory(true);
                       }}
                     >
@@ -1462,6 +1552,14 @@ const AdminPage = () => {
                             value={editingSubcategory.image} 
                             onChange={url => setEditingSubcategory({ ...editingSubcategory, image: url })}
                             acceptType="image"
+                          />
+                        </div>
+                        <div className="dashboard-form-group">
+                          <label>SHOWCASE VIDEO URL (FOR IMMERSIVE CATEGORY SINGLE VIDEO SHOWCASE)</label>
+                          <FileUploadWidget 
+                            value={editingSubcategory.video || ''} 
+                            onChange={url => setEditingSubcategory({ ...editingSubcategory, video: url })}
+                            acceptType="video"
                           />
                         </div>
                         <div className="dashboard-form-actions">
@@ -1515,6 +1613,14 @@ const AdminPage = () => {
                                     acceptType="image"
                                   />
                                 </div>
+                                <div className="dashboard-form-group">
+                                  <label>SHOWCASE VIDEO URL (FOR IMMERSIVE CATEGORY SINGLE VIDEO SHOWCASE)</label>
+                                  <FileUploadWidget 
+                                    value={editingSubcategory.video || ''} 
+                                    onChange={url => setEditingSubcategory({ ...editingSubcategory, video: url })}
+                                    acceptType="video"
+                                  />
+                                </div>
                                 <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px' }}>
                                   <button type="submit" className="dashboard-btn primary">Save Changes</button>
                                   <button type="button" className="dashboard-btn secondary" onClick={() => setEditingSubcategory(null)}>Cancel</button>
@@ -1541,6 +1647,7 @@ const AdminPage = () => {
                                       title: sub.title, 
                                       description: sub.description, 
                                       image: sub.image,
+                                      video: sub.video || '',
                                       galleryItems: sub.galleryItems 
                                     })}
                                   >
@@ -1567,7 +1674,7 @@ const AdminPage = () => {
                                 className="dashboard-btn primary"
                                 style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                 onClick={() => {
-                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', year: '', code: '', client: '', image: '', video: '' });
+                                  setEditingProject({ categoryId: cat.id, subcategoryTitle: sub.title, title: '', tag: '', year: '', code: '', client: '', image: '', video: '', galleryImages: [] });
                                   setIsAddingProject(true);
                                 }}
                               >
@@ -1641,6 +1748,58 @@ const AdminPage = () => {
                                       acceptType="any"
                                     />
                                   </div>
+                                  <div className="dashboard-form-group" style={{ marginTop: '10px' }}>
+                                    <label>ADDITIONAL GALLERY IMAGES / VIDEOS ({editingProject.galleryImages?.length || 0})</label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                                      {editingProject.galleryImages && editingProject.galleryImages.map((imgUrl: string, idx: number) => (
+                                        <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                          <span style={{ fontSize: '0.75rem', color: '#6b7280', width: '20px' }}>{idx + 1}.</span>
+                                          <div style={{ flex: 1 }}>
+                                            <FileUploadWidget 
+                                              value={imgUrl}
+                                              onChange={(url) => {
+                                                const updated = [...(editingProject.galleryImages || [])];
+                                                updated[idx] = url;
+                                                setEditingProject((prev: any) => ({
+                                                  ...prev,
+                                                  galleryImages: updated
+                                                }));
+                                              }}
+                                              acceptType="any"
+                                            />
+                                          </div>
+                                          <button 
+                                            type="button" 
+                                            className="dashboard-btn delete" 
+                                            style={{ padding: '0 10px', height: '42px', margin: 0, fontSize: '0.75rem' }}
+                                            onClick={() => {
+                                              const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
+                                              setEditingProject((prev: any) => ({
+                                                ...prev,
+                                                galleryImages: updated
+                                              }));
+                                            }}
+                                          >
+                                            Remove
+                                          </button>
+                                        </div>
+                                      ))}
+                                      <button 
+                                        type="button" 
+                                        className="dashboard-btn primary" 
+                                        style={{ alignSelf: 'flex-start', padding: '4px 10px', fontSize: '0.75rem', margin: 0 }}
+                                        onClick={() => {
+                                          setEditingProject((prev: any) => ({
+                                            ...prev,
+                                            galleryImages: [...(prev.galleryImages || []), '']
+                                          }));
+                                        }}
+                                      >
+                                        + Add Gallery Image / Video
+                                      </button>
+                                    </div>
+                                    <small className="field-hint" style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '4px', display: 'block' }}>// Add multiple images that will appear as a gallery modal section when clicking this project video.</small>
+                                  </div>
                                   <div className="dashboard-form-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '15px', borderTop: '1px solid #e2e8f0', paddingTop: '15px' }}>
                                     <button type="button" className="dashboard-btn secondary" style={{ padding: '8px 16px', fontSize: '0.78rem', margin: 0 }} onClick={() => {
                                       setIsAddingProject(false);
@@ -1713,6 +1872,57 @@ const AdminPage = () => {
                                           acceptType="any"
                                         />
                                       </div>
+                                      <div className="dashboard-form-group" style={{ marginTop: '10px', marginBottom: '8px' }}>
+                                        <label style={{ fontSize: '0.62rem' }}>ADDITIONAL GALLERY IMAGES / VIDEOS ({editingProject.galleryImages?.length || 0})</label>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                                          {editingProject.galleryImages && editingProject.galleryImages.map((imgUrl: string, idx: number) => (
+                                            <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                              <span style={{ fontSize: '0.75rem', color: '#6b7280', width: '20px' }}>{idx + 1}.</span>
+                                              <div style={{ flex: 1 }}>
+                                                <FileUploadWidget 
+                                                  value={imgUrl}
+                                                  onChange={(url) => {
+                                                    const updated = [...(editingProject.galleryImages || [])];
+                                                    updated[idx] = url;
+                                                    setEditingProject((prev: any) => ({
+                                                      ...prev,
+                                                      galleryImages: updated
+                                                    }));
+                                                  }}
+                                                  acceptType="any"
+                                                />
+                                              </div>
+                                              <button 
+                                                type="button" 
+                                                className="dashboard-btn delete" 
+                                                style={{ padding: '0 10px', height: '42px', margin: 0, fontSize: '0.75rem' }}
+                                                onClick={() => {
+                                                  const updated = (editingProject.galleryImages || []).filter((_: any, i: number) => i !== idx);
+                                                  setEditingProject((prev: any) => ({
+                                                    ...prev,
+                                                    galleryImages: updated
+                                                  }));
+                                                }}
+                                              >
+                                                Remove
+                                              </button>
+                                            </div>
+                                          ))}
+                                          <button 
+                                            type="button" 
+                                            className="dashboard-btn primary" 
+                                            style={{ alignSelf: 'flex-start', padding: '4px 10px', fontSize: '0.75rem', margin: 0 }}
+                                            onClick={() => {
+                                              setEditingProject((prev: any) => ({
+                                                ...prev,
+                                                galleryImages: [...(prev.galleryImages || []), '']
+                                              }));
+                                            }}
+                                          >
+                                            + Add Gallery Image / Video
+                                          </button>
+                                        </div>
+                                      </div>
                                       <div className="dashboard-form-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', borderTop: '1px solid #f3f4f6', paddingTop: '8px', marginTop: '4px' }}>
                                         <button type="button" className="dashboard-btn secondary" style={{ padding: '5px 12px', fontSize: '0.7rem', margin: 0 }} onClick={() => setEditingProject(null)}>Cancel</button>
                                         <button type="submit" className="dashboard-btn primary" style={{ padding: '5px 12px', fontSize: '0.7rem', margin: 0 }}>Save</button>
@@ -1754,7 +1964,8 @@ const AdminPage = () => {
                                               code: proj.code || proj.year,
                                               client: proj.client || '',
                                               image: proj.image,
-                                              video: proj.video || ''
+                                              video: proj.video || '',
+                                              galleryImages: proj.galleryImages || []
                                             })}
                                           >
                                             Edit
@@ -1814,13 +2025,23 @@ const AdminPage = () => {
                   </div>
 
                   <div className="dashboard-form-group">
-                    <label>VIDEO SOURCE LINK (DIRECT MP4)</label>
+                    <label>SHOWREEL VIDEO SOURCE LINK (DIRECT MP4)</label>
                     <FileUploadWidget 
                       value={reel.videoUrl} 
                       onChange={url => setReel({ ...reel, videoUrl: url })}
                       acceptType="video"
                     />
                     <small className="field-hint">// Supports file uploads or absolute URLs targeting direct video formats.</small>
+                  </div>
+
+                  <div className="dashboard-form-group" style={{ marginTop: '16px' }}>
+                    <label>HERO LOGO VIDEO SOURCE LINK (CDN/DIRECT MP4)</label>
+                    <FileUploadWidget 
+                      value={reel.heroVideoUrl} 
+                      onChange={url => setReel({ ...reel, heroVideoUrl: url })}
+                      acceptType="video"
+                    />
+                    <small className="field-hint">// The cinematic logo loop video that plays at the top of the homepage.</small>
                   </div>
 
                   <div className="dashboard-form-actions">
@@ -2239,13 +2460,80 @@ const AdminPage = () => {
                   </div>
 
                   <div className="dashboard-form-group">
-                    <label>PHOTO IMAGE URL</label>
+                    <label>PRIMARY PHOTO IMAGE URL</label>
                     <FileUploadWidget 
                       value={newAboutPhoto.imageUrl}
-                      onChange={(url) => setNewAboutPhoto({ ...newAboutPhoto, imageUrl: url })}
+                      onChange={(url) => setNewAboutPhoto(prev => {
+                        const updatedUrls = [...(prev.imageUrls || [])];
+                        if (updatedUrls.length === 0) {
+                          updatedUrls.push(url);
+                        } else {
+                          updatedUrls[0] = url;
+                        }
+                        return {
+                          ...prev,
+                          imageUrl: url,
+                          imageUrls: updatedUrls
+                        };
+                      })}
                       acceptType="image"
                     />
-                    <small className="field-hint">// Upload about photo or paste a CDN URL.</small>
+                    <small className="field-hint">// Upload main about photo or paste a CDN URL.</small>
+                  </div>
+
+                  <div className="dashboard-form-group" style={{ marginTop: '15px' }}>
+                    <label>ADDITIONAL SLIDER GALLERY IMAGES ({newAboutPhoto.imageUrls?.length || 0})</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                      {newAboutPhoto.imageUrls && newAboutPhoto.imageUrls.map((imgUrl, idx) => (
+                        <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.8rem', color: '#6b7280', width: '20px' }}>{idx + 1}.</span>
+                          <div style={{ flex: 1 }}>
+                            <FileUploadWidget 
+                              value={imgUrl}
+                              onChange={(url) => {
+                                const updated = [...(newAboutPhoto.imageUrls || [])];
+                                updated[idx] = url;
+                                setNewAboutPhoto(prev => ({
+                                  ...prev,
+                                  imageUrl: idx === 0 ? url : prev.imageUrl,
+                                  imageUrls: updated
+                                }));
+                              }}
+                              acceptType="image"
+                            />
+                          </div>
+                          <button 
+                            type="button" 
+                            className="dashboard-btn delete" 
+                            style={{ padding: '0 12px', height: '42px', margin: 0 }}
+                            onClick={() => {
+                              const updated = (newAboutPhoto.imageUrls || []).filter((_, i) => i !== idx);
+                              setNewAboutPhoto(prev => ({
+                                ...prev,
+                                imageUrl: prev.imageUrl === imgUrl ? (updated[0] || '') : prev.imageUrl,
+                                imageUrls: updated
+                              }));
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                      <button 
+                        type="button" 
+                        className="dashboard-btn primary" 
+                        style={{ alignSelf: 'flex-start', padding: '6px 12px', fontSize: '0.8rem' }}
+                        onClick={() => {
+                          setNewAboutPhoto(prev => ({
+                            ...prev,
+                            imageUrls: [...(prev.imageUrls || []), '']
+                          }));
+                        }}
+                      >
+                        + Add Slider Image
+                      </button>
+                    </div>
+                    <small className="field-hint">// Add multiple images here. When multiple images are added, this slot will automatically become an interactive slider/carousel on the website.</small>
                   </div>
 
                   <div className="dashboard-form-actions">

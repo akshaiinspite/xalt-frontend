@@ -123,7 +123,7 @@ const Header = () => {
         <span className="nav-separator">/</span>
         <a href="#about" className={`nav-link ${activeTab === 'about' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#about')}>
           {activeTab === 'about' && <span className="active-dot"></span>}
-          About
+          Studio
         </a>
         <span className="nav-separator">/</span>
         <div className="nav-dropdown-wrapper">
@@ -151,7 +151,7 @@ const Header = () => {
         <span className="nav-separator">/</span>
         <a href="#contact" className={`nav-link ${activeTab === 'contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#contact')}>
           {activeTab === 'contact' && <span className="active-dot"></span>}
-          Contact Us
+          Connect
         </a>
       </nav>
       
@@ -180,7 +180,7 @@ const Header = () => {
             Home
           </a>
           <a href="#about" className={`mobile-nav-link ${activeTab === 'about' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#about')}>
-            About
+            Studio
           </a>
           
           <div className="mobile-projects-wrapper">
@@ -203,7 +203,7 @@ const Header = () => {
           </a>
 
           <a href="#contact" className={`mobile-nav-link ${activeTab === 'contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick(e, '#contact')}>
-            Contact Us
+            Connect
           </a>
         </nav>
       </div>

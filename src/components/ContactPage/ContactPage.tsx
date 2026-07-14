@@ -258,7 +258,6 @@ const ContactPage = () => {
       <div className="contact-content-wrapper">
         <div className="contact-header-section">
           <div className="brand-accent-chevron-group">
-            <span className="accent-chevron-red">&gt;&gt;</span>
             <span className="accent-badge-text">CONNECT WITH X.ALT</span>
           </div>
 
@@ -304,7 +303,7 @@ const ContactPage = () => {
                   <a href="tel:+919633322321" className="info-card-link">
                     +91 96333 22321
                   </a>
-                  <p className="info-card-meta">Mon - Sat // 09:00 - 18:00 IST</p>
+                  <p className="info-card-meta">Mon - Sat | 09:00 - 18:00 IST</p>
                 </div>
               </div>
 
@@ -435,7 +434,6 @@ const ContactPage = () => {
                   <span className="submit-btn-text">
                     {isSubmitting ? 'SENDING MESSAGE...' : 'SEND MESSAGE'}
                   </span>
-                  <span className="submit-btn-arrow">&gt;&gt;</span>
                 </button>
 
               </form>

@@ -76,12 +76,6 @@ const ClassicHero = () => {
       {/* Red Glowing Circle Behind Text */}
       <div className="hero-text-glow"></div>
       
-      {/* Tech Status Block (Covers corner watermarks / professional status) */}
-      <div className="hero-tech-status">
-        <div className="status-dot-pulse"></div>
-        <span className="status-text">SYSTEM ACTIVE // SEC_04_VFX</span>
-      </div>
-
       {/* Content Container */}
       <div className="classic-hero-content">
         <div className="hero-badge-wrapper">

@@ -97,17 +97,6 @@ const ServicesGrid = () => {
                 <img src={getMediaUrl(service.image) || LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" />
                 <div className="service-card-overlay"></div>
                 <div className="service-card-glow-red"></div>
-
-                {/* Cyber Telemetry Overlay */}
-                <div className="card-telemetry-overlay">
-                  <div className="telemetry-line"><span>NODE:</span> <span>0{index + 1}_VFX</span></div>
-                  <div className="telemetry-line"><span>SYS_DB:</span> <span>XALT_LOC_X</span></div>
-                  <div className="telemetry-line"><span>INTEGRITY:</span> <span className="telemetry-status-red">ACCESS_READY</span></div>
-                </div>
-
-                <div className="board-subcard-indicator">
-                  <span>&gt;&gt; CLICK TO OPEN</span>
-                </div>
               </div>
 
               {/* Text overlay content */}

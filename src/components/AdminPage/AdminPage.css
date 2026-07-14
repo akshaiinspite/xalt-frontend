@@ -92,7 +92,7 @@
 }
 
 .login-title {
-  font-family: var(--font-oswald, 'Montserrat', sans-serif);
+  font-family: var(--font-oswald, sans-serif);
   font-size: 1.6rem;
   font-weight: 500;
   letter-spacing: 0.05em;

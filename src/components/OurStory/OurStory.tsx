@@ -82,10 +82,10 @@ const OurStory = () => {
           
           <div className="about-description-box">
             <p className="about-hud-text">
-              AT XALT STUDIOS, WE ARE A TEAM OF VISIONARY CREATORS, TECH INNOVATORS, AND VISUAL ARTISTS PUSHING THE BOUNDARIES OF WHAT IS POSSIBLE IN THE DIGITAL REALM.
+              At X.ALT Studios, we are a team of visionary creators, tech innovators, and visual artists pushing the boundaries of what is possible in the digital realm.
             </p>
             <p className="about-hud-text">
-              X.ALT STUDIO BRIDGES THE GAP BETWEEN RAW IMAGINATION AND TECHNICAL EXECUTION. WE CRAFT HIGH-END VISUAL EFFECTS, INTERACTIVE 3D ASSETS, AND IMMERSIVE XR EXPERIENCES THAT DO NOT JUST TELL A STORY—THEY TRANSPORT AUDIENCES ENTIRELY.
+              X.ALT Studio bridges the gap between raw imagination and technical execution. We craft high-end visual effects, interactive 3D assets, and immersive XR experiences that do not just tell a story—they transport audiences entirely.
             </p>
           </div>
 
