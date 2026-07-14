@@ -1094,64 +1094,72 @@ const ProjectsPage = () => {
             </div>
 
             {/* Gallery Section */}
-            {selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img).length > 0 && (
-              <div className="lightbox-gallery-section">
-                <h4 className="lightbox-gallery-title">PROJECT GALLERY</h4>
-                
-                <div className="lightbox-slider-container">
-                  <div className="lightbox-slider-corners">
-                    <span className="corner tl"></span>
-                    <span className="corner tr"></span>
-                    <span className="corner bl"></span>
-                    <span className="corner br"></span>
-                  </div>
+            {(() => {
+              const galleryList = (selectedProjectNode.galleryImages && selectedProjectNode.galleryImages.filter(img => img).length > 0)
+                ? selectedProjectNode.galleryImages.filter(img => img)
+                : [selectedProjectNode.image].filter(img => img);
 
-                  <button className="lightbox-nav-btn prev" onClick={handleLightboxScrollLeft} aria-label="Previous Image">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                  </button>
+              if (galleryList.length === 0) return null;
 
-                  <div className="lightbox-slider-track" ref={lightboxScrollRef}>
-                    {selectedProjectNode.galleryImages.filter(img => img).map((imgUrl, imgIdx) => (
-                      <div key={imgIdx} className="lightbox-slider-slide">
-                        <div className="lightbox-slide-corners">
-                          <span className="corner tl"></span>
-                          <span className="corner tr"></span>
-                          <span className="corner bl"></span>
-                          <span className="corner br"></span>
+              return (
+                <div className="lightbox-gallery-section">
+                  <h4 className="lightbox-gallery-title">PROJECT GALLERY</h4>
+                  
+                  <div className="lightbox-slider-container">
+                    <div className="lightbox-slider-corners">
+                      <span className="corner tl"></span>
+                      <span className="corner tr"></span>
+                      <span className="corner bl"></span>
+                      <span className="corner br"></span>
+                    </div>
+
+                    <button className="lightbox-nav-btn prev" onClick={handleLightboxScrollLeft} aria-label="Previous Image">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                      </svg>
+                    </button>
+
+                    <div className="lightbox-slider-track" ref={lightboxScrollRef}>
+                      {galleryList.map((imgUrl, imgIdx) => (
+                        <div key={imgIdx} className="lightbox-slider-slide">
+                          <div className="lightbox-slide-corners">
+                            <span className="corner tl"></span>
+                            <span className="corner tr"></span>
+                            <span className="corner bl"></span>
+                            <span className="corner br"></span>
+                          </div>
+
+                          {isVideoUrl(imgUrl) ? (
+                            <video 
+                              src={getMediaUrl(imgUrl)} 
+                              controls
+                              className="lightbox-slider-media"
+                            />
+                          ) : (
+                            <img 
+                              src={getMediaUrl(imgUrl)} 
+                              alt={`${selectedProjectNode.title} gallery ${imgIdx + 1}`} 
+                              className="lightbox-slider-media"
+                              onClick={() => window.open(getMediaUrl(imgUrl), '_blank')}
+                            />
+                          )}
+
+                          <div className="lightbox-slide-badge">
+                            <span>IMAGE {String(imgIdx + 1).padStart(2, '0')} / {String(galleryList.length).padStart(2, '0')}</span>
+                          </div>
                         </div>
+                      ))}
+                    </div>
 
-                        {isVideoUrl(imgUrl) ? (
-                          <video 
-                            src={getMediaUrl(imgUrl)} 
-                            controls
-                            className="lightbox-slider-media"
-                          />
-                        ) : (
-                          <img 
-                            src={getMediaUrl(imgUrl)} 
-                            alt={`${selectedProjectNode.title} gallery ${imgIdx + 1}`} 
-                            className="lightbox-slider-media"
-                            onClick={() => window.open(getMediaUrl(imgUrl), '_blank')}
-                          />
-                        )}
-
-                        <div className="lightbox-slide-badge">
-                          <span>IMAGE {String(imgIdx + 1).padStart(2, '0')} / {String(selectedProjectNode.galleryImages?.filter(img => img).length || 0).padStart(2, '0')}</span>
-                        </div>
-                      </div>
-                    ))}
+                    <button className="lightbox-nav-btn next" onClick={handleLightboxScrollRight} aria-label="Next Image">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
                   </div>
-
-                  <button className="lightbox-nav-btn next" onClick={handleLightboxScrollRight} aria-label="Next Image">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </button>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       )}
