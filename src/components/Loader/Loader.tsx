@@ -77,19 +77,17 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const currentStageIdx = getStageIndex(progress);
   const currentStageText = STAGES[currentStageIdx];
 
-  // Helper to split text into styled spans mimicking the Broed design style
+  // Helper to split text into styled spans
   const renderStyledText = (text: string) => {
     const uppercaseText = text.toUpperCase();
     return uppercaseText.split('').map((char, index) => {
       if (char === ' ') {
         return <span key={index} style={{ width: '0.22em' }}>&nbsp;</span>;
       }
-      // Broed style: Only outline 'O' and 'E' characters for clean designer typography
-      const isOutline = char === 'O' || char === 'E';
       return (
         <span 
           key={index} 
-          className={`loader-char ${isOutline ? 'char-outline' : 'char-solid'}`}
+          className="loader-char"
         >
           {char}
         </span>
@@ -101,7 +99,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
 
   return (
     <div className={`broed-loader-container ${!loading ? 'reveal-site' : ''} ${welcomeActive ? 'welcome-active' : ''}`}>
-      {/* Sliding Red Panels */}
+      {/* Sliding Red/Black Panels */}
       <div className="loader-half-panel panel-top"></div>
       <div className="loader-half-panel panel-bottom"></div>
 

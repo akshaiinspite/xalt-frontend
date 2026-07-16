@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=League+Gothic&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Montserrat:wght@700;800;900&display=swap');
 
 .broed-loader-container {
   position: fixed;
@@ -11,17 +11,17 @@
   justify-content: center;
   z-index: 999999;
   overflow: hidden;
-  background-color: transparent;
+  background-color: #050505; /* Deep Black Background */
   pointer-events: all;
 }
 
-/* SOLID RED PANEL HALVES (Touch in center for 100% solid color background) */
+/* SOLID DEEP BLACK PANEL HALVES (Touch in center for solid color background) */
 .loader-half-panel {
   position: absolute;
   left: 0;
   width: 100%;
   height: 50vh;
-  background-color: var(--color-primary, #E10600); /* Exact Brand/Logo Red */
+  background-color: #050505; /* Deep Black Background */
   z-index: 10;
   transition: transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
 }
@@ -29,13 +29,13 @@
 .panel-top {
   top: 0;
   transform-origin: top;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .panel-bottom {
   bottom: 0;
   transform-origin: bottom;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 /* CENTRAL TYPOGRAPHIC WORKSPACE */
@@ -57,11 +57,11 @@
 }
 
 .word-half {
-  font-family: 'League Gothic', 'Bebas Neue', var(--font-anton), sans-serif;
-  font-size: clamp(2.6rem, 8.8vw, 9.5rem);
-  font-weight: 400; /* League Gothic is bold/heavy by default */
+  font-family: 'Syne', 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  font-size: clamp(2.4rem, 8.2vw, 9rem);
+  font-weight: 800; /* Ultra-bold luxury weight */
   text-transform: uppercase;
-  letter-spacing: -0.01em; /* Highly readable tight spacing */
+  letter-spacing: 0.1em; /* Generous letter spacing for premium editorial feel */
   line-height: 0.9;
   white-space: nowrap;
 }
@@ -95,17 +95,8 @@
 /* Character custom styling */
 .loader-char {
   display: inline-block;
-  margin-right: -0.01em; /* Subtly tight kern spacing */
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.char-solid {
-  color: #ffffff;
-}
-
-.char-outline {
-  color: transparent;
-  -webkit-text-stroke: clamp(1.2px, 0.22vw, 2.5px) #ffffff;
+  color: #ffffff; /* Pure White Text */
+  text-shadow: none; /* Crisp, sharp edges with no glow or shadow */
 }
 
 /* REVEAL TRANSITIONS ON LOADING COMPLETE */
@@ -129,7 +120,7 @@
 /* KEYFRAMES */
 @keyframes slideTopIn {
   0% {
-    transform: translateX(-35px);
+    transform: translateX(-40px);
     opacity: 0;
   }
   100% {
@@ -140,7 +131,7 @@
 
 @keyframes slideBottomIn {
   0% {
-    transform: translateX(35px);
+    transform: translateX(40px);
     opacity: 0;
   }
   100% {
