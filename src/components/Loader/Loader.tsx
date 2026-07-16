@@ -66,7 +66,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
       const fadeTimer = setTimeout(() => {
         setLoading(false);
         if (onFinish) {
-          setTimeout(onFinish, 900); // Allow slide split animation to complete
+          setTimeout(onFinish, 900); // Allow panels split animation to complete
         }
       }, 1500); // 1.5s reading time for welcome before entering site
       
@@ -77,51 +77,48 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const currentStageIdx = getStageIndex(progress);
   const currentStageText = STAGES[currentStageIdx];
 
+  // Helper to split text into styled spans mimicking the Broed design style
+  const renderStyledText = (text: string) => {
+    const uppercaseText = text.toUpperCase();
+    return uppercaseText.split('').map((char, index) => {
+      if (char === ' ') {
+        return <span key={index} style={{ width: '0.22em' }}>&nbsp;</span>;
+      }
+      // Broed style: Only outline 'O' and 'E' characters for clean designer typography
+      const isOutline = char === 'O' || char === 'E';
+      return (
+        <span 
+          key={index} 
+          className={`loader-char ${isOutline ? 'char-outline' : 'char-solid'}`}
+        >
+          {char}
+        </span>
+      );
+    });
+  };
+
+  const activeText = progress === 100 ? 'WELCOME' : currentStageText;
+
   return (
     <div className={`broed-loader-container ${!loading ? 'reveal-site' : ''} ${welcomeActive ? 'welcome-active' : ''}`}>
-      {/* Cyber Grid Scanlines */}
-      <div className="loader-scanline-overlay"></div>
+      {/* Sliding Red Panels */}
+      <div className="loader-half-panel panel-top"></div>
+      <div className="loader-half-panel panel-bottom"></div>
 
-      {/* TOP RED PANEL */}
-      <div className="broed-panel broed-panel-top">
-        <div className="broed-panel-inner">
-          <div className="broed-telemetry-row">
-            <span className="telemetry-tag">[ X.ALT PIPELINE PRELOADER ]</span>
-            <span className="telemetry-status">SYS_STATUS // ONLINE</span>
+      {/* Central Typographic Container */}
+      <div className="loader-center-content">
+        <div key={currentStageIdx} className="loader-split-word-wrapper">
+          {/* Hidden guide to maintain correct sizes */}
+          <div className="word-half guide-text" style={{ position: 'relative', visibility: 'hidden' }}>
+            {renderStyledText(activeText)}
           </div>
-        </div>
-      </div>
-
-      {/* MIDDLE APERTURE SLIT */}
-      <div className="broed-slit">
-        <div className="broed-slit-bg"></div>
-        <div className="broed-slit-content">
-          {/* Progress percentage on top */}
-          <div className="broed-percentage-indicator">
-            <span className="percentage-number">{progress.toString().padStart(3, '0')}</span>
-            <span className="percentage-lbl">/ 100</span>
+          {/* Top half */}
+          <div className="word-half top-half">
+            {renderStyledText(activeText)}
           </div>
-
-          {/* Main Huge Stage Text with key-based re-render for slide-up CSS animation */}
-          <div className="broed-stage-text-container">
-            <span key={currentStageIdx} className={`broed-stage-text ${welcomeActive ? 'welcome-text' : ''}`}>
-              {progress === 100 ? 'WELCOME' : currentStageText.toUpperCase()}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* BOTTOM RED PANEL */}
-      <div className="broed-panel broed-panel-bottom">
-        <div className="broed-panel-inner">
-          {/* Animated red-lined progress indicator */}
-          <div className="broed-progressbar-track">
-            <div className="broed-progressbar-fill" style={{ width: `${progress}%` }}></div>
-          </div>
-          
-          <div className="broed-telemetry-row">
-            <span className="telemetry-tag">BUILDING VIRTUAL FRAMEWORK</span>
-            <span className="telemetry-status">LOAD_RATIO // {progress}%</span>
+          {/* Bottom half */}
+          <div className="word-half bottom-half">
+            {renderStyledText(activeText)}
           </div>
         </div>
       </div>

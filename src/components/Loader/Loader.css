@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Gothic&family=Bebas+Neue&display=swap');
+
 .broed-loader-container {
   position: fixed;
   top: 0;
@@ -5,261 +7,144 @@
   width: 100vw;
   height: 100vh;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   z-index: 999999;
   overflow: hidden;
   background-color: transparent;
   pointer-events: all;
 }
 
-/* Background scanline grid overlay */
-.loader-scanline-overlay {
+/* SOLID RED PANEL HALVES (Touch in center for 100% solid color background) */
+.loader-half-panel {
   position: absolute;
-  top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-  background-size: 100% 4px;
-  z-index: 100;
-  opacity: 0.7;
-}
-
-/* DOUBLE PANEL SPLIT SYSTEM (Solid Light Red) */
-.broed-panel {
-  position: relative;
-  width: 100%;
-  height: 42vh;
-  background-color: #ff5447; /* Modern Light Coral Red */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 50vh;
+  background-color: var(--color-primary, #E10600); /* Exact Brand/Logo Red */
   z-index: 10;
-  transition: transform 0.95s cubic-bezier(0.85, 0, 0.15, 1);
-  box-sizing: border-box;
+  transition: transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
 }
 
-.broed-panel-top {
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.15);
+.panel-top {
+  top: 0;
   transform-origin: top;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.broed-panel-bottom {
-  border-top: 1.5px solid rgba(0, 0, 0, 0.15);
+.panel-bottom {
+  bottom: 0;
   transform-origin: bottom;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* PANEL INNER CONTAINER FOR TELEMETRY */
-.broed-panel-inner {
-  width: 90%;
-  max-width: 1400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
-
-.broed-panel-top .broed-panel-inner {
-  justify-content: flex-end;
-  padding-bottom: 40px;
-}
-
-.broed-panel-bottom .broed-panel-inner {
-  justify-content: flex-start;
-  padding-top: 40px;
-}
-
-/* INDUSTRIAL TELEMETRY TEXT */
-.broed-telemetry-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.8rem;
-  letter-spacing: 0.18em;
-  color: #000000; /* Sharp black text on red panel */
-  font-weight: bold;
-}
-
-/* MIDDLE APERTURE SLIT (Dark viewport) */
-.broed-slit {
+/* CENTRAL TYPOGRAPHIC WORKSPACE */
+.loader-center-content {
   position: relative;
-  width: 100%;
-  height: 16vh;
-  z-index: 5;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  transition: transform 0.95s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.8s ease;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.broed-slit-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #050507; /* Dark background inside the slit */
-  z-index: 1;
-}
-
-.broed-slit-content {
+/* HORIZONTAL SLICE TYPOGRAPHY SYSTEM */
+.loader-split-word-wrapper {
   position: relative;
-  z-index: 2;
-  width: 90%;
-  max-width: 1400px;
-  display: flex;
-  justify-content: space-between;
+  display: inline-flex;
   align-items: center;
-  height: 100%;
-}
-
-/* Progress Percentage Indicator */
-.broed-percentage-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-family: 'Share Tech Mono', monospace;
-  color: rgba(255, 255, 255, 0.25);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
-}
-
-.percentage-number {
-  font-size: 2.2rem;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.percentage-lbl {
-  font-size: 0.72rem;
-  color: #ff5447; /* Light red slash indicator */
-  font-weight: bold;
-  margin-top: 2px;
-}
-
-/* MAIN STAGE TEXT (Huge Typographic Design) */
-.broed-stage-text-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
   justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 2;
 }
 
-.broed-stage-text {
-  font-family: var(--font-anton), 'Oswald', sans-serif;
-  font-size: clamp(2.5rem, 7vw, 6.2rem);
-  font-weight: 900;
+.word-half {
+  font-family: 'League Gothic', 'Bebas Neue', var(--font-anton), sans-serif;
+  font-size: clamp(2.6rem, 8.8vw, 9.5rem);
+  font-weight: 400; /* League Gothic is bold/heavy by default */
   text-transform: uppercase;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  text-align: center;
-  display: inline-block;
-  transform-origin: center center;
-  animation: textChangePop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  letter-spacing: -0.01em; /* Highly readable tight spacing */
+  line-height: 0.9;
+  white-space: nowrap;
 }
 
-/* Outline Text Effect to mimic Awwwards outline stages */
-.broed-stage-text:nth-child(even) {
-  color: transparent;
-  -webkit-text-stroke: 1.5px #ffffff;
-}
-
-/* Welcome Active text styling */
-.welcome-text {
-  color: #ff5447 !important;
-  -webkit-text-stroke: 0px transparent !important;
-  text-shadow: 0 0 35px rgba(255, 84, 71, 0.4);
-  font-size: clamp(3rem, 8vw, 7rem) !important;
-  letter-spacing: 0.05em;
-  animation: welcomePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
-}
-
-@keyframes welcomePop {
-  0% { transform: scale(0.8) translateY(20px); opacity: 0; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-@keyframes textChangePop {
-  0% { transform: translateY(50px) skewY(2deg); opacity: 0; filter: blur(3px); }
-  100% { transform: translateY(0) skewY(0deg); opacity: 1; filter: blur(0); }
-}
-
-/* PROGRESS BAR TRACK IN BOTTOM PANEL */
-.broed-progressbar-track {
-  width: 100%;
-  height: 2px;
-  background-color: rgba(0, 0, 0, 0.12);
+.top-half {
   position: absolute;
   top: 0;
   left: 0;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: inset(0 0 50% 0);
+  animation: slideTopIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.broed-progressbar-fill {
+.bottom-half {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  background-color: #ffffff; /* Contrast white fill line */
-  transition: width 0.08s ease-out;
-  box-shadow: 0 0 8px #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: inset(50% 0 0 0);
+  animation: slideBottomIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Character custom styling */
+.loader-char {
+  display: inline-block;
+  margin-right: -0.01em; /* Subtly tight kern spacing */
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.char-solid {
+  color: #ffffff;
+}
+
+.char-outline {
+  color: transparent;
+  -webkit-text-stroke: clamp(1.2px, 0.22vw, 2.5px) #ffffff;
 }
 
 /* REVEAL TRANSITIONS ON LOADING COMPLETE */
-.reveal-site .broed-panel-top {
+.reveal-site .panel-top {
   transform: translateY(-100%);
 }
 
-.reveal-site .broed-panel-bottom {
+.reveal-site .panel-bottom {
   transform: translateY(100%);
 }
 
-.reveal-site .broed-slit {
-  transform: scaleY(0);
+.reveal-site .loader-center-content {
   opacity: 0;
+  pointer-events: none;
 }
 
 .reveal-site {
   pointer-events: none;
 }
 
-/* RESPONSIVE DESIGN */
-@media (max-width: 860px) {
-  .broed-panel {
-    height: 44vh;
+/* KEYFRAMES */
+@keyframes slideTopIn {
+  0% {
+    transform: translateX(-35px);
+    opacity: 0;
   }
-  
-  .broed-slit {
-    height: 12vh;
+  100% {
+    transform: translateX(0);
+    opacity: 1;
   }
+}
 
-  .broed-panel-top .broed-panel-inner {
-    padding-bottom: 20px;
+@keyframes slideBottomIn {
+  0% {
+    transform: translateX(35px);
+    opacity: 0;
   }
-
-  .broed-panel-bottom .broed-panel-inner {
-    padding-top: 20px;
-  }
-
-  .broed-stage-text {
-    font-size: clamp(1.8rem, 5vw, 3.5rem);
-  }
-
-  .welcome-text {
-    font-size: clamp(2rem, 5.5vw, 4rem) !important;
-  }
-
-  .percentage-number {
-    font-size: 1.6rem;
+  100% {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
