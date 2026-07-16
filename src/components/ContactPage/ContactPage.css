@@ -196,6 +196,57 @@
   margin: 0;
 }
 
+.contact-social-icons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+
+.contact-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-sizing: border-box;
+}
+
+.contact-social-link svg {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease;
+}
+
+.contact-social-link:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.contact-social-link[aria-label="Instagram"]:hover {
+  border-color: #E4405F;
+  box-shadow: 0 5px 15px rgba(228, 64, 95, 0.2);
+}
+
+.contact-social-link[aria-label="Behance"]:hover {
+  border-color: #0057ff;
+  box-shadow: 0 5px 15px rgba(0, 87, 255, 0.2);
+}
+
+.contact-social-link[aria-label="LinkedIn"]:hover {
+  border-color: #0077B5;
+  box-shadow: 0 5px 15px rgba(0, 119, 181, 0.2);
+}
+
+.contact-social-link:hover svg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+
 /* ----------------------------------------------------
    RIGHT COLUMN: SLEEK MINIMAL FORM
    ---------------------------------------------------- */

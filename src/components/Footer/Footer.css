@@ -183,9 +183,9 @@
 }
 
 /* Specific glows matching brand colors */
-.footer-social-icon-link[aria-label="Facebook"]:hover {
-  box-shadow: 0 5px 15px rgba(24, 119, 242, 0.2);
-  border-color: #1877F2;
+.footer-social-icon-link[aria-label="Behance"]:hover {
+  box-shadow: 0 5px 15px rgba(0, 87, 255, 0.2);
+  border-color: #0057ff;
 }
 
 .footer-social-icon-link[aria-label="Instagram"]:hover {
