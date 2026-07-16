@@ -34,17 +34,13 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
 
   useEffect(() => {
     let currentProgress = 0;
+    // Deliberate speed loop for 10-stage professional sequence (~7-8 seconds total)
     const interval = setInterval(() => {
-      // Variable speed for realistic loading feedback
-      let increment = Math.floor(Math.random() * 4) + 2; // 2% to 5% default
+      let increment = Math.floor(Math.random() * 2) + 1; // 1% to 2% increments
       
       if (currentProgress >= 48 && currentProgress <= 76) {
-        // Slower rendering & compositing phase
-        increment = Math.random() > 0.45 ? 1 : 2;
+        increment = Math.random() > 0.65 ? 1 : 2;
       } else if (currentProgress >= 90 && currentProgress < 99) {
-        // Slow down near finalizing
-        increment = 1;
-      } else if (currentProgress === 99) {
         increment = 1;
       }
 
@@ -54,7 +50,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
       if (currentProgress === 100) {
         clearInterval(interval);
       }
-    }, 70);
+    }, 125); // 125ms interval for smooth progression of 10 stages
 
     return () => clearInterval(interval);
   }, []);
@@ -77,19 +73,52 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const currentStageIdx = getStageIndex(progress);
   const currentStageText = STAGES[currentStageIdx];
 
-  // Helper to split text into styled spans
+  // Helper to split text into styled spans matching the ONTMOET reference pattern
   const renderStyledText = (text: string) => {
-    const uppercaseText = text.toUpperCase();
-    return uppercaseText.split('').map((char, index) => {
-      if (char === ' ') {
-        return <span key={index} style={{ width: '0.22em' }}>&nbsp;</span>;
-      }
+    const words = text.toUpperCase().split(' ');
+    let globalLetterCount = 0;
+
+    return words.map((word, wordIdx) => {
+      const letters = word.split('');
+      const len = letters.length;
+
+      const renderedLetters = letters.map((char, charIdx) => {
+        globalLetterCount++;
+
+        // Pattern: Last 3 letters of a word are Outline, Outline, Solid. Rest are Solid.
+        let isOutline = false;
+        if (len > 3) {
+          if (charIdx === len - 3 || charIdx === len - 2) {
+            isOutline = true;
+          }
+        } else if (len > 1) {
+          // For very short words, just make the last character outline
+          if (charIdx === len - 1) {
+            isOutline = true;
+          }
+        }
+
+        return (
+          <span 
+            key={charIdx} 
+            className="loader-char-wrapper"
+            style={{ 
+              animationDelay: `${globalLetterCount * 0.015}s`
+            }}
+          >
+            <span className={`loader-char ${isOutline ? 'char-outline' : 'char-solid'}`}>
+              {char}
+            </span>
+          </span>
+        );
+      });
+
       return (
-        <span 
-          key={index} 
-          className="loader-char"
-        >
-          {char}
+        <span key={wordIdx} style={{ display: 'inline-flex', alignItems: 'flex-end' }}>
+          {renderedLetters}
+          {wordIdx < words.length - 1 && (
+            <span className="loader-space">&nbsp;</span>
+          )}
         </span>
       );
     });
@@ -99,29 +128,23 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
 
   return (
     <div className={`broed-loader-container ${!loading ? 'reveal-site' : ''} ${welcomeActive ? 'welcome-active' : ''}`}>
-      {/* Sliding Red/Black Panels */}
+      {/* Sliding Red brand color Panels */}
       <div className="loader-half-panel panel-top"></div>
       <div className="loader-half-panel panel-bottom"></div>
 
       {/* Central Typographic Container */}
       <div className="loader-center-content">
-        <div key={currentStageIdx} className="loader-split-word-wrapper">
-          {/* Hidden guide to maintain correct sizes */}
-          <div className="word-half guide-text" style={{ position: 'relative', visibility: 'hidden' }}>
-            {renderStyledText(activeText)}
-          </div>
-          {/* Top half */}
-          <div className="word-half top-half">
-            {renderStyledText(activeText)}
-          </div>
-          {/* Bottom half */}
-          <div className="word-half bottom-half">
-            {renderStyledText(activeText)}
-          </div>
+        <div key={currentStageIdx} className="loader-text-wrapper">
+          {renderStyledText(activeText)}
         </div>
+      </div>
+
+      <div className="loader-progress-percentage">
+        {progress}%
       </div>
     </div>
   );
 };
 
 export default Loader;
+

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Montserrat:wght@700;800;900&display=swap');
-
 .broed-loader-container {
   position: fixed;
   top: 0;
@@ -11,17 +9,17 @@
   justify-content: center;
   z-index: 999999;
   overflow: hidden;
-  background-color: #050505; /* Deep Black Background */
+  background-color: #FF3322; /* Lighter, highly vibrant logo red */
   pointer-events: all;
 }
 
-/* SOLID DEEP BLACK PANEL HALVES (Touch in center for solid color background) */
+/* SOLID BRAND RED PANEL HALVES (Touch in center for solid color background) */
 .loader-half-panel {
   position: absolute;
   left: 0;
   width: 100%;
   height: 50vh;
-  background-color: #050505; /* Deep Black Background */
+  background-color: #FF3322; /* Lighter, highly vibrant logo red */
   z-index: 10;
   transition: transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
 }
@@ -29,13 +27,13 @@
 .panel-top {
   top: 0;
   transform-origin: top;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .panel-bottom {
   bottom: 0;
   transform-origin: bottom;
-  border-top: 1px solid rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* CENTRAL TYPOGRAPHIC WORKSPACE */
@@ -48,55 +46,76 @@
   transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* HORIZONTAL SLICE TYPOGRAPHY SYSTEM */
-.loader-split-word-wrapper {
+/* HORIZONTAL MASKED TYPOGRAPHY SYSTEM */
+.loader-text-wrapper {
   position: relative;
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end; /* Align characters to bottom */
   justify-content: center;
+  overflow: hidden; /* Mask the letters coming from above for an editorial look */
+  height: clamp(2.2rem, 5.2vw, 4.5rem);
+  padding: 0 1rem;
 }
 
-.word-half {
-  font-family: 'Syne', 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-  font-size: clamp(2.4rem, 8.2vw, 9rem);
-  font-weight: 800; /* Ultra-bold luxury weight */
-  text-transform: uppercase;
-  letter-spacing: 0.1em; /* Generous letter spacing for premium editorial feel */
-  line-height: 0.9;
-  white-space: nowrap;
-}
-
-.top-half {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  clip-path: inset(0 0 50% 0);
-  animation: slideTopIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.bottom-half {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  clip-path: inset(50% 0 0 0);
-  animation: slideBottomIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Character custom styling */
-.loader-char {
+.loader-char-wrapper {
   display: inline-block;
-  color: #ffffff; /* Pure White Text */
-  text-shadow: none; /* Crisp, sharp edges with no glow or shadow */
+  overflow: visible;
+  transform: translateY(-105%);
+  opacity: 0;
+  animation: dropLetterIn 0.65s cubic-bezier(0.76, 0, 0.24, 1) forwards; /* Balanced, professional slide speed */
+}
+
+.loader-char {
+  font-family: 'League Gothic', var(--font-bebas), sans-serif; /* Tall, ultra-condensed modern display font */
+  font-size: clamp(1.8rem, 4.8vw, 4.2rem); /* Clean scale (reduced by 10-15%) for breathing room */
+  font-weight: 500; /* Softer weight (reduced thickness by ~35-40% compared to Anton/bold) */
+  text-transform: uppercase;
+  letter-spacing: -0.03em; /* Slightly negative tracking, close but not overlapping */
+  line-height: 0.95;
+  display: inline-block;
+  
+  /* Text Shadow Depth */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+  /* Crisp Rendering Attributes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+/* Custom Letter Style Classes */
+.loader-char.char-solid {
+  color: #F4E7DE; /* Soft off-white */
+  opacity: 0.95; /* 95% opacity for premium editorial feel */
+}
+
+.loader-char.char-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px #F4E7DE; /* Clean thin stroke, matching same off-white color */
+  opacity: 0.95;
+  transform: none; /* Removed vertical offset for a seamless, perfectly aligned transition */
+}
+
+/* Space spacer */
+.loader-space {
+  display: inline-block;
+  width: 0.35em;
+}
+
+/* PROGRESS PERCENTAGE */
+.loader-progress-percentage {
+  position: absolute;
+  bottom: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Panchang-Variable', 'Panchang-Regular', sans-serif;
+  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  font-weight: 500;
+  color: rgba(244, 231, 222, 0.55); /* Dimmed soft cream for subtle hierarchy */
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  z-index: 25;
+  animation: fadeInPercentage 0.8s ease-out forwards;
 }
 
 /* REVEAL TRANSITIONS ON LOADING COMPLETE */
@@ -118,24 +137,38 @@
 }
 
 /* KEYFRAMES */
-@keyframes slideTopIn {
+@keyframes dropLetterIn {
   0% {
-    transform: translateX(-40px);
+    transform: translateY(-105%);
     opacity: 0;
   }
   100% {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
-@keyframes slideBottomIn {
+@keyframes fadeInPercentage {
   0% {
-    transform: translateX(40px);
     opacity: 0;
+    transform: translate(-50%, 5px);
   }
   100% {
-    transform: translateX(0);
     opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Responsive adjustments for outline stroke width */
+@media (max-width: 768px) {
+  .loader-char.char-outline {
+    -webkit-text-stroke: 1.25px #F4E7DE;
+  }
+  .loader-text-wrapper {
+    height: clamp(1.8rem, 8vw, 3.5rem);
+  }
+  .loader-char {
+    font-size: clamp(1.4rem, 7vw, 3.2rem);
+    letter-spacing: -0.02em;
   }
 }
