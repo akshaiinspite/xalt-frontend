@@ -26,8 +26,25 @@ import 'react-toastify/dist/ReactToastify.css';
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'projects' | 'contact' | 'careers' | 'admin'>('home');
-  const [isLoaderFinished, setIsLoaderFinished] = useState(false);
+  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'projects' | 'contact' | 'careers' | 'admin'>(() => {
+    if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')) {
+      return 'admin';
+    }
+    const hash = window.location.hash;
+    if (hash === '#about') return 'about';
+    if (hash.startsWith('#projects')) return 'projects';
+    if (hash.startsWith('#contact')) return 'contact';
+    if (hash.startsWith('#careers')) return 'careers';
+    if (hash.startsWith('#admin')) return 'admin';
+    return 'home';
+  });
+
+  const [isLoaderFinished, setIsLoaderFinished] = useState(() => {
+    const isAdmin = window.location.pathname === '/admin' || 
+                    window.location.pathname.startsWith('/admin/') || 
+                    window.location.hash.startsWith('#admin');
+    return isAdmin;
+  });
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -48,6 +65,7 @@ function App() {
         setCurrentTab('careers');
       } else if (window.location.hash.startsWith('#admin')) {
         setCurrentTab('admin');
+        setIsLoaderFinished(true);
       } else {
         setCurrentTab('home');
       }
