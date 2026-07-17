@@ -1,174 +1,178 @@
-.broed-loader-container {
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+.loader-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
+  background-color: #000000;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 999999;
+  transition: transform 0.85s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.85s ease;
   overflow: hidden;
-  background-color: #FF3322; /* Lighter, highly vibrant logo red */
   pointer-events: all;
 }
 
-/* SOLID BRAND RED PANEL HALVES (Touch in center for solid color background) */
-.loader-half-panel {
+/* Slide up out of view on complete */
+.loader-container.fade-out {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Background Cyber Grid Scanline Overlay */
+.loader-scanline-grid {
   position: absolute;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 50vh;
-  background-color: #FF3322; /* Lighter, highly vibrant logo red */
-  z-index: 10;
-  transition: transform 0.9s cubic-bezier(0.85, 0, 0.15, 1);
+  height: 100%;
+  pointer-events: none;
+  background: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(225, 6, 0, 0.02), rgba(0, 0, 0, 0), rgba(225, 6, 0, 0.02));
+  background-size: 100% 4px, 6px 100%;
+  opacity: 0.75;
+  z-index: 1;
 }
 
-.panel-top {
+.loader-scanline-grid::after {
+  content: '';
+  position: absolute;
   top: 0;
-  transform-origin: top;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(225, 6, 0, 0.04) 0%, transparent 10%, transparent 100%);
+  animation: scanlineAnimation 8s infinite linear;
 }
 
-.panel-bottom {
-  bottom: 0;
-  transform-origin: bottom;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+@keyframes scanlineAnimation {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }
 
-/* CENTRAL TYPOGRAPHIC WORKSPACE */
-.loader-center-content {
+.loader-content {
   position: relative;
-  z-index: 20;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.2rem;
+  width: 90%;
+  max-width: 480px;
+}
+
+/* Chevron Logo (Slanted Glowing Red Eyes) */
+.loader-chevron-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.chevron-bar {
+  width: 32px;
+  height: 7px;
+  background-color: #E10600; /* Official brand red */
+  border-radius: 3px;
+  box-shadow: 0 0 16px rgba(225, 6, 0, 0.85);
+  position: relative;
+}
+
+.chevron-left {
+  transform: rotate(40deg);
+  animation: pulseChevronLeft 2s infinite alternate ease-in-out;
+}
+
+.chevron-right {
+  transform: rotate(-40deg);
+  animation: pulseChevronRight 2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseChevronLeft {
+  0% { transform: rotate(40deg) scale(0.92); opacity: 0.6; filter: drop-shadow(0 0 4px rgba(225, 6, 0, 0.5)); }
+  100% { transform: rotate(40deg) translate(-1px, -1px) scale(1.08); opacity: 1; filter: drop-shadow(0 0 12px rgba(225, 6, 0, 0.95)); }
+}
+
+@keyframes pulseChevronRight {
+  0% { transform: rotate(-40deg) scale(0.92); opacity: 0.6; filter: drop-shadow(0 0 4px rgba(225, 6, 0, 0.5)); }
+  100% { transform: rotate(-40deg) translate(1px, -1px) scale(1.08); opacity: 1; filter: drop-shadow(0 0 12px rgba(225, 6, 0, 0.95)); }
+}
+
+/* Big Monospace Progress Percentage */
+.loader-percentage-container {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.loader-percentage-number {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(4.5rem, 8vw, 5.5rem);
+  line-height: 1;
+  font-weight: bold;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.loader-percentage-symbol {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(1.8rem, 3vw, 2.2rem);
+  font-weight: bold;
+  color: #E10600; /* Official brand red */
+  margin-left: 6px;
+  text-shadow: 0 0 12px rgba(225, 6, 0, 0.7);
+}
+
+/* Glowing Neon Progress Bar (Red Line) */
+.loader-track-container {
+  width: 100%;
+  height: 3.5px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.loader-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #E10600 0%, #ff5e57 100%);
+  box-shadow: 0 0 12px rgba(225, 6, 0, 0.85);
+  transition: width 0.08s ease-out;
+}
+
+/* Console Log Status Line */
+.loader-console-log {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-/* HORIZONTAL MASKED TYPOGRAPHY SYSTEM */
-.loader-text-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: flex-end; /* Align characters to bottom */
-  justify-content: center;
-  overflow: hidden; /* Mask the letters coming from above for an editorial look */
-  height: clamp(2.2rem, 5.2vw, 4.5rem);
-  padding: 0 1rem;
-}
-
-.loader-char-wrapper {
-  display: inline-block;
-  overflow: visible;
-  transform: translateY(-105%);
-  opacity: 0;
-  animation: dropLetterIn 0.65s cubic-bezier(0.76, 0, 0.24, 1) forwards; /* Balanced, professional slide speed */
-}
-
-.loader-char {
-  font-family: 'League Gothic', var(--font-bebas), sans-serif; /* Tall, ultra-condensed modern display font */
-  font-size: clamp(1.8rem, 4.8vw, 4.2rem); /* Clean scale (reduced by 10-15%) for breathing room */
-  font-weight: 500; /* Softer weight (reduced thickness by ~35-40% compared to Anton/bold) */
+  gap: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  letter-spacing: -0.03em; /* Slightly negative tracking, close but not overlapping */
-  line-height: 0.95;
-  display: inline-block;
-  
-  /* Text Shadow Depth */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-
-  /* Crisp Rendering Attributes */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
+  color: rgba(255, 255, 255, 0.88);
+  min-height: 18px;
 }
 
-/* Custom Letter Style Classes */
-.loader-char.char-solid {
-  color: #F4E7DE; /* Soft off-white */
-  opacity: 0.95; /* 95% opacity for premium editorial feel */
+.console-prompt {
+  color: #E10600; /* Official brand red */
+  font-weight: bold;
+  animation: blinkPrompt 0.8s infinite;
 }
 
-.loader-char.char-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.5px #F4E7DE; /* Clean thin stroke, matching same off-white color */
-  opacity: 0.95;
-  transform: none; /* Removed vertical offset for a seamless, perfectly aligned transition */
+@keyframes blinkPrompt {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
-/* Space spacer */
-.loader-space {
-  display: inline-block;
-  width: 0.35em;
-}
-
-/* PROGRESS PERCENTAGE */
-.loader-progress-percentage {
-  position: absolute;
-  bottom: 3.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Panchang-Variable', 'Panchang-Regular', sans-serif;
-  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
-  font-weight: 500;
-  color: rgba(244, 231, 222, 0.55); /* Dimmed soft cream for subtle hierarchy */
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  z-index: 25;
-  animation: fadeInPercentage 0.8s ease-out forwards;
-}
-
-/* REVEAL TRANSITIONS ON LOADING COMPLETE */
-.reveal-site .panel-top {
-  transform: translateY(-100%);
-}
-
-.reveal-site .panel-bottom {
-  transform: translateY(100%);
-}
-
-.reveal-site .loader-center-content {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.reveal-site {
-  pointer-events: none;
-}
-
-/* KEYFRAMES */
-@keyframes dropLetterIn {
-  0% {
-    transform: translateY(-105%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInPercentage {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-/* Responsive adjustments for outline stroke width */
-@media (max-width: 768px) {
-  .loader-char.char-outline {
-    -webkit-text-stroke: 1.25px #F4E7DE;
-  }
-  .loader-text-wrapper {
-    height: clamp(1.8rem, 8vw, 3.5rem);
-  }
-  .loader-char {
-    font-size: clamp(1.4rem, 7vw, 3.2rem);
-    letter-spacing: -0.02em;
-  }
+.console-text {
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }

@@ -30,7 +30,6 @@ const getStageIndex = (p: number) => {
 const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [welcomeActive, setWelcomeActive] = useState(false);
 
   useEffect(() => {
     let currentProgress = 0;
@@ -50,7 +49,7 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
       if (currentProgress === 100) {
         clearInterval(interval);
       }
-    }, 125); // 125ms interval for smooth progression of 10 stages
+    }, 80); // Fast but smooth progression matching the earlier feel
 
     return () => clearInterval(interval);
   }, []);
@@ -58,93 +57,58 @@ const Loader = ({ onFinish }: { onFinish?: () => void }) => {
   // Handle welcome phase and exit transition
   useEffect(() => {
     if (progress === 100) {
-      setWelcomeActive(true);
-      const fadeTimer = setTimeout(() => {
+      const timer = setTimeout(() => {
         setLoading(false);
         if (onFinish) {
-          setTimeout(onFinish, 900); // Allow panels split animation to complete
+          setTimeout(onFinish, 850); // Wait for container transition to finish
         }
-      }, 1500); // 1.5s reading time for welcome before entering site
+      }, 1500); // Allow reading time for welcome stage
       
-      return () => clearTimeout(fadeTimer);
+      return () => clearTimeout(timer);
     }
   }, [progress, onFinish]);
 
   const currentStageIdx = getStageIndex(progress);
   const currentStageText = STAGES[currentStageIdx];
 
-  // Helper to split text into styled spans matching the ONTMOET reference pattern
-  const renderStyledText = (text: string) => {
-    const words = text.toUpperCase().split(' ');
-    let globalLetterCount = 0;
-
-    return words.map((word, wordIdx) => {
-      const letters = word.split('');
-      const len = letters.length;
-
-      const renderedLetters = letters.map((char, charIdx) => {
-        globalLetterCount++;
-
-        // Pattern: Last 3 letters of a word are Outline, Outline, Solid. Rest are Solid.
-        let isOutline = false;
-        if (len > 3) {
-          if (charIdx === len - 3 || charIdx === len - 2) {
-            isOutline = true;
-          }
-        } else if (len > 1) {
-          // For very short words, just make the last character outline
-          if (charIdx === len - 1) {
-            isOutline = true;
-          }
-        }
-
-        return (
-          <span 
-            key={charIdx} 
-            className="loader-char-wrapper"
-            style={{ 
-              animationDelay: `${globalLetterCount * 0.015}s`
-            }}
-          >
-            <span className={`loader-char ${isOutline ? 'char-outline' : 'char-solid'}`}>
-              {char}
-            </span>
-          </span>
-        );
-      });
-
-      return (
-        <span key={wordIdx} style={{ display: 'inline-flex', alignItems: 'flex-end' }}>
-          {renderedLetters}
-          {wordIdx < words.length - 1 && (
-            <span className="loader-space">&nbsp;</span>
-          )}
-        </span>
-      );
-    });
-  };
-
-  const activeText = progress === 100 ? 'WELCOME' : currentStageText;
-
   return (
-    <div className={`broed-loader-container ${!loading ? 'reveal-site' : ''} ${welcomeActive ? 'welcome-active' : ''}`}>
-      {/* Sliding Red brand color Panels */}
-      <div className="loader-half-panel panel-top"></div>
-      <div className="loader-half-panel panel-bottom"></div>
+    <div className={`loader-container ${!loading ? 'fade-out' : ''}`}>
+      {/* Background cyber grid scanline overlay */}
+      <div className="loader-scanline-grid"></div>
 
-      {/* Central Typographic Container */}
-      <div className="loader-center-content">
-        <div key={currentStageIdx} className="loader-text-wrapper">
-          {renderStyledText(activeText)}
+      <div className="loader-content">
+        {/* Symmetrical glowing red chevron graphic (resembles slanted red eyes) */}
+        <div className="loader-chevron-logo">
+          <div className="chevron-bar chevron-left"></div>
+          <div className="chevron-bar chevron-right"></div>
         </div>
-      </div>
 
-      <div className="loader-progress-percentage">
-        {progress}%
+        {/* Big monospace percentage counter */}
+        <div className="loader-percentage-container">
+          <span className="loader-percentage-number">
+            {progress.toString().padStart(3, '0')}
+          </span>
+          <span className="loader-percentage-symbol">%</span>
+        </div>
+
+        {/* Loading progress track */}
+        <div className="loader-track-container">
+          <div 
+            className="loader-progress-bar" 
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+
+        {/* Dynamic status line utilizing current stages */}
+        <div className="loader-console-log">
+          <span className="console-prompt">&gt;&gt;</span>
+          <span className="console-text">
+            {progress === 100 ? 'WELCOME.' : `${currentStageText.toUpperCase()}.`}
+          </span>
+        </div>
       </div>
     </div>
   );
 };
 
 export default Loader;
-
