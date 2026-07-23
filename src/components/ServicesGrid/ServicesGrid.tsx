@@ -5,6 +5,7 @@ import imgCommercial from '../../assets/images/image-galley/gallery-img-3.jpg';
 import imgArvr from '../../assets/images/image-galley/gallery-img-5.jpg';
 
 import { API_BASE_URL, getMediaUrl } from '../../config';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 // Original images mapped by order — these never change
 const LOCAL_IMAGES: { [key: number]: string } = {
@@ -94,7 +95,7 @@ const ServicesGrid = () => {
                   <span className="corner br"></span>
                 </div>
                 
-                <img src={getMediaUrl(service.image) || LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" />
+                <ProgressiveImage src={getMediaUrl(service.image) || LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" loading="lazy" decoding="async" />
                 <div className="service-card-overlay"></div>
                 <div className="service-card-glow-red"></div>
               </div>

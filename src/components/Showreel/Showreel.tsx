@@ -1,12 +1,16 @@
 import { useRef, useState, useEffect } from 'react';
 import './Showreel.css';
-import showreelVideo from '../../assets/video/show-reel/showreel.mp4';
 import { API_BASE_URL } from '../../config';
+import { useVideoAutoPause } from '../../hooks/useVideoAutoPause';
 
 const Showreel = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [videoUrl, setVideoUrl] = useState(showreelVideo);
+  const [videoUrl, setVideoUrl] = useState('/video/show-reel/showreel.mp4');
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useVideoAutoPause(videoRef);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/reels`)
@@ -21,6 +25,31 @@ const Showreel = () => {
       .catch(err => console.warn('Backend offline, using local showreel video.', err));
   }, []);
 
+  // IntersectionObserver to defer video loading
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px 0px' } // start loading slightly before visible
+    );
+    
+    observer.observe(sectionRef.current);
+    
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (shouldLoad && videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [shouldLoad]);
+
   const toggleMute = () => {
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
@@ -29,18 +58,20 @@ const Showreel = () => {
   };
 
   return (
-    <section className="showreel-section" id="projects">
+    <section className="showreel-section" id="projects" ref={sectionRef}>
       {/* Full screen video background */}
       <div className="showreel-video-bg-wrapper">
         <video 
           ref={videoRef}
           className="showreel-video-bg"
-          src={videoUrl}
-          autoPlay
+          preload="metadata"
+          autoPlay={shouldLoad}
           loop
           muted
           playsInline
-        />
+        >
+          {shouldLoad && <source src={videoUrl} type="video/mp4" />}
+        </video>
         {/* Cinematic dark & red overlays */}
         <div className="showreel-overlay-dark"></div>
         <div className="showreel-overlay-red-glow"></div>

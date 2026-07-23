@@ -8,6 +8,7 @@ import { API_BASE_URL, getMediaUrl } from '../../config';
 import imgCommercial from '../../assets/images/services/commercial_landscape.png';
 import imgFilms from '../../assets/images/services/films_landscape.png';
 import imgArvr from '../../assets/images/services/arvr_landscape.png';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 const DEFAULT_SERVICES = [
   {
@@ -130,7 +131,7 @@ const AnimatedScrollCard = ({
           style={{ cursor: 'pointer' }}
           onClick={handleExploreClick}
         >
-          <img src={getMediaUrl(service.image)} alt={service.title} className="scroll-card-image" />
+          <ProgressiveImage src={getMediaUrl(service.image)} alt={service.title} className="scroll-card-image"  loading="lazy" decoding="async" />
         </div>
         <div className="scroll-card-content">
           <ScrollRevealText 

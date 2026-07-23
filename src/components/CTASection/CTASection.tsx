@@ -1,11 +1,12 @@
 import './CTASection.css';
 import ctaBannerImg from '../../assets/images/img/cta_banner_portal.png';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 const CTASection = () => {
   return (
     <section className="cta-section" id="contact">
       <div className="cta-card-wrapper">
-        <img src={ctaBannerImg} alt="VFX Portal Banner" className="cta-card-bg" />
+        <ProgressiveImage src={ctaBannerImg} alt="VFX Portal Banner" className="cta-card-bg" loading="lazy" decoding="async" />
         <div className="cta-card-overlay"></div>
         <div className="cta-card-glow"></div>
         

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './ClassicHero.css';
-import heroVideo from '../../assets/video/hero/hero.mp4';
+import { AutoPauseVideo } from '../AutoPauseVideo/AutoPauseVideo';
+const heroVideo = '/video/hero/hero.mp4';
 
 const ClassicHero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -41,7 +42,7 @@ const ClassicHero = () => {
     <div ref={heroRef} className="classic-hero" id="home">
       {/* Background Video with Slow Zoom / Parallax */}
       <div className="hero-video-wrapper" style={parallaxTransform}>
-        <video 
+        <AutoPauseVideo 
           className="hero-video-bg" 
           src={heroVideo} 
           autoPlay 

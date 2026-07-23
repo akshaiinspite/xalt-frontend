@@ -10,6 +10,7 @@ import studioWorkspaceImg from '../../assets/images/about/studio_workspace.png';
 import designArtistsImg from '../../assets/images/about/design_artists.png';
 import studioFloorVfxImg from '../../assets/images/about/studio_floor_vfx.png';
 import studioFloorAudioImg from '../../assets/images/about/studio_floor_audio.png';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -311,7 +312,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
               }}></div>
 
               {member.image ? (
-                <img 
+                <ProgressiveImage 
                   src={getMediaUrl(member.image)} 
                   alt={member.name} 
                   style={{ 
@@ -324,7 +325,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
                     left: 0,
                     zIndex: 2
                   }} 
-                />
+                 loading="lazy" decoding="async" />
               ) : (
                 <svg viewBox="0 0 24 24" className="avatar-placeholder-svg" fill="none" stroke="currentColor" strokeWidth="0.8">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -502,12 +503,12 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, alt
 
   if (slides.length <= 1) {
     return (
-      <img
+      <ProgressiveImage
         src={getMediaUrl(slides[0])}
         alt={altText}
         className={className}
         style={{ borderRadius: 0, objectFit: 'cover' }}
-      />
+       loading="lazy" decoding="async" />
     );
   }
 
@@ -515,13 +516,13 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, alt
     <div className={`about-image-slider ${className || ''}`} ref={sliderRef} data-lenis-prevent>
       <div className="slider-images-container">
         {slides.map((slide, idx) => (
-          <img
+          <ProgressiveImage
             key={idx}
             src={getMediaUrl(slide)}
             alt={`${altText} - Slide ${idx + 1}`}
             className={`slider-img ${idx === currentIndex ? 'active' : ''}`}
             style={{ borderRadius: 0 }}
-          />
+           loading="lazy" decoding="async" />
         ))}
       </div>
       

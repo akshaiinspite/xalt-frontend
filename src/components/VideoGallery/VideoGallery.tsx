@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ScrollRevealText } from '../ScrollRevealText/ScrollRevealText';
+import { useVideoAutoPause } from '../../hooks/useVideoAutoPause';
 import './VideoGallery.css';
 
 // Import videos
-import vid1 from '../../assets/video/video-gallery/movie-motion-poster-4.min.mp4';
-import vid2 from '../../assets/video/video-gallery/movie-motion-poster-6.min.mp4';
-import vid3 from '../../assets/video/video-gallery/pre-viz-1.min.mp4';
-import vid4 from '../../assets/video/video-gallery/pre-viz-2.min.mp4';
+const vid1 = '/video/video-gallery/movie-motion-poster-4.min.mp4';
+const vid2 = '/video/video-gallery/movie-motion-poster-6.min.mp4';
+const vid3 = '/video/video-gallery/pre-viz-1.min.mp4';
+const vid4 = '/video/video-gallery/pre-viz-2.min.mp4';
 
 const videos = [
   { id: 'vid1', src: vid1 },
@@ -32,6 +33,8 @@ const VideoPlayer = ({
   
   // Detect if the video container is at least 10% in the viewport
   const isInView = useInView(containerRef, { amount: 0.1 });
+
+  useVideoAutoPause(videoRef);
 
   const isMuted = activeAudioId !== video.id;
 

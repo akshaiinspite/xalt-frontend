@@ -1,27 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Classic Components
-import BrandVideoSection from './components/BrandVideoSection/BrandVideoSection';
-import OurStory from './components/OurStory/OurStory';
-import ServicesGrid from './components/ServicesGrid/ServicesGrid';
-import Showreel from './components/Showreel/Showreel';
+// Always-visible lightweight components (eagerly loaded)
 import Header from './components/Header/Header';
-import CTASection from './components/CTASection/CTASection';
 import Footer from './components/Footer/Footer';
-import AboutPage from './components/AboutPage/AboutPage';
 import CustomCursor from './components/CustomCursor/CustomCursor';
-import ContactPage from './components/ContactPage/ContactPage';
-import ProjectsPage from './components/ProjectsPage/ProjectsPage';
-import CareersPage from './components/CareersPage/CareersPage';
 import Loader from './components/Loader/Loader';
-import AdminPage from './components/AdminPage/AdminPage';
 import './index.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// ─── Lazy-loaded page components (code-split into separate chunks) ───
+const AboutPage = lazy(() => import('./components/AboutPage/AboutPage'));
+const ProjectsPage = lazy(() => import('./components/ProjectsPage/ProjectsPage'));
+const ContactPage = lazy(() => import('./components/ContactPage/ContactPage'));
+const CareersPage = lazy(() => import('./components/CareersPage/CareersPage'));
+const AdminPage = lazy(() => import('./components/AdminPage/AdminPage'));
+
+// ─── Lazy-loaded heavy home sections ─────────────────────────────────
+const BrandVideoSection = lazy(() => import('./components/BrandVideoSection/BrandVideoSection'));
+const Showreel = lazy(() => import('./components/Showreel/Showreel'));
+const OurStory = lazy(() => import('./components/OurStory/OurStory'));
+const ServicesGrid = lazy(() => import('./components/ServicesGrid/ServicesGrid'));
+const CTASection = lazy(() => import('./components/CTASection/CTASection'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -135,30 +139,33 @@ function App() {
       {/* Navigation Header */}
       {currentTab !== 'admin' && <Header />}
 
-      {/* Conditional Rendering of Pages */}
-      {currentTab === 'about' && <AboutPage />}
-      {currentTab === 'projects' && <ProjectsPage />}
-      {currentTab === 'contact' && <ContactPage />}
-      {currentTab === 'careers' && <CareersPage />}
-      {currentTab === 'admin' && <AdminPage />}
-      {currentTab === 'home' && (
-        <>
-          {/* Brand Video Section (spafax-style reference video) */}
-          <BrandVideoSection />
+      {/* Suspense boundary for all lazy-loaded pages and sections */}
+      <Suspense fallback={<div style={{ minHeight: '100vh', background: '#050505' }} />}>
+        {/* Conditional Rendering of Pages */}
+        {currentTab === 'about' && <AboutPage />}
+        {currentTab === 'projects' && <ProjectsPage />}
+        {currentTab === 'contact' && <ContactPage />}
+        {currentTab === 'careers' && <CareersPage />}
+        {currentTab === 'admin' && <AdminPage />}
+        {currentTab === 'home' && (
+          <>
+            {/* Brand Video Section (spafax-style reference video) */}
+            <BrandVideoSection />
 
-          {/* Showreel */}
-          <Showreel />
+            {/* Showreel */}
+            <Showreel />
 
-          {/* Our Story Section */}
-          <OurStory />
+            {/* Our Story Section */}
+            <OurStory />
 
-          {/* Services Grid Section */}
-          <ServicesGrid />
+            {/* Services Grid Section */}
+            <ServicesGrid />
 
-          {/* CTA Section */}
-          <CTASection />
-        </>
-      )}
+            {/* CTA Section */}
+            <CTASection />
+          </>
+        )}
+      </Suspense>
 
       {/* Footer */}
       {currentTab !== 'admin' && <Footer />}

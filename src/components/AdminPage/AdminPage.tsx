@@ -3,6 +3,7 @@ import './AdminPage.css';
 import logoImg from '../../assets/images/logo/xalt-studios-logo.webp';
 import { toast } from 'react-toastify';
 import { API_BASE_URL, getMediaUrl } from '../../config';
+import { AutoPauseVideo } from '../AutoPauseVideo/AutoPauseVideo';
 
 interface Job {
   _id: string;
@@ -198,7 +199,7 @@ const FileUploadWidget: React.FC<FileUploadWidgetProps> = ({
       {value && (
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', padding: '8px 12px' }}>
           {isVideoUrl(value) ? (
-            <video 
+            <AutoPauseVideo preload="metadata" 
               src={getMediaUrl(value)} 
               muted 
               playsInline 
@@ -280,7 +281,7 @@ const AdminPage = () => {
   // --- Showreel State ---
   const [reel, setReel] = useState({
     title: 'X.ALT Showreel',
-    videoUrl: '/src/assets/videos/showreel.mp4',
+    videoUrl: '/video/show-reel/showreel.mp4',
     heroVideoUrl: '/uploads/logo video xalt.mp4',
   });
   const [reelFeedback, setReelFeedback] = useState({ type: '', message: '' });
@@ -432,7 +433,7 @@ const AdminPage = () => {
           if (item) {
             setReel({ 
               title: item.title || 'X.ALT Showreel', 
-              videoUrl: item.videoUrl || '/src/assets/videos/showreel.mp4',
+              videoUrl: item.videoUrl || '/video/show-reel/showreel.mp4',
               heroVideoUrl: item.heroVideoUrl || '/uploads/logo video xalt.mp4'
             });
           }

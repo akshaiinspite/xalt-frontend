@@ -8,6 +8,7 @@ import imgVfx from '../../assets/images/image-galley/gallery-img-2.jpg';
 import img4 from '../../assets/images/image-galley/gallery-img-4.jpg';
 import img5 from '../../assets/images/image-galley/gallery-img-5.jpg';
 import img6 from '../../assets/images/image-galley/gallery-img-6.jpg';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 const galleryItems = [
   
@@ -67,7 +68,7 @@ const ImageGallery = () => {
             transition={{ duration: 1.2, ease: [0.19, 1.0, 0.22, 1.0], delay: index * 0.2 }}
           >
             <div className="image-wrapper">
-              <img src={item.image} alt={item.title} className="gallery-image" />
+              <ProgressiveImage src={item.image} alt={item.title} className="gallery-image"  loading="lazy" decoding="async" />
             </div>
             <div className="image-details">
               <h3 className="image-title">{item.title}</h3>

@@ -5,6 +5,7 @@ import img3 from '../../assets/images/image-galley/gallery-img-2.jpg';
 import img4 from '../../assets/images/image-galley/gallery-img-3.jpg';
 import img5 from '../../assets/images/image-galley/gallery-img-4.jpg';
 import img6 from '../../assets/images/image-galley/gallery-img-6.jpg';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 const projects = [
   {
@@ -61,7 +62,7 @@ const ProjectsSection = () => {
           {/* Left Large Card */}
           <div className="project-grid-card large-left">
             <div className="project-image-box">
-              <img src={projects[0].image} alt={projects[0].title} />
+              <ProgressiveImage src={projects[0].image} alt={projects[0].title}  loading="lazy" decoding="async" />
               <div className="project-overlay-dark"></div>
               <div className="project-overlay-red"></div>
               <div className="project-animated-border"></div>
@@ -77,7 +78,7 @@ const ProjectsSection = () => {
             {/* Card 2 */}
             <div className="project-grid-card stacked-right">
               <div className="project-image-box">
-                <img src={projects[1].image} alt={projects[1].title} />
+                <ProgressiveImage src={projects[1].image} alt={projects[1].title}  loading="lazy" decoding="async" />
                 <div className="project-overlay-dark"></div>
                 <div className="project-overlay-red"></div>
                 <div className="project-animated-border"></div>
@@ -91,7 +92,7 @@ const ProjectsSection = () => {
             {/* Card 3 */}
             <div className="project-grid-card stacked-right">
               <div className="project-image-box">
-                <img src={projects[2].image} alt={projects[2].title} />
+                <ProgressiveImage src={projects[2].image} alt={projects[2].title}  loading="lazy" decoding="async" />
                 <div className="project-overlay-dark"></div>
                 <div className="project-overlay-red"></div>
                 <div className="project-animated-border"></div>
@@ -109,7 +110,7 @@ const ProjectsSection = () => {
           {projects.slice(3).map((project) => (
             <div key={project.id} className="project-grid-card bottom-card">
               <div className="project-image-box">
-                <img src={project.image} alt={project.title} />
+                <ProgressiveImage src={project.image} alt={project.title}  loading="lazy" decoding="async" />
                 <div className="project-overlay-dark"></div>
                 <div className="project-overlay-red"></div>
                 <div className="project-animated-border"></div>

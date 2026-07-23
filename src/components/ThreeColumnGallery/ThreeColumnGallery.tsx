@@ -6,6 +6,7 @@ import './ThreeColumnGallery.css';
 import img1 from '../../assets/images/img/img-1.jpg';
 import img2 from '../../assets/images/img/img-2.jpg';
 import img3 from '../../assets/images/img/img-3.jpg';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 const ThreeColumnGallery = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,7 +62,7 @@ const ThreeColumnGallery = () => {
             style={{ x: spreadXLeft, rotate: rotateLeft, zIndex: 1 }}
           >
             <div className="gallery-card-img-wrapper">
-              <img src={img1} alt="Feature 1" />
+              <ProgressiveImage src={img1} alt="Feature 1"  loading="lazy" decoding="async" />
             </div>
             <motion.h3 style={{ opacity: titleOpacity, y: titleY }} className="gallery-card-title">Cinematic Visuals</motion.h3>
           </motion.div>
@@ -72,7 +73,7 @@ const ThreeColumnGallery = () => {
             style={{ x: spreadXRight, rotate: rotateRight }}
           >
             <div className="gallery-card-img-wrapper">
-              <img src={img3} alt="Feature 3" />
+              <ProgressiveImage src={img3} alt="Feature 3"  loading="lazy" decoding="async" />
             </div>
             <motion.h3 className="gallery-card-title" style={{ opacity: titleOpacity, y: titleY }}>Design System</motion.h3>
           </motion.div>
@@ -83,7 +84,7 @@ const ThreeColumnGallery = () => {
             style={{ zIndex: 3 }}
           >
             <div className="gallery-card-img-wrapper">
-              <img src={img2} alt="Feature 2" />
+              <ProgressiveImage src={img2} alt="Feature 2"  loading="lazy" decoding="async" />
             </div>
             <motion.h3 style={{ opacity: titleOpacity, y: titleY }} className="gallery-card-title">Virtual Environments</motion.h3>
           </motion.div>

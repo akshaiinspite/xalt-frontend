@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useInView, motion, useScroll, useTransform, MotionValue } from 'framer-motion';
+import { useVideoAutoPause } from '../../hooks/useVideoAutoPause';
 import './RevealText.css';
 
 // Import the videos
-import vid1 from '../../assets/video/para/movie-motion-poster-1.min.mp4';
-import vid2 from '../../assets/video/para/movie-motion-poster-2.min.mp4';
-import vid3 from '../../assets/video/para/pre-viz-1.min.mp4';
-import vid4 from '../../assets/video/para/pre-viz-2.min.mp4';
+const vid1 = '/video/para/movie-motion-poster-1.min.mp4';
+const vid2 = '/video/para/movie-motion-poster-2.min.mp4';
+const vid3 = '/video/para/pre-viz-1.min.mp4';
+const vid4 = '/video/para/pre-viz-2.min.mp4';
 
 interface HoverVideoProps {
   src: string;
@@ -18,6 +19,8 @@ interface HoverVideoProps {
 const HoverVideo = ({ src, id, activeAudioId, onToggleAudio }: HoverVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isPlayingAudio = activeAudioId === id;
+
+  useVideoAutoPause(videoRef);
 
   useEffect(() => {
     if (videoRef.current) {

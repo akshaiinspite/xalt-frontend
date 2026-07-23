@@ -9,6 +9,7 @@ import img3 from '../../assets/images/gallery/commercial_vfx.png';
 import img4 from '../../assets/images/image-galley/gallery-img-1.jpg';
 import img5 from '../../assets/images/image-galley/gallery-img-2.jpg';
 import img6 from '../../assets/images/image-galley/gallery-img-3.jpg';
+import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 
 const portfolioItems = [
   {
@@ -103,7 +104,7 @@ const MasonryCard = ({ item }: { item: typeof portfolioItems[0] }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <img src={item.image} alt={item.title} className="masonry-card-img" />
+      <ProgressiveImage src={item.image} alt={item.title} className="masonry-card-img"  loading="lazy" decoding="async" />
       <div className="masonry-card-dark-overlay"></div>
       <div className="masonry-card-red-overlay"></div>
       <div className="masonry-card-glow-glow" style={glowStyle}></div>
