@@ -15,7 +15,14 @@ const CustomCursor = () => {
     let isHoveringText = false;
     let isHoveringWide = false;
     let currentLabelText = '';
+    
+    let lastDotClass = '';
+    let lastLabelClass = '';
+    let lastLabelText = '';
     let animId: number;
+
+    const INTERACTIVE_SELECTOR = 'a, button, [role="button"], input, textarea, select, .team-nav-arrow-btn, .form-submit-btn, .nav-link, .hamburger-btn, .inline-video-wrapper, .play-btn';
+    const WIDE_SELECTOR = '.service-card, .team-card-new, .board-subcard, .gallery-sharp-slot';
 
     const onMouseMove = (e: MouseEvent) => {
       targetX = e.clientX;
@@ -28,49 +35,26 @@ const CustomCursor = () => {
       let wideFound = false;
       let hoverLabel = '>> ACCESS';
 
-      // Check if hovering inside a wide interactive card first
-      const wideContainer = target.closest('.service-card, .team-card-new, .board-subcard, .gallery-sharp-slot');
+      // 1. Check wide container match first (zero reflow, fast DOM check)
+      const wideContainer = target.closest(WIDE_SELECTOR) as HTMLElement | null;
       if (wideContainer) {
         pointerFound = true;
         wideFound = true;
-        if (
-          wideContainer.classList.contains('service-card') || 
-          wideContainer.classList.contains('board-subcard') ||
-          wideContainer.classList.contains('gallery-sharp-slot')
-        ) {
-          hoverLabel = '>> CLICK TO OPEN';
-        } else {
-          hoverLabel = '>> CLICK TO OPEN';
-        }
+        hoverLabel = '>> CLICK TO OPEN';
       } else {
-        // Standard walk up for other interactive elements
-        let el: HTMLElement | null = target;
-        while (el) {
-          const tag = el.tagName.toLowerCase();
-          const style = window.getComputedStyle(el);
-          
-          if (
-            style.cursor === 'pointer' ||
-            tag === 'a' ||
-            tag === 'button' ||
-            el.classList.contains('team-nav-arrow-btn') ||
-            el.classList.contains('form-submit-btn') ||
-            el.classList.contains('nav-link') ||
-            el.classList.contains('hamburger-btn')
-          ) {
-            pointerFound = true;
-            if (el.classList.contains('nav-link') || tag === 'a') {
-              hoverLabel = '>> NAVIGATE';
-            } else if (el.classList.contains('form-submit-btn')) {
-              hoverLabel = '>> TRANSMIT';
-            } else if (el.classList.contains('inline-video-wrapper') || el.classList.contains('play-btn')) {
-              hoverLabel = '>> PLAY REEL';
-            } else {
-              hoverLabel = '>> ACCESS';
-            }
-            break;
+        // 2. Check general interactive elements match
+        const interactiveEl = target.closest(INTERACTIVE_SELECTOR) as HTMLElement | null;
+        if (interactiveEl) {
+          pointerFound = true;
+          if (interactiveEl.classList.contains('nav-link') || interactiveEl.tagName === 'A') {
+            hoverLabel = '>> NAVIGATE';
+          } else if (interactiveEl.classList.contains('form-submit-btn')) {
+            hoverLabel = '>> TRANSMIT';
+          } else if (interactiveEl.classList.contains('inline-video-wrapper') || interactiveEl.classList.contains('play-btn')) {
+            hoverLabel = '>> PLAY REEL';
+          } else {
+            hoverLabel = '>> ACCESS';
           }
-          el = el.parentElement;
         }
       }
 
@@ -78,25 +62,23 @@ const CustomCursor = () => {
       isHoveringWide = wideFound;
 
       if (!pointerFound) {
-        const tag = target.tagName.toLowerCase();
-        const textTags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'li', 'label', 'textarea', 'input'];
+        const tag = target.tagName;
+        const textTags = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'SPAN', 'LI', 'LABEL'];
         isHoveringText = textTags.includes(tag) || target.closest('p') !== null;
       } else {
         isHoveringText = false;
       }
 
-      // Prepare coordinate template
       if (isHoveringPointer) {
         currentLabelText = hoverLabel;
       } else if (isHoveringText) {
         currentLabelText = 'TXT_SELECT';
       } else {
-        currentLabelText = `X: ${Math.round(targetX)} Y: ${Math.round(targetY)}`;
+        currentLabelText = 'X.ALT_STUDIO';
       }
     };
 
     const animate = () => {
-      // 0.35 easing factor matches the snappy tracking on Killian Herzer's site
       currentX += (targetX - currentX) * 0.35;
       currentY += (targetY - currentY) * 0.35;
 
@@ -104,28 +86,35 @@ const CustomCursor = () => {
         containerRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
       }
 
-      if (dotRef.current) {
-        if (isHoveringWide) {
-          dotRef.current.className = 'custom-cursor-dot wide pointer';
-        } else if (isHoveringPointer) {
-          dotRef.current.className = 'custom-cursor-dot pointer';
-        } else if (isHoveringText) {
-          dotRef.current.className = 'custom-cursor-dot text';
-        } else {
-          dotRef.current.className = 'custom-cursor-dot';
-        }
+      // Calculate target class names
+      let targetDotClass = 'custom-cursor-dot';
+      let targetLabelClass = 'custom-cursor-label';
+
+      if (isHoveringWide) {
+        targetDotClass = 'custom-cursor-dot wide pointer';
+        targetLabelClass = 'custom-cursor-label wide pointer';
+      } else if (isHoveringPointer) {
+        targetDotClass = 'custom-cursor-dot pointer';
+        targetLabelClass = 'custom-cursor-label pointer';
+      } else if (isHoveringText) {
+        targetDotClass = 'custom-cursor-dot text';
+        targetLabelClass = 'custom-cursor-label text';
+      }
+
+      // DOM updates ONLY when value changes (prevents 60/120fps DOM invalidation)
+      if (dotRef.current && lastDotClass !== targetDotClass) {
+        dotRef.current.className = targetDotClass;
+        lastDotClass = targetDotClass;
       }
 
       if (labelRef.current) {
-        labelRef.current.textContent = currentLabelText;
-        if (isHoveringWide) {
-          labelRef.current.className = 'custom-cursor-label wide pointer';
-        } else if (isHoveringPointer) {
-          labelRef.current.className = 'custom-cursor-label pointer';
-        } else if (isHoveringText) {
-          labelRef.current.className = 'custom-cursor-label text';
-        } else {
-          labelRef.current.className = 'custom-cursor-label';
+        if (lastLabelClass !== targetLabelClass) {
+          labelRef.current.className = targetLabelClass;
+          lastLabelClass = targetLabelClass;
+        }
+        if (lastLabelText !== currentLabelText) {
+          labelRef.current.textContent = currentLabelText;
+          lastLabelText = currentLabelText;
         }
       }
 
@@ -148,9 +137,9 @@ const CustomCursor = () => {
       if (containerRef.current) containerRef.current.style.opacity = '1';
     };
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mousedown', handleMouseDown, { passive: true });
+    window.addEventListener('mouseup', handleMouseUp, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
     

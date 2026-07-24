@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import './BrandVideoSection.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,12 +9,12 @@ gsap.registerPlugin(ScrollTrigger);
 // Configuration
 // ─────────────────────────────────────────────────────────────────────
 const FRAME_PATH = '/finalmov/finalmov_';
-const FRAME_EXT = '.png';
+const FRAME_EXT = '.webp';
 const TOTAL_FRAMES = 192;        // frames 00000 → 00191
 const SCROLL_HEIGHT_MULTIPLIER = 5; // scroll distance = 5× viewport
 const BUFFER_AHEAD = 30;         // preload this many frames ahead of current
 const BUFFER_BEHIND = 15;        // keep this many frames behind current
-const BATCH_SIZE = 6;            // concurrent fetches per batch (gentle on server)
+const BATCH_SIZE = 6;            // concurrent fetches per batch
 
 /** Pad frame index to 5 digits: 0 → "00000" */
 const padFrame = (n: number): string => String(n).padStart(5, '0');
@@ -34,27 +35,24 @@ const HeroScrollSequence = () => {
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    // Use desynchronized for lower latency on fast scrolls
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
     if (!ctx) return;
 
     // ── State ──────────────────────────────────────────────────────
     const images: (HTMLImageElement | null)[] = new Array(TOTAL_FRAMES).fill(null);
-    const loadingSet = new Set<number>(); // track in-flight requests
+    const loadingSet = new Set<number>();
     let currentFrame = 0;
     let isDestroyed = false;
     let isVisible = false;
 
     // ── Canvas sizing (High-DPI aware) ────────────────────────────
     const sizeCanvas = () => {
-      // Limit DPR to 1.5 to prevent massive 4K decoding lag on high-DPI screens
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
         canvas.width = w * dpr;
         canvas.height = h * dpr;
-        // Reset transform after resize to apply fresh DPR scale
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
     };
@@ -63,7 +61,6 @@ const HeroScrollSequence = () => {
     const drawFrame = (frameIdx: number) => {
       const img = images[frameIdx];
       if (!img || !img.complete || img.naturalWidth === 0) {
-        // If requested frame isn't loaded yet, find nearest loaded frame
         for (let offset = 1; offset < 10; offset++) {
           const fallback = images[frameIdx - offset];
           if (fallback && fallback.complete && fallback.naturalWidth > 0) {
@@ -82,7 +79,6 @@ const HeroScrollSequence = () => {
       const displayW = canvas.clientWidth;
       const displayH = canvas.clientHeight;
 
-      // Cover-fit calculation
       const imgRatio = img.naturalWidth / img.naturalHeight;
       const canvasRatio = displayW / displayH;
 
@@ -118,8 +114,17 @@ const HeroScrollSequence = () => {
           resolve(img);
         };
         img.onerror = () => {
-          loadingSet.delete(idx);
-          resolve(null);
+          // Fallback to PNG if WebP is missing for any index
+          img.src = `${FRAME_PATH}${padFrame(idx)}.png`;
+          img.onload = () => {
+            if (!isDestroyed) images[idx] = img;
+            loadingSet.delete(idx);
+            resolve(img);
+          };
+          img.onerror = () => {
+            loadingSet.delete(idx);
+            resolve(null);
+          };
         };
       });
 
@@ -131,7 +136,6 @@ const HeroScrollSequence = () => {
       const start = Math.max(0, center - BUFFER_BEHIND);
       const end = Math.min(TOTAL_FRAMES - 1, center + BUFFER_AHEAD);
 
-      // Build a list of frames that need loading, prioritized by proximity
       const toLoad: number[] = [];
       for (let i = center; i <= end; i++) {
         if (!images[i]?.complete && !loadingSet.has(i)) toLoad.push(i);
@@ -140,7 +144,6 @@ const HeroScrollSequence = () => {
         if (!images[i]?.complete && !loadingSet.has(i)) toLoad.push(i);
       }
 
-      // Load in small batches to avoid flooding the network
       for (let b = 0; b < toLoad.length; b += BATCH_SIZE) {
         if (isDestroyed) return;
         const batch = toLoad.slice(b, b + BATCH_SIZE);
@@ -150,11 +153,9 @@ const HeroScrollSequence = () => {
 
     // ── Initial bootstrap: load frame 0, then nearby frames ───────
     const bootstrap = async () => {
-      // Load first frame immediately so canvas isn't empty
       await loadImage(0);
       if (!isDestroyed) drawFrame(0);
 
-      // Load the first ~10 frames for smooth initial scroll
       const initialBatch = [];
       for (let i = 1; i <= Math.min(10, TOTAL_FRAMES - 1); i++) {
         initialBatch.push(loadImage(i));
@@ -170,7 +171,7 @@ const HeroScrollSequence = () => {
           loadFramesAroundCurrent();
         }
       },
-      { rootMargin: '200px 0px' } // start loading 200px before entering viewport
+      { rootMargin: '200px 0px' }
     );
     observer.observe(container);
 
@@ -195,28 +196,23 @@ const HeroScrollSequence = () => {
         if (clamped !== currentFrame) {
           currentFrame = clamped;
           drawFrame(clamped);
-          // Trigger loading of nearby frames on scroll
           loadFramesAroundCurrent();
         }
       },
     });
 
-    // ── Start initial load ────────────────────────────────────────
     bootstrap();
 
-    // ── Handle window resize ──────────────────────────────────────
     const onResize = () => {
       sizeCanvas();
       drawFrame(currentFrame);
     };
     window.addEventListener('resize', onResize);
 
-    // ── Refresh ScrollTrigger after a short delay ─────────────────
     const refreshTimer = setTimeout(() => {
       ScrollTrigger.refresh();
     }, 200);
 
-    // ── Cleanup ───────────────────────────────────────────────────
     return () => {
       isDestroyed = true;
       clearTimeout(refreshTimer);
@@ -236,4 +232,3 @@ const HeroScrollSequence = () => {
 };
 
 export default HeroScrollSequence;
-

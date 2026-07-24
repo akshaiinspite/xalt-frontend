@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import './ServicesGrid.css';
-import imgFilms from '../../assets/images/image-galley/gallery-img-1.jpg';
-import imgCommercial from '../../assets/images/image-galley/gallery-img-3.jpg';
-import imgArvr from '../../assets/images/image-galley/gallery-img-5.jpg';
+import imgFilms from '../../assets/images/image-galley/gallery-img-1.webp';
+import imgCommercial from '../../assets/images/image-galley/gallery-img-3.webp';
+import imgArvr from '../../assets/images/image-galley/gallery-img-5.webp';
 
 import { API_BASE_URL, getMediaUrl } from '../../config';
 import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
@@ -57,6 +57,17 @@ const ServicesGrid = () => {
       });
   }, []);
 
+  // Pre-load all expertise card images in background memory cache
+  useEffect(() => {
+    services.forEach((service, index) => {
+      const src = getMediaUrl(service.image) || LOCAL_IMAGES[index] || imgFilms;
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [services]);
+
   const handleCardClick = (service: any) => {
     const targetHash = service.link || '#projects';
     const lenisInstance = (window as any).lenis;
@@ -95,7 +106,13 @@ const ServicesGrid = () => {
                   <span className="corner br"></span>
                 </div>
                 
-                <ProgressiveImage src={getMediaUrl(service.image) || LOCAL_IMAGES[index] || imgFilms} alt={service.title} className="service-card-img" loading="lazy" decoding="async" />
+                <ProgressiveImage 
+                  src={getMediaUrl(service.image) || LOCAL_IMAGES[index] || imgFilms} 
+                  alt={service.title} 
+                  className="service-card-img" 
+                  loading="eager" 
+                  decoding="async" 
+                />
                 <div className="service-card-overlay"></div>
                 <div className="service-card-glow-red"></div>
               </div>

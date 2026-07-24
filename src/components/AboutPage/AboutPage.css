@@ -241,7 +241,7 @@
   transform: translate(-50%, -50%);
   border: 1px solid rgba(225, 6, 0, 0.08);
   border-radius: 50%;
-  box-shadow: inset 0 0 30px rgba(225, 6, 0, 0.02), 0 0 50px rgba(225, 6, 0, 0.02);
+  will-change: transform;
 }
 
 .concentric-ring-circle.ring-1 {
@@ -352,13 +352,13 @@
 
 .story-offset-wrapper.wrap-1 {
   align-self: flex-start;
-  animation: floatStoryImg1 8s infinite ease-in-out;
+  will-change: transform;
 }
 
 .story-offset-wrapper.wrap-2 {
   align-self: flex-end;
   margin-top: 20px;
-  animation: floatStoryImg2 8s infinite ease-in-out;
+  will-change: transform;
 }
 
 .story-parallax-img {
@@ -485,9 +485,7 @@
 }
 
 .team-header-split-sticky {
-  background: linear-gradient(180deg, rgba(8, 8, 10, 0.98) 0%, rgba(8, 8, 10, 0.8) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(8, 8, 10, 0.96);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: center;
@@ -497,6 +495,8 @@
   top: 0;
   width: 100vw;
   z-index: 10;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .team-header-container {
@@ -562,6 +562,8 @@
   height: 100%;
   padding: 0 10vw;
   width: max-content;
+  will-change: transform;
+  transform: translateZ(0);
   transition: filter 0.4s ease;
 }
 

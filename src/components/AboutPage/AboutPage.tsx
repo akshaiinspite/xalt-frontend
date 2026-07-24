@@ -15,7 +15,7 @@ import { ProgressiveImage } from '../ProgressiveImage/ProgressiveImage';
 gsap.registerPlugin(ScrollTrigger);
 
 // ----------------------------------------------------
-// THREE.JS BACKGROUND COMPONENT
+// THREE.JS BACKGROUND COMPONENT (Optimized with Visibility Pause)
 // ----------------------------------------------------
 const ThreeBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -32,9 +32,14 @@ const ThreeBackground = () => {
     );
     camera.position.z = 8;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true, 
+      antialias: false,
+      powerPreference: 'high-performance',
+      precision: 'mediump',
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     containerRef.current.appendChild(renderer.domElement);
 
     // Particles (Red space dust)
@@ -59,8 +64,8 @@ const ThreeBackground = () => {
     const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particleSystem);
 
-    // Large floating sphere mesh
-    const sphereGeometry = new THREE.SphereGeometry(2.4, 32, 32);
+    // Large floating sphere mesh (optimized vertex density)
+    const sphereGeometry = new THREE.SphereGeometry(2.4, 16, 16);
     const sphereMaterial = new THREE.MeshBasicMaterial({
       color: 0xe10600,
       wireframe: true,
@@ -70,8 +75,8 @@ const ThreeBackground = () => {
     const wireframeSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     scene.add(wireframeSphere);
 
-    // Torus knot mesh
-    const knotGeometry = new THREE.TorusKnotGeometry(0.7, 0.22, 100, 10);
+    // Torus knot mesh (optimized vertex density)
+    const knotGeometry = new THREE.TorusKnotGeometry(0.7, 0.22, 40, 8);
     const knotMaterial = new THREE.MeshBasicMaterial({
       color: 0xff3344,
       wireframe: true,
@@ -97,7 +102,7 @@ const ThreeBackground = () => {
       mouseY = -(event.clientY / window.innerHeight - 0.5) * 2;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -106,12 +111,26 @@ const ThreeBackground = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Anim Loop
+    let isCanvasVisible = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      isCanvasVisible = entry.isIntersecting;
+    });
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    // Anim Loop (Throttled to 35 FPS to conserve GPU overhead during scroll)
     let animationFrameId: number;
     const clock = new THREE.Clock();
+    let lastTime = 0;
+    const fpsInterval = 1000 / 35;
 
-    const animate = () => {
+    const animate = (time = 0) => {
       animationFrameId = requestAnimationFrame(animate);
+      if (!isCanvasVisible) return;
+
+      const delta = time - lastTime;
+      if (delta < fpsInterval) return;
+      lastTime = time - (delta % fpsInterval);
+
       const elapsedTime = clock.getElapsedTime();
 
       wireframeSphere.rotation.y = elapsedTime * 0.035;
@@ -136,6 +155,7 @@ const ThreeBackground = () => {
     animate();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
@@ -157,11 +177,7 @@ const ThreeBackground = () => {
   return <div ref={containerRef} className="three-background-canvas" />;
 };
 
-// ----------------------------------------------------
-// 3D TILT TEAM CARD COMPONENT (With Zoom & Wide Expand)
-// ----------------------------------------------------
 interface TeamMember {
-  _id?: string;
   name: string;
   role: string;
   gradient: string;
@@ -180,7 +196,7 @@ interface TeamCardProps {
 
 const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  // coords state removed for direct DOM performance
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -198,7 +214,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
     const angleX = -(y - yc) / 14;
     const angleY = (x - xc) / 14;
 
-    setCoords({ x: angleY, y: angleX });
+    card.style.transform = `perspective(1000px) rotateX(${angleX.toFixed(1)}deg) rotateY(${angleY.toFixed(1)}deg) scale3d(1.03, 1.03, 1.03) translateZ(0)`;
 
     const px = (x / rect.width) * 100;
     const py = (y / rect.height) * 100;
@@ -209,22 +225,22 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
   const handleMouseLeave = () => {
     setIsHovered(false);
     if (!isClicked) {
-      setCoords({ x: 0, y: 0 });
+      if (cardRef.current) cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     }
   };
 
-  const isActive = isHovered || isClicked;
+
 
   const cardStyle = {
     background: member.gradient,
     transform: isClicked
       ? 'perspective(1000px) scale3d(1.05, 1.05, 1.05) translateZ(30px)'
       : isHovered
-      ? `perspective(1000px) rotateX(${coords.y}deg) rotateY(${coords.x}deg) scale3d(1.03, 1.03, 1.03)`
+      ? undefined
       : 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
     zIndex: isClicked ? 99 : isHovered ? 20 : 2,
     transition: isHovered && !isClicked ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease',
-    filter: isActive ? 'grayscale(0%)' : 'grayscale(100%)',
+    // grayscale filter removed for GPU performance
   };
 
   const idNumber = String(index + 1).padStart(2, '0');
@@ -325,7 +341,7 @@ const TeamCard = ({ member, index, isClicked, onCardClick }: TeamCardProps) => {
                     left: 0,
                     zIndex: 2
                   }} 
-                 loading="lazy" decoding="async" />
+                 loading="eager" decoding="async" />
               ) : (
                 <svg viewBox="0 0 24 24" className="avatar-placeholder-svg" fill="none" stroke="currentColor" strokeWidth="0.8">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -484,7 +500,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrls, fallbackImage, alt
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: true });
     container.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
@@ -571,13 +587,14 @@ const AboutPage = () => {
   const teamCardsRowRef = useRef<HTMLDivElement>(null);
   const scrollerWrapperRef = useRef<HTMLDivElement>(null);
   const progressTrackRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const progressValRef = useRef<HTMLSpanElement>(null);
   
   const aboutLeftRef = useRef<HTMLDivElement>(null);
   const aboutRightRef = useRef<HTMLDivElement>(null);
 
   const [activeMember, setActiveMember] = useState<string | null>(null);
   const [hoverDirection, setHoverDirection] = useState<'left' | 'right' | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
@@ -586,7 +603,7 @@ const AboutPage = () => {
       gradient: 'linear-gradient(135deg, #050505 0%, #300006 100%)',
       department: 'ADMINISTRATIVE_CORE',
       bio: 'Key visionary behind X.ALT. Directs administrative strategies, business partnerships, and structural expansion plans to redefine digital design standards.',
-      image: '/uploads/alex_mercer.png'
+      image: '/uploads/alex_mercer.webp'
     },
     {
       name: 'Sarah Connor',
@@ -594,7 +611,7 @@ const AboutPage = () => {
       gradient: 'linear-gradient(135deg, #101012 0%, #440d16 100%)',
       department: 'OPERATION_MGMT',
       bio: 'Supervises studio workflow, project milestones, and resource allocation. Bridges organizational systems with production pipelines for flawless delivery.',
-      image: '/uploads/sarah_connor.png'
+      image: '/uploads/sarah_connor.webp'
     },
     {
       name: 'David Miller',
@@ -602,7 +619,7 @@ const AboutPage = () => {
       gradient: 'linear-gradient(135deg, #1b0206 0%, #520510 100%)',
       department: 'CREATIVE_3D_LAB',
       bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
-      image: '/uploads/david_miller.png'
+      image: '/uploads/david_miller.webp'
     },
     {
       name: 'Michael Chen',
@@ -610,7 +627,7 @@ const AboutPage = () => {
       gradient: 'linear-gradient(135deg, #161616 0%, #700a18 100%)',
       department: 'CREATIVE_3D_LAB',
       bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
-      image: '/uploads/michael_chen.png'
+      image: '/uploads/michael_chen.webp'
     },
     {
       name: 'Marcus Vance',
@@ -618,7 +635,7 @@ const AboutPage = () => {
       gradient: 'linear-gradient(135deg, #120318 0%, #4a030a 100%)',
       department: 'CREATIVE_3D_LAB',
       bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
-      image: '/uploads/marcus_vance.png'
+      image: '/uploads/marcus_vance.webp'
     },
     {
       name: 'Liam Vance',
@@ -626,7 +643,7 @@ const AboutPage = () => {
       gradient: 'linear-gradient(135deg, #040108 0%, #350218 100%)',
       department: 'CREATIVE_3D_LAB',
       bio: 'Specializes in hyper-realistic 3D environment architecture, displacement shading, and immersive rendering techniques to develop state-of-the-art visual assets.',
-      image: '/uploads/liam_vance.png'
+      image: '/uploads/liam_vance.webp'
     },
   ]);
 
@@ -667,6 +684,16 @@ const AboutPage = () => {
         console.warn('Backend offline or error fetching about photos, using local dummy list.', err);
       });
   }, []);
+
+  // Pre-load all personnel dossier avatar images for instant scroll rendering
+  useEffect(() => {
+    teamMembers.forEach((member) => {
+      if (member.image) {
+        const img = new Image();
+        img.src = getMediaUrl(member.image);
+      }
+    });
+  }, [teamMembers]);
 
   const getAboutPhotoUrls = (key: string, fallback: string): string[] => {
     const photo = aboutPhotos.find(p => p.key === key);
@@ -909,8 +936,10 @@ const AboutPage = () => {
         const teamCardsRow = teamCardsRowRef.current;
 
         const getScrollAmount = () => {
+          if (!teamCardsRow) return 1200;
           const leftStickyPanelWidth = window.innerWidth * 0.35;
-          return teamCardsRow.scrollWidth - (window.innerWidth - leftStickyPanelWidth);
+          const calculated = teamCardsRow.scrollWidth - (window.innerWidth - leftStickyPanelWidth);
+          return Math.max(600, calculated);
         };
 
         gsap.to(teamCardsRow, {
@@ -920,34 +949,24 @@ const AboutPage = () => {
             id: 'teamPinTrigger',
             trigger: teamSection,
             pin: true,
-            scrub: 1,
+            anticipatePin: 1,
+            scrub: true,
             start: 'top top',
             end: () => `+=${getScrollAmount()}`,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              setScrollProgress(self.progress * 100);
+              const p = self.progress;
+              if (progressBarRef.current) {
+                progressBarRef.current.style.width = `${p * 100}%`;
+              }
+              if (progressValRef.current) {
+                const total = teamMembers.length || 1;
+                const idx = Math.min(total, Math.max(1, Math.round(p * (total - 1)) + 1));
+                progressValRef.current.textContent = `${String(idx).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+              }
             }
           },
         });
-
-        // Team cards reveal
-        gsap.fromTo(
-          '.team-card-new',
-          { opacity: 0, y: 80, scale: 0.92 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            stagger: 0.1,
-            duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: teamSection,
-              start: 'top 65%',
-              toggleActions: 'play none none none',
-            },
-          }
-        );
       }
     });
 
@@ -1280,14 +1299,15 @@ const AboutPage = () => {
         <div className="team-progress-slider-container">
           <div className="team-progress-track" ref={progressTrackRef} onClick={handleTrackClick}>
             <div 
+              ref={progressBarRef}
               className="team-progress-bar" 
-              style={{ width: `${scrollProgress}%` }}
+              style={{ width: '0%' }}
             ></div>
           </div>
           <div className="team-progress-labels">
             <span className="progress-label">INDEX</span>
-            <span className="progress-val">
-              {String(Math.min(teamMembers.length, Math.max(1, Math.round((scrollProgress / 100) * (teamMembers.length - 1)) + 1))).padStart(2, '0')} / {String(teamMembers.length).padStart(2, '0')}
+            <span ref={progressValRef} className="progress-val">
+              01 / {String(teamMembers.length).padStart(2, '0')}
             </span>
           </div>
         </div>

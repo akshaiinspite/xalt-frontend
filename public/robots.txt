@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://xaltstudios.com/sitemap.xml

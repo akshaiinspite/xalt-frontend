@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import gsap from 'gsap';
@@ -13,19 +13,18 @@ import './index.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// ─── Lazy-loaded page components (code-split into separate chunks) ───
-const AboutPage = lazy(() => import('./components/AboutPage/AboutPage'));
-const ProjectsPage = lazy(() => import('./components/ProjectsPage/ProjectsPage'));
-const ContactPage = lazy(() => import('./components/ContactPage/ContactPage'));
-const CareersPage = lazy(() => import('./components/CareersPage/CareersPage'));
-const AdminPage = lazy(() => import('./components/AdminPage/AdminPage'));
+// Page & Section Components (Eagerly loaded for complete build bundle)
+import AboutPage from './components/AboutPage/AboutPage';
+import ProjectsPage from './components/ProjectsPage/ProjectsPage';
+import ContactPage from './components/ContactPage/ContactPage';
+import CareersPage from './components/CareersPage/CareersPage';
+import AdminPage from './components/AdminPage/AdminPage';
 
-// ─── Lazy-loaded heavy home sections ─────────────────────────────────
-const BrandVideoSection = lazy(() => import('./components/BrandVideoSection/BrandVideoSection'));
-const Showreel = lazy(() => import('./components/Showreel/Showreel'));
-const OurStory = lazy(() => import('./components/OurStory/OurStory'));
-const ServicesGrid = lazy(() => import('./components/ServicesGrid/ServicesGrid'));
-const CTASection = lazy(() => import('./components/CTASection/CTASection'));
+import BrandVideoSection from './components/BrandVideoSection/BrandVideoSection';
+import Showreel from './components/Showreel/Showreel';
+import OurStory from './components/OurStory/OurStory';
+import ServicesGrid from './components/ServicesGrid/ServicesGrid';
+import CTASection from './components/CTASection/CTASection';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,22 +51,22 @@ function App() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      // Check pathname redirect first
       if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')) {
         window.history.replaceState(null, '', '/');
         window.location.hash = '#admin';
         return;
       }
 
-      if (window.location.hash === '#about') {
+      const hash = window.location.hash;
+      if (hash === '#about') {
         setCurrentTab('about');
-      } else if (window.location.hash.startsWith('#projects')) {
+      } else if (hash.startsWith('#projects')) {
         setCurrentTab('projects');
-      } else if (window.location.hash.startsWith('#contact')) {
+      } else if (hash.startsWith('#contact')) {
         setCurrentTab('contact');
-      } else if (window.location.hash.startsWith('#careers')) {
+      } else if (hash.startsWith('#careers')) {
         setCurrentTab('careers');
-      } else if (window.location.hash.startsWith('#admin')) {
+      } else if (hash.startsWith('#admin')) {
         setCurrentTab('admin');
         setIsLoaderFinished(true);
       } else {
@@ -75,55 +74,56 @@ function App() {
       }
     };
 
-    // Check initial hash
     handleHashChange();
-
     window.addEventListener('hashchange', handleHashChange);
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
 
-  // Initialize Lenis and Sync with GSAP Ticker
+  // Initialize Lenis with native RAF for zero physics delta jumps
   useEffect(() => {
     const lenis = new Lenis({
-      autoRaf: false, // Turn off autoRaf to sync with GSAP Ticker
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // smooth exponential scroll ease
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
     });
 
-    // Expose lenis instance globally for navigation links
     (window as any).lenis = lenis;
 
-    // Reset scroll position to top immediately on transition
+    // Reset scroll offset
     window.scrollTo(0, 0);
     lenis.scrollTo(0, { immediate: true });
 
-    // Update ScrollTrigger on Lenis Scroll
-    lenis.on('scroll', ScrollTrigger.update);
-
-    // Synchronize Lenis frames with GSAP ticker loop
-    const updateRaf = (time: number) => {
-      lenis.raf(time * 1000);
+    // Synchronize Lenis with native browser requestAnimationFrame loop
+    let rafId: number;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
     };
-    gsap.ticker.add(updateRaf);
-    gsap.ticker.lagSmoothing(0);
+    rafId = requestAnimationFrame(raf);
 
-    // Refresh layout and reset scroll coordinates after transition/render delay
+    // Sync GSAP ScrollTrigger updates
+    const handleLenisScroll = () => {
+      ScrollTrigger.update();
+    };
+    lenis.on('scroll', handleLenisScroll);
+
+    // Refresh layout and reset scroll coordinates after transition
     const timer = setTimeout(() => {
       window.scrollTo(0, 0);
       lenis.scrollTo(0, { immediate: true });
       lenis.resize();
       ScrollTrigger.refresh();
-    }, 50);
+    }, 120);
 
     return () => {
+      cancelAnimationFrame(rafId);
+      lenis.off('scroll', handleLenisScroll);
       lenis.destroy();
       (window as any).lenis = null;
-      gsap.ticker.remove(updateRaf);
       clearTimeout(timer);
     };
   }, [currentTab]);
@@ -149,19 +149,10 @@ function App() {
         {currentTab === 'admin' && <AdminPage />}
         {currentTab === 'home' && (
           <>
-            {/* Brand Video Section (spafax-style reference video) */}
             <BrandVideoSection />
-
-            {/* Showreel */}
             <Showreel />
-
-            {/* Our Story Section */}
             <OurStory />
-
-            {/* Services Grid Section */}
             <ServicesGrid />
-
-            {/* CTA Section */}
             <CTASection />
           </>
         )}

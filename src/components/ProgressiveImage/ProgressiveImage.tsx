@@ -1,11 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useInView } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
 
-/**
- * A drop-in replacement for the standard HTML5 <img> element.
- * It waits until it's near the viewport to request the full image,
- * and fades in smoothly once loaded.
- */
 interface ProgressiveImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   rootMargin?: string;
 }
@@ -15,32 +9,55 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   className = '', 
   style, 
   onLoad,
-  rootMargin = '800px 0px', // Increased default margin so it loads way before scrolling into view
+  width,
+  height,
+  loading = 'lazy',
+  rootMargin = '600px 0px',
   ...props 
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  
-  // Only start loading when the image is within the specified margin of entering the viewport
-  const isInView = useInView(imgRef, { once: true, margin: rootMargin as any });
+
+  // Transform image URL to .webp if available
+  const getOptimizedSrc = (originalSrc?: string) => {
+    if (!originalSrc) return undefined;
+    if (typeof originalSrc === 'string') {
+      if ((originalSrc.includes('/uploads/') || originalSrc.includes('/assets/')) && (originalSrc.endsWith('.jpg') || originalSrc.endsWith('.jpeg') || originalSrc.endsWith('.png'))) {
+        if (!originalSrc.includes('-240.')) {
+          return originalSrc.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+        }
+      }
+    }
+    return originalSrc;
+  };
+
+  const finalSrc = getOptimizedSrc(src);
+
+  // Respect native browser lazy loading & instant cached image checks
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoaded(true);
+    }
+  }, [finalSrc]);
 
   return (
     <img
       ref={imgRef}
-      src={isInView ? src : undefined}
+      src={finalSrc}
       className={`${className} ${isLoaded ? 'loaded' : 'loading'}`}
+      width={width}
+      height={height}
       style={{
         ...style,
-        opacity: isLoaded ? 1 : 0,
-        transition: 'opacity 0.5s ease-out',
-        // Optional: show a faint background while loading
-        backgroundColor: isLoaded ? 'transparent' : 'rgba(255,255,255,0.05)',
+        opacity: isLoaded ? 1 : 0.85,
+        transition: 'opacity 0.2s ease-out',
       }}
       onLoad={(e) => {
         setIsLoaded(true);
         if (onLoad) onLoad(e);
       }}
       decoding="async"
+      loading={loading}
       {...props}
     />
   );

@@ -17,18 +17,18 @@ export const useVideoAutoPause = (videoRef: RefObject<HTMLVideoElement | null>, 
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Play the video when it enters the viewport
-            video.play().catch(e => {
-              // Ignore play interruptions (e.g. user hasn't interacted with document yet)
+            if (video.preload !== 'auto') {
+              video.preload = 'auto';
+            }
+            video.play().catch((e) => {
               console.debug('Autoplay prevented or interrupted', e);
             });
           } else {
-            // Pause the video when it leaves the viewport
             video.pause();
           }
         });
       },
-      { rootMargin, threshold: 0 }
+      { rootMargin, threshold: 0.05 }
     );
 
     observer.observe(video);

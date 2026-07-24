@@ -340,7 +340,7 @@ const ProjectsPage = () => {
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: true });
     return () => {
       container.removeEventListener('wheel', handleWheel);
     };
@@ -389,7 +389,7 @@ const ProjectsPage = () => {
       }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: true });
     return () => {
       container.removeEventListener('wheel', handleWheel);
     };
@@ -475,6 +475,19 @@ const ProjectsPage = () => {
     const catId = catIds[categoryIdx] || 'films';
     window.location.hash = `#projects/${catId}`;
     setActiveDropdown(null);
+  };
+
+  const preloadCategoryImages = (categoryIdx: number) => {
+    setActiveDropdown(categoryIdx);
+    const cat = categoriesData[categoryIdx];
+    if (cat?.subCategories) {
+      cat.subCategories.forEach((sub) => {
+        if (sub.image) {
+          const img = new Image();
+          img.src = getMediaUrl(sub.image);
+        }
+      });
+    }
   };
 
   // Synchronize selected category with URL hash
@@ -658,7 +671,7 @@ const ProjectsPage = () => {
               <div 
                 key={cat.id}
                 className={`proj-dropdown-wrapper ${activeDropdown === idx ? 'expanded' : ''}`}
-                onMouseEnter={() => setActiveDropdown(idx)}
+                onMouseEnter={() => preloadCategoryImages(idx)}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
                 <button 
@@ -866,7 +879,7 @@ const ProjectsPage = () => {
                         >
                           <div className="slide-media-wrapper">
                             {item.video ? (
-                              <AutoPauseVideo preload="metadata" 
+                              <AutoPauseVideo preload="none" 
                                 src={getMediaUrl(item.video)} 
                                 poster={getMediaUrl(item.image)} 
                                 muted 
@@ -933,7 +946,9 @@ const ProjectsPage = () => {
                       <span className="corner bl"></span>
                       <span className="corner br"></span>
                     </div>
-                    <AutoPauseVideo preload="metadata"
+                    <AutoPauseVideo 
+                      preload="auto"
+                      poster={getMediaUrl(activeSubcategory.image)}
                       key={activeSubcategory.video || 'default'} // Force reload video when category/subcategory changes
                       src={getMediaUrl(activeSubcategory.video || '/video/show-reel/showreel.mp4')}
                       controls
@@ -975,7 +990,7 @@ const ProjectsPage = () => {
 
                     <div className="slot-img-wrapper">
                       {item.video ? (
-                        <AutoPauseVideo preload="metadata" 
+                        <AutoPauseVideo preload="none" 
                           src={getMediaUrl(item.video)} 
                           poster={getMediaUrl(item.image)} 
                           muted 

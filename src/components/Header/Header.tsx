@@ -112,7 +112,10 @@ const Header = () => {
   return (
     <header className={`header ${isScrolled || isProjectsPage || isMobileMenuOpen ? 'scrolled' : ''}`}>
       <div className="header-logo" style={{ cursor: 'pointer' }} onClick={handleLogoClick}>
-        <img src="/uploads/XALT LOGO - VERT (1).png" alt="Xalt Studio" className="logo" />
+        <picture>
+          <source srcSet="/uploads/xalt-logo-vert-240.webp" type="image/webp" />
+          <img src="/uploads/xalt-logo-vert-240.png" alt="Xalt Studio" className="logo" width="120" height="120" decoding="async" />
+        </picture>
       </div>
       
       <nav className="nav-links">

@@ -6,10 +6,26 @@
   RewriteCond %{HTTPS} off
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   
+  # Exclude static files from SPA fallback rewrite
+  RewriteRule ^(robots\.txt|sitemap\.xml|llms\.txt)$ - [L]
+
   # React Router SPA routing rewrite
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteRule . /index.html [L]
+</IfModule>
+
+# Cache-Control headers for performance optimization
+<IfModule mod_headers.c>
+  # 1 Year Caching for Static Assets (Images, Videos, Fonts, JS, CSS)
+  <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|webp|avif|swf|mp4|webm|svg|css|js|woff|woff2|ttf|otf)$">
+    Header set Cache-Control "max-age=31536000, public, immutable"
+  </FilesMatch>
+  
+  # Prevent caching of root HTML and SEO directive files
+  <FilesMatch "\.(html|htm|txt|xml)$">
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+  </FilesMatch>
 </IfModule>

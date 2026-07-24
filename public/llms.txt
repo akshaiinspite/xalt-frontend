@@ -1,0 +1,23 @@
+# X.ALT Studios
+
+> Premier Virtual Production, Cinematic Visual Effects (VFX), and Immersive AR/VR Experiences Studio.
+
+## Overview
+X.ALT Studios is a next-generation creative technology studio specializing in end-to-end virtual production, real-time CGI, photorealistic 3D visualization, cinematic VFX for films and commercials, and interactive spatial computing (AR/VR).
+
+## Key Offerings & Capabilities
+- **Virtual Production & Previz**: In-camera visual effects (ICVFX), LED volume stage rendering, real-time pre-visualization.
+- **Cinematic Visual Effects (VFX)**: High-end compositing, 3D asset generation, creature animation, particle simulation.
+- **Commercial & Feature Productions**: Visual design, motion graphics, and full-pipeline production support.
+- **AR/VR & Immersive Experiences**: WebGL, WebXR, Unreal Engine / Unity spatial applications.
+
+## Navigation & Sections
+- Home: https://xaltstudios.com/#home
+- Studio & Story: https://xaltstudios.com/#about
+- Projects & Portfolio: https://xaltstudios.com/#projects
+- Careers: https://xaltstudios.com/#careers
+- Connect & Inquiries: https://xaltstudios.com/#contact
+
+## Contact Information
+- Email: info@xaltstudios.com
+- Location: Virtual & Global Production Stages

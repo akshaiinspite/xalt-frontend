@@ -25,7 +25,8 @@
   font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-primary);
+  color: #FF3D38;
+  font-weight: 600;
   margin-bottom: 1.5rem;
   display: block;
 }
@@ -64,10 +65,11 @@
   height: 520px; /* Increased height for premium space */
   flex: 1;
   min-width: 0;
+  transform: translateZ(0);
+  will-change: flex, transform;
   transition: 
-    flex 0.7s cubic-bezier(0.25, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
-    box-shadow 0.6s ease, 
+    flex 0.6s cubic-bezier(0.25, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
     border-color 0.3s ease;
   cursor: pointer;
 }
@@ -75,10 +77,8 @@
 .service-card:hover {
   flex: 2; /* Dynamic width expansion on hover */
   border-color: var(--color-primary);
-  box-shadow: 
-    0 0 35px rgba(225, 6, 0, 0.25), 
-    0 20px 45px rgba(0, 0, 0, 0.7);
-  transform: translateY(-12px);
+  box-shadow: 0 10px 30px rgba(225, 6, 0, 0.2);
+  transform: translateY(-8px) translateZ(0);
 }
 
 .service-card-img-box {
@@ -90,6 +90,7 @@
   overflow: hidden;
   background-color: #050505;
   z-index: 1;
+  transform: translateZ(0);
 }
 
 .service-card-img {
@@ -97,13 +98,15 @@
   height: 100%;
   object-fit: cover;
   object-position: center top; /* Locks top of image to top of frame during horizontal expansion */
-  filter: grayscale(100%) brightness(0.65) contrast(1.15); /* More visible B&W default */
-  transition: filter 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s ease;
+  opacity: 0.85;
+  transform: scale(1) translateZ(0);
+  will-change: transform, opacity;
+  transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .service-card:hover .service-card-img {
-  filter: grayscale(20%) brightness(0.85) contrast(1.05);
-  transform: scale(1.03);
+  opacity: 1;
+  transform: scale(1.04) translateZ(0);
 }
 
 .service-card-overlay {

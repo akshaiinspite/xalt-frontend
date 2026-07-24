@@ -12,7 +12,8 @@ export default defineConfig({
   ],
   build: {
     chunkSizeWarningLimit: 1000,
-    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+    assetsInlineLimit: 4096,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -20,8 +21,9 @@ export default defineConfig({
             if (id.includes('three')) return 'vendor-three';
             if (id.includes('gsap')) return 'vendor-gsap';
             if (id.includes('framer-motion')) return 'vendor-framer';
-            if (id.includes('react')) return 'vendor-react';
-            return 'vendor';
+            if (id.includes('react-dom') || id.includes('react/') || id.includes('react-router')) return 'vendor-react';
+            if (id.includes('lenis')) return 'vendor-lenis';
+            return 'vendor-utils';
           }
         }
       }

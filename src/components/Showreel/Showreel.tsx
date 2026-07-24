@@ -71,6 +71,7 @@ const Showreel = () => {
           playsInline
         >
           {shouldLoad && <source src={videoUrl} type="video/mp4" />}
+          <track kind="captions" src="" label="English captions" default />
         </video>
         {/* Cinematic dark & red overlays */}
         <div className="showreel-overlay-dark"></div>
