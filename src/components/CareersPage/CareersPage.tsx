@@ -179,15 +179,29 @@ const formatExperience = (exp: string) => {
   return `${val} years of experience`;
 };
 
+const DEFAULT_CAREERS_SUBTITLE = "At X Alt Studios, we're redefining visual storytelling through cinematic craft, design and technology. From world-building and character creation to VFX, CGI, animation, motion design and virtual production, you'll work on ambitious projects that challenge creativity and push technical boundaries. We're looking for curious minds who are passionate about shaping the future of visual storytelling.";
+
 // ----------------------------------------------------
 // CAREERS PAGE COMPONENT
 // ----------------------------------------------------
 const CareersPage = () => {
   const [jobs, setJobs] = useState<Job[]>(DUMMY_JOBS);
+  const [subtitleText, setSubtitleText] = useState<string>(DEFAULT_CAREERS_SUBTITLE);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    fetch(`${API_BASE_URL}/jobs/header`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.subtitle) {
+          setSubtitleText(data.subtitle);
+        }
+      })
+      .catch(err => {
+        console.warn('Error fetching careers header subtitle:', err);
+      });
+
     fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
       .then(data => {
@@ -434,7 +448,7 @@ const CareersPage = () => {
         {/* Full-width Grid of Vacancies */}
         <div className="careers-full-panel">
           <p className="careers-subtitle-text">
-            We are constantly seeking digital architects, boundary-pushing CGI artists, and innovative developers to join our elite studio. Select an active vacancy below to apply.
+            {subtitleText}
           </p>
 
           <div className="careers-jobs-grid">

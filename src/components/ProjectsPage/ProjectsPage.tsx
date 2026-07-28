@@ -287,6 +287,13 @@ const isVideoUrl = (url: string) => {
          url.includes('stream');
 };
 
+const getVideoPoster = (image?: string) => {
+  if (!image || image.includes('unsplash') || image.includes('photo-1618005182384') || image.includes('img-1')) {
+    return getMediaUrl('/uploads/xalt-logo-poster.webp');
+  }
+  return getMediaUrl(image);
+};
+
 const ProjectsPage = () => {
   const [categoriesData, setCategoriesData] = useState<CategorySection[]>(CATEGORIES_DATA);
   const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<number>(1); // Default: Films & Entertainment
@@ -881,7 +888,7 @@ const ProjectsPage = () => {
                             {item.video ? (
                               <AutoPauseVideo preload="none" 
                                 src={getMediaUrl(item.video)} 
-                                poster={getMediaUrl(item.image)} 
+                                poster={getVideoPoster(item.image)} 
                                 muted 
                                 loop 
                                 playsInline 
@@ -948,7 +955,7 @@ const ProjectsPage = () => {
                     </div>
                     <AutoPauseVideo 
                       preload="auto"
-                      poster={getMediaUrl(activeSubcategory.image)}
+                      poster={getVideoPoster(activeSubcategory.image)}
                       key={activeSubcategory.video || 'default'} // Force reload video when category/subcategory changes
                       src={getMediaUrl(activeSubcategory.video || '/video/show-reel/showreel.mp4')}
                       controls
@@ -992,7 +999,7 @@ const ProjectsPage = () => {
                       {item.video ? (
                         <AutoPauseVideo preload="none" 
                           src={getMediaUrl(item.video)} 
-                          poster={getMediaUrl(item.image)} 
+                          poster={getVideoPoster(item.image)} 
                           muted 
                           loop 
                           playsInline 

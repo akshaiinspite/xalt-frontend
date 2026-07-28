@@ -267,6 +267,8 @@ const AdminPage = () => {
   });
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
   const [jobFeedback, setJobFeedback] = useState({ type: '', message: '' });
+  const [careersSubtitle, setCareersSubtitle] = useState<string>('');
+  const [headerFeedback, setHeaderFeedback] = useState({ type: '', message: '' });
 
   // --- Projects/Portfolio Hierarchy State ---
   const [portfolio, setPortfolio] = useState<any[]>([]);
@@ -382,6 +384,7 @@ const AdminPage = () => {
   useEffect(() => {
     if (isLoggedIn) {
       fetchDbStatus();
+      fetchCareersHeader();
       fetchJobs();
       fetchPortfolio();
       fetchReel();
@@ -392,6 +395,45 @@ const AdminPage = () => {
   }, [isLoggedIn]);
 
   // --- Fetch API calls ---
+  const fetchCareersHeader = () => {
+    fetch(`${API_BASE_URL}/jobs/header`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.subtitle) {
+          setCareersSubtitle(data.subtitle);
+        }
+      })
+      .catch(err => console.error('Error fetching careers header:', err));
+  };
+
+  const handleCareersHeaderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('xalt_admin_token');
+
+    fetch(`${API_BASE_URL}/jobs/header`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ subtitle: careersSubtitle })
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update careers header');
+      }
+      setHeaderFeedback({ type: 'success', message: 'Careers page subtitle updated successfully!' });
+      toast.success('Careers page subtitle updated successfully!');
+      setTimeout(() => setHeaderFeedback({ type: '', message: '' }), 3000);
+    })
+    .catch(err => {
+      setHeaderFeedback({ type: 'error', message: err.message });
+      toast.error('Failed to update careers subtitle: ' + err.message);
+      setTimeout(() => setHeaderFeedback({ type: '', message: '' }), 4000);
+    });
+  };
+
   const fetchJobs = () => {
     fetch(`${API_BASE_URL}/jobs`)
       .then(res => res.json())
@@ -1325,6 +1367,39 @@ const AdminPage = () => {
           {activeTab === 'careers' && (
             <div className="dashboard-grid">
               
+              {/* Careers Subtitle / Intro Header Editor */}
+              <div className="dashboard-card" style={{ gridColumn: '1 / -1' }}>
+                <div className="dashboard-card-header">
+                  <h3>Careers Page Introduction Heading</h3>
+                  <p>Manage the main introductory text displayed above active vacancies on the live Careers page.</p>
+                </div>
+
+                {headerFeedback.message && (
+                  <div className={`feedback-alert ${headerFeedback.type}`}>
+                    {headerFeedback.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleCareersHeaderSubmit} className="dashboard-form">
+                  <div className="dashboard-form-group">
+                    <label>CAREERS HEADER SUBTITLE</label>
+                    <textarea 
+                      rows={4}
+                      placeholder="Enter Careers page introductory text..."
+                      value={careersSubtitle}
+                      onChange={(e) => setCareersSubtitle(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="dashboard-form-actions">
+                    <button type="submit" className="dashboard-btn primary">
+                      Save Careers Intro Text
+                    </button>
+                  </div>
+                </form>
+              </div>
+
               {/* Add/Edit Career Form */}
               <div className="dashboard-card" id="career-form-container">
                 <div className="dashboard-card-header">

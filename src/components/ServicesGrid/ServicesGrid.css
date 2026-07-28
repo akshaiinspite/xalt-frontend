@@ -1,7 +1,8 @@
 .services-section {
   width: 100%;
   background-color: var(--color-bg);
-  padding: 7rem 4rem; /* Balanced section padding */
+  padding: 7rem 4rem;
+  /* Balanced section padding */
   display: flex;
   justify-content: center;
   position: relative;
@@ -13,7 +14,8 @@
   max-width: 1200px;
   display: flex;
   flex-direction: column;
-  gap: 3.5rem; /* Reduced container gap */
+  gap: 3.5rem;
+  /* Reduced container gap */
 }
 
 .services-header {
@@ -60,22 +62,25 @@
   position: relative;
   background-color: #0b0b0d;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0; /* Straight square edges */
+  border-radius: 0;
+  /* Straight square edges */
   overflow: hidden;
-  height: 520px; /* Increased height for premium space */
+  height: 520px;
+  /* Increased height for premium space */
   flex: 1;
   min-width: 0;
   transform: translateZ(0);
   will-change: flex, transform;
-  transition: 
+  transition:
     flex 0.6s cubic-bezier(0.25, 1, 0.3, 1),
-    transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
+    transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
     border-color 0.3s ease;
   cursor: pointer;
 }
 
 .service-card:hover {
-  flex: 2; /* Dynamic width expansion on hover */
+  flex: 2;
+  /* Dynamic width expansion on hover */
   border-color: var(--color-primary);
   box-shadow: 0 10px 30px rgba(225, 6, 0, 0.2);
   transform: translateY(-8px) translateZ(0);
@@ -97,7 +102,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top; /* Locks top of image to top of frame during horizontal expansion */
+  object-position: center top;
+  /* Locks top of image to top of frame during horizontal expansion */
   opacity: 0.85;
   transform: scale(1) translateZ(0);
   will-change: transform, opacity;
@@ -115,24 +121,20 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom, 
-    rgba(0, 0, 0, 0.25) 0%, 
-    rgba(0, 0, 0, 0.5) 50%, 
-    rgba(0, 0, 0, 0.92) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.25) 0%,
+      rgba(0, 0, 0, 0.5) 50%,
+      rgba(0, 0, 0, 0.92) 100%);
   z-index: 2;
   pointer-events: none;
   transition: background 0.4s ease;
 }
 
 .service-card:hover .service-card-overlay {
-  background: linear-gradient(
-    to bottom, 
-    rgba(0, 0, 0, 0.15) 0%, 
-    rgba(0, 0, 0, 0.4) 40%, 
-    rgba(0, 0, 0, 0.88) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.15) 0%,
+      rgba(0, 0, 0, 0.4) 40%,
+      rgba(0, 0, 0, 0.88) 100%);
 }
 
 .service-card-glow-red {
@@ -175,10 +177,33 @@
   border-color: var(--color-primary);
 }
 
-.corner.tl { top: 15px; left: 15px; border-bottom: none; border-right: none; }
-.corner.tr { top: 15px; right: 15px; border-bottom: none; border-left: none; }
-.corner.bl { bottom: 15px; left: 15px; border-top: none; border-right: none; }
-.corner.br { bottom: 15px; right: 15px; border-top: none; border-left: none; }
+.corner.tl {
+  top: 15px;
+  left: 15px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.corner.tr {
+  top: 15px;
+  right: 15px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.corner.bl {
+  bottom: 15px;
+  left: 15px;
+  border-top: none;
+  border-right: none;
+}
+
+.corner.br {
+  bottom: 15px;
+  right: 15px;
+  border-top: none;
+  border-left: none;
+}
 
 /* Cyber Telemetry Overlay on Service Card */
 .card-telemetry-overlay {
@@ -319,14 +344,27 @@
     flex-direction: column;
     gap: 2rem;
   }
+
   .service-card {
     flex: none;
     width: 100%;
     height: 480px;
   }
+
   .service-card:hover {
     flex: none;
     transform: translateY(-8px);
+  }
+
+  .service-card-glow-red,
+  .service-card:hover .service-card-glow-red {
+    opacity: 1;
+    background-color: rgba(225, 6, 0, 0.12);
+    mix-blend-mode: multiply;
+  }
+
+  .service-card-desc {
+    color: #ffffff;
   }
 }
 
@@ -340,21 +378,41 @@
   .services-section {
     padding: 3.5rem 1.25rem;
   }
+
   .service-card {
     height: 380px;
   }
+
   .service-card-content {
     padding: 1.5rem 1.25rem;
   }
+
   .service-card-title {
     font-size: 1.3rem;
   }
+
   .service-card-desc {
     font-size: 0.82rem;
     -webkit-line-clamp: 2;
   }
-  .corner.tl { top: 8px; left: 8px; }
-  .corner.tr { top: 8px; right: 8px; }
-  .corner.bl { bottom: 8px; left: 8px; }
-  .corner.br { bottom: 8px; right: 8px; }
+
+  .corner.tl {
+    top: 8px;
+    left: 8px;
+  }
+
+  .corner.tr {
+    top: 8px;
+    right: 8px;
+  }
+
+  .corner.bl {
+    bottom: 8px;
+    left: 8px;
+  }
+
+  .corner.br {
+    bottom: 8px;
+    right: 8px;
+  }
 }
